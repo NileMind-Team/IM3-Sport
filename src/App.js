@@ -1,23 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, useLocation } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import ConfirmEmail from "./pages/ConfirmEmail";
+import ResetPassword from "./pages/ResetPassword";
+import AuthPage from "./pages/AuthPage";
+import Profile from "./pages/Profile";
 
 function App() {
+  const location = useLocation();
+
+  const hideNavbarFooterPaths = [
+    "/login",
+    "/register",
+    "/auth/verify-email-address",
+    "/reset-password",
+    "/profile",
+  ];
+
+  const shouldShowNavbarFooter = !hideNavbarFooterPaths.includes(
+    location.pathname
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="min-h-screen flex flex-col">
+      {/* Navbar */}
+      {shouldShowNavbarFooter && <Navbar />}
+
+      {/* Main content */}
+      <main className="flex-grow w-full">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/auth/verify-email-address" element={<ConfirmEmail />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </main>
     </div>
   );
 }
