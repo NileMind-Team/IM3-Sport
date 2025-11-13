@@ -467,7 +467,7 @@ export default function Reviews() {
                             <h3 className="font-bold text-gray-800 text-base sm:text-lg md:text-xl truncate">
                               {review.menuItemName}
                             </h3>
-                            <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-2 mt-1">
+                            <div className="flex items-center gap-2 mt-1">
                               {renderStars(review.rating)}
                               <span className="text-xs sm:text-sm text-gray-600">
                                 ({review.rating}/5)
