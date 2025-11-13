@@ -6,6 +6,7 @@ import {
   FaSignOutAlt,
   FaMapMarkerAlt,
   FaTrash,
+  FaStar,
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -89,6 +90,11 @@ const Navbar = () => {
   const handleAddressesClick = () => {
     setIsDropdownOpen(false);
     navigate("/addresses");
+  };
+
+  const handleReviewsClick = () => {
+    setIsDropdownOpen(false);
+    navigate("/reviews");
   };
 
   // Close dropdown when clicking outside
@@ -262,6 +268,19 @@ const Navbar = () => {
                       >
                         <FaMapMarkerAlt className="text-[#E41E26]" />
                         <span>My Addresses</span>
+                      </button>
+                    </motion.div>
+
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <button
+                        onClick={handleReviewsClick}
+                        className="w-full text-left flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] transition-all duration-200 font-medium rounded-lg"
+                      >
+                        <FaStar className="text-[#E41E26]" />
+                        <span>My Reviews</span>
                       </button>
                     </motion.div>
 

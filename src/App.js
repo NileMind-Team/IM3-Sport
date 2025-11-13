@@ -6,6 +6,7 @@ import ResetPassword from "./pages/ResetPassword";
 import AuthPage from "./pages/AuthPage";
 import Profile from "./pages/Profile";
 import Addresses from "./pages/Addresses";
+import Reviews from "./pages/Reviews";
 
 function App() {
   const location = useLocation();
@@ -17,6 +18,7 @@ function App() {
     "/reset-password",
     "/profile",
     "/addresses",
+    "/reviews",
   ];
 
   const shouldShowNavbarFooter = !hideNavbarFooterPaths.includes(
@@ -38,6 +40,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/addresses" element={<Addresses />} />
+          <Route path="/reviews" element={<Reviews />} />
         </Routes>
       </main>
     </div>
