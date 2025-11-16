@@ -21,6 +21,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axiosInstance from "../api/axiosInstance";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -30,15 +31,13 @@ const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   const [quantity, setQuantity] = useState(1);
+  const [isAdminOrRestaurant, setIsAdminOrRestaurant] = useState(false);
+  const [loading, setLoading] = useState(true);
   const categoriesContainerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const navigate = useNavigate();
-
-  // Check user role from localStorage
-  const userRole = localStorage.getItem("userRole") || "user";
-  const isAdminOrRestaurant = userRole === "restaurant" || userRole === "admin";
 
   // Categories with icons
   const categories = [
@@ -47,6 +46,42 @@ const Home = () => {
     { id: "drinks", name: "Beverages", icon: <FaCoffee /> },
     { id: "desserts", name: "Desserts", icon: <FaIceCream /> },
   ];
+
+  // Check user role from API endpoint using axios
+  useEffect(() => {
+    const checkUserRole = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsAdminOrRestaurant(false);
+          setLoading(false);
+          return;
+        }
+
+        const response = await axiosInstance.get("/api/Account/Profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const userData = response.data;
+        const userRoles = userData.roles || [];
+
+        const hasAdminOrRestaurantRole =
+          userRoles.includes("Admin") || userRoles.includes("Restaurant");
+
+        setIsAdminOrRestaurant(hasAdminOrRestaurantRole);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        setIsAdminOrRestaurant(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUserRole();
+  }, []);
 
   // Mock data with real food images
   useEffect(() => {
@@ -404,6 +439,14 @@ const Home = () => {
       </div>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#fff8e7] to-[#ffe5b4] px-4">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-[#fff8e7] to-[#ffe5b4] font-sans relative overflow-x-hidden">

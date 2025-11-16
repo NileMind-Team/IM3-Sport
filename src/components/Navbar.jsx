@@ -130,7 +130,7 @@ const Navbar = () => {
         const res = await axiosInstance.get("/api/Account/Profile");
         if (res.status === 200) {
           const fixedImageUrl = res.data.imageUrl
-            ? `https://nilefood.runasp.net/${res.data.imageUrl}`
+            ? `https://restaurant-template.runasp.net/${res.data.imageUrl}`
             : null;
           setUser({ ...res.data, avatar: fixedImageUrl });
         }
