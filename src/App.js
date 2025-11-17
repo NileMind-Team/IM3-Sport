@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import OrderTracking from "./pages/OrderTracking";
 import MyOrders from "./pages/MyOrders";
 import ProductForm from "./pages/ProductForm";
+import Footer from "./components/Footer";
 
 function App() {
   const location = useLocation();
@@ -52,6 +53,9 @@ function App() {
           <Route path="/products/edit" element={<ProductForm />} />
         </Routes>
       </main>
+
+      {/* Footer */}
+      {shouldShowNavbarFooter && <Footer />}
     </div>
   );
 }

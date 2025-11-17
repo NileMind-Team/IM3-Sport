@@ -678,9 +678,9 @@ const Home = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleAddNewProduct}
-          className="fixed bottom-4 left-4 bg-green-500 text-white rounded-full p-4 shadow-2xl z-40 hover:bg-green-600 transition-colors duration-200"
+          className="fixed bottom-4 left-4 bg-green-500 text-white rounded-full p-3 sm:p-4 shadow-2xl z-40 hover:bg-green-600 transition-colors duration-200"
         >
-          <FaPlus size={24} />
+          <FaPlus className="w-4 h-4 sm:w-6 sm:h-6" />
         </motion.button>
       )}
 
@@ -870,7 +870,7 @@ const Home = () => {
           onClick={() => navigate("/cart")}
         >
           <div className="relative">
-            <FaShoppingCart size={20} className="sm:w-6" />
+            <FaShoppingCart className="w-4 h-4 sm:w-6 sm:h-6" />
             <span className="absolute -top-2 -right-2 bg-white text-[#E41E26] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold">
               {cart.reduce((total, item) => total + item.quantity, 0)}
             </span>
