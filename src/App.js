@@ -15,6 +15,8 @@ import ProductForm from "./pages/ProductForm";
 import Footer from "./components/Footer";
 import AdminUsers from "./pages/AdminUsers";
 import AdminBranches from "./pages/AdminBranches";
+import DeliveryCostManagement from "./pages/DeliveryCostManagement";
+import CouponsManagement from "./pages/CouponsManagement";
 
 function App() {
   const location = useLocation();
@@ -80,6 +82,11 @@ function App() {
           <Route path="/products/edit" element={<ProductForm />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/branches" element={<AdminBranches />} />
+          <Route
+            path="/admin/delivery-cost"
+            element={<DeliveryCostManagement />}
+          />
+          <Route path="/admin/coupons" element={<CouponsManagement />} />
         </Routes>
       </main>
 

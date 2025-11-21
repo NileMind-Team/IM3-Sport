@@ -10,8 +10,11 @@ import {
   FaSearch,
   FaFilter,
   FaChevronDown,
+  FaEdit,
+  FaTrash,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
+import axiosInstance from "../api/axiosInstance";
 
 export default function MyOrders() {
   const navigate = useNavigate();
@@ -19,6 +22,47 @@ export default function MyOrders() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isAdminOrRestaurantOrBranch, setIsAdminOrRestaurantOrBranch] =
+    useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Check user role from API endpoint using axios - Same as Home page
+  useEffect(() => {
+    const checkUserRole = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsAdminOrRestaurantOrBranch(false);
+          setLoading(false);
+          return;
+        }
+
+        const response = await axiosInstance.get("/api/Account/Profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const userData = response.data;
+        const userRoles = userData.roles || [];
+
+        const hasAdminOrRestaurantOrBranchRole =
+          userRoles.includes("Admin") ||
+          userRoles.includes("Restaurant") ||
+          userRoles.includes("Branch");
+
+        setIsAdminOrRestaurantOrBranch(hasAdminOrRestaurantOrBranchRole);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        setIsAdminOrRestaurantOrBranch(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUserRole();
+  }, []);
 
   // Sample orders data - UPDATED to match OrderTracking structure
   const sampleOrders = [
@@ -205,6 +249,93 @@ export default function MyOrders() {
     }
   };
 
+  // Admin Functions - Only for Admin, Restaurant or Branch role
+  const handleChangeOrderStatus = (orderId, e) => {
+    e.stopPropagation();
+
+    Swal.fire({
+      title: "Change Order Status",
+      input: "select",
+      inputOptions: {
+        preparing: "Preparing",
+        on_the_way: "On The Way",
+        delivered: "Delivered",
+        cancelled: "Cancelled",
+      },
+      inputPlaceholder: "Select status",
+      showCancelButton: true,
+      confirmButtonColor: "#E41E26",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Update Status",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newStatus = result.value;
+        const statusTextMap = {
+          preparing: "Preparing",
+          on_the_way: "On The Way",
+          delivered: "Delivered",
+          cancelled: "Cancelled",
+        };
+
+        setOrders(
+          orders.map((order) =>
+            order.id === orderId
+              ? {
+                  ...order,
+                  status: newStatus,
+                  statusText: statusTextMap[newStatus],
+                }
+              : order
+          )
+        );
+
+        Swal.fire({
+          icon: "success",
+          title: "Status Updated!",
+          text: `Order status changed to ${statusTextMap[newStatus]}`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
+  const handleCancelOrder = (orderId, e) => {
+    e.stopPropagation();
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to cancel this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#E41E26",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, cancel it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setOrders(
+          orders.map((order) =>
+            order.id === orderId
+              ? {
+                  ...order,
+                  status: "cancelled",
+                  statusText: "Cancelled",
+                }
+              : order
+          )
+        );
+
+        Swal.fire({
+          title: "Cancelled!",
+          text: "Order has been cancelled.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
   const handleOrderClick = (order) => {
     if (order.status === "preparing" || order.status === "on_the_way") {
       // Save the COMPLETE order data to localStorage for tracking page
@@ -258,6 +389,14 @@ export default function MyOrders() {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#fff8e7] to-[#ffe5b4] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-4">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -424,6 +563,32 @@ export default function MyOrders() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Admin Actions - Only show for Admin, Restaurant or Branch role */}
+                    {isAdminOrRestaurantOrBranch && (
+                      <div className="flex gap-2 mb-3">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={(e) => handleChangeOrderStatus(order.id, e)}
+                          className="flex items-center gap-1 bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors"
+                        >
+                          <FaEdit size={10} />
+                          Change Status
+                        </motion.button>
+                        {order.status !== "cancelled" && (
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => handleCancelOrder(order.id, e)}
+                            className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-600 transition-colors"
+                          >
+                            <FaTrash size={10} />
+                            Cancel Order
+                          </motion.button>
+                        )}
+                      </div>
+                    )}
 
                     {/* Order Items */}
                     <div className="space-y-2 mb-3">

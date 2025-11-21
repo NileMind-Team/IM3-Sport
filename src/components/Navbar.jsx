@@ -15,6 +15,8 @@ import {
   FaBuilding,
   FaMoon,
   FaSun,
+  FaMoneyBillWave,
+  FaTag,
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -136,6 +138,16 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
     navigate("/admin/branches");
   };
 
+  const handleDeliveryCostClick = () => {
+    setIsSidebarOpen(false);
+    navigate("/admin/delivery-cost");
+  };
+
+  const handleCouponsClick = () => {
+    setIsSidebarOpen(false);
+    navigate("/admin/coupons");
+  };
+
   // Close sidebar and dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -246,7 +258,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={toggleDarkMode} // ✅ تم ربط الزر بالدالة الممررة كـ prop
+            onClick={toggleDarkMode}
             className="p-2.5 bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-800 dark:to-gray-700 rounded-xl border border-[#FDB913]/30 dark:border-gray-600 hover:shadow-lg transition-all duration-300 flex items-center justify-center"
             aria-label={
               darkMode ? "Switch to light mode" : "Switch to dark mode"
@@ -475,6 +487,38 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                               <FaBuilding className="text-[#E41E26] dark:text-[#FDB913] text-lg" />
                             </div>
                             <span className="text-lg">Manage Branches</span>
+                          </button>
+                        </motion.div>
+
+                        {/* Delivery Cost Management */}
+                        <motion.div
+                          whileHover={{ scale: 1.02, x: 4 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <button
+                            onClick={handleDeliveryCostClick}
+                            className="w-full text-left flex items-center gap-4 px-2 py-2 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 font-medium rounded-xl border border-transparent hover:border-[#FDB913]/30 dark:hover:border-gray-500"
+                          >
+                            <div className="p-2 bg-[#E41E26]/10 dark:bg-[#FDB913]/20 rounded-lg">
+                              <FaMoneyBillWave className="text-[#E41E26] dark:text-[#FDB913] text-lg" />
+                            </div>
+                            <span className="text-lg">Delivery Costs</span>
+                          </button>
+                        </motion.div>
+
+                        {/* Coupons Management - NEW */}
+                        <motion.div
+                          whileHover={{ scale: 1.02, x: 4 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <button
+                            onClick={handleCouponsClick}
+                            className="w-full text-left flex items-center gap-4 px-2 py-2 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 font-medium rounded-xl border border-transparent hover:border-[#FDB913]/30 dark:hover:border-gray-500"
+                          >
+                            <div className="p-2 bg-[#E41E26]/10 dark:bg-[#FDB913]/20 rounded-lg">
+                              <FaTag className="text-[#E41E26] dark:text-[#FDB913] text-lg" />
+                            </div>
+                            <span className="text-lg">Manage Coupons</span>
                           </button>
                         </motion.div>
                       </div>
