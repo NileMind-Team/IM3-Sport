@@ -15,7 +15,6 @@ import {
   FaEnvelope,
   FaCity,
   FaUser,
-  FaStar,
   FaChevronDown,
   FaGlobe,
 } from "react-icons/fa";
@@ -41,7 +40,6 @@ export default function AdminBranches() {
     address: "",
     locationUrl: "",
     status: "Open",
-    rating_Avgarage: 0,
     openingTime: "",
     closingTime: "",
     isActive: true,
@@ -49,14 +47,11 @@ export default function AdminBranches() {
     managerId: "",
   });
 
-  const ratingOptions = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-
   const isFormValid = () => {
     return (
       formData.name.trim() !== "" &&
       formData.email.trim() !== "" &&
       formData.address.trim() !== "" &&
-      formData.locationUrl.trim() !== "" &&
       formData.openingTime.trim() !== "" &&
       formData.closingTime.trim() !== "" &&
       formData.cityId !== "" &&
@@ -202,11 +197,16 @@ export default function AdminBranches() {
       return;
     }
 
+    const submitData = { ...formData };
+    if (!submitData.locationUrl.trim()) {
+      delete submitData.locationUrl;
+    }
+
     try {
       if (editingId) {
         const res = await axiosInstance.put(
           `/api/Branches/Update/${editingId}`,
-          formData
+          submitData
         );
         if (res.status === 200 || res.status === 204) {
           await fetchBranches();
@@ -220,7 +220,7 @@ export default function AdminBranches() {
           resetForm();
         }
       } else {
-        const res = await axiosInstance.post("/api/Branches/Add", formData);
+        const res = await axiosInstance.post("/api/Branches/Add", submitData);
         if (res.status === 200 || res.status === 201) {
           await fetchBranches();
           Swal.fire({
@@ -250,10 +250,9 @@ export default function AdminBranches() {
       address: branch.address || "",
       locationUrl: branch.locationUrl || "",
       status: branch.status || "Open",
-      rating_Avgarage: branch.rating_Avgarage || 0,
       openingTime: branch.openingTime || "",
       closingTime: branch.closingTime || "",
-      isActive: branch.isActive || true,
+      isActive: branch.isActive !== undefined ? branch.isActive : true,
       cityId: branch.city?.id || "",
       managerId: branch.managerId || "",
     });
@@ -330,7 +329,6 @@ export default function AdminBranches() {
       address: "",
       locationUrl: "",
       status: "Open",
-      rating_Avgarage: 0,
       openingTime: "",
       closingTime: "",
       isActive: true,
@@ -515,12 +513,6 @@ export default function AdminBranches() {
                             >
                               {branch.status === "Open" ? "مفتوح" : "مغلق"}
                             </div>
-                            {branch.rating_Avgarage > 0 && (
-                              <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 px-2 py-1 rounded-full text-xs">
-                                <FaStar className="text-yellow-500" />
-                                <span>{branch.rating_Avgarage.toFixed(1)}</span>
-                              </div>
-                            )}
                           </div>
                         </div>
 
@@ -701,7 +693,7 @@ export default function AdminBranches() {
 
                       <div>
                         <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                          رابط الموقع *
+                          رابط الموقع
                         </label>
                         <div className="relative group">
                           <FaGlobe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
@@ -710,9 +702,8 @@ export default function AdminBranches() {
                             name="locationUrl"
                             value={formData.locationUrl}
                             onChange={handleInputChange}
-                            required
                             className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                            placeholder="رابط خرائط جوجل"
+                            placeholder="رابط خرائط جوجل (اختياري)"
                           />
                         </div>
                       </div>
@@ -841,116 +832,59 @@ export default function AdminBranches() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
-                        <div>
-                          <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                            الحالة *
-                          </label>
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setOpenDropdown(
-                                  openDropdown === "status" ? null : "status"
-                                )
-                              }
-                              className="w-full flex items-center justify-between border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-black dark:text-white rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      <div>
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                          الحالة *
+                        </label>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setOpenDropdown(
+                                openDropdown === "status" ? null : "status"
+                              )
+                            }
+                            className="w-full flex items-center justify-between border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-black dark:text-white rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                          >
+                            <span>
+                              {formData.status === "Open" ? "مفتوح" : "مغلق"}
+                            </span>
+                            <motion.div
+                              animate={{
+                                rotate: openDropdown === "status" ? 180 : 0,
+                              }}
+                              transition={{ duration: 0.3 }}
                             >
-                              <span>
-                                {formData.status === "Open" ? "مفتوح" : "مغلق"}
-                              </span>
-                              <motion.div
-                                animate={{
-                                  rotate: openDropdown === "status" ? 180 : 0,
-                                }}
-                                transition={{ duration: 0.3 }}
-                              >
-                                <FaChevronDown className="text-[#E41E26]" />
-                              </motion.div>
-                            </button>
+                              <FaChevronDown className="text-[#E41E26]" />
+                            </motion.div>
+                          </button>
 
-                            <AnimatePresence>
-                              {openDropdown === "status" && (
-                                <motion.ul
-                                  initial={{ opacity: 0, y: -5 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -5 }}
-                                  transition={{ duration: 0.2 }}
-                                  className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 shadow-2xl rounded-xl overflow-hidden max-h-48 overflow-y-auto"
-                                >
-                                  {["Open", "Closed"].map((status) => (
-                                    <li
-                                      key={status}
-                                      onClick={() =>
-                                        handleSelectChange("status", status)
-                                      }
-                                      className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] dark:hover:from-gray-500 dark:hover:to-gray-400 cursor-pointer text-gray-700 dark:text-gray-300 transition-all text-sm sm:text-base border-b border-gray-100 dark:border-gray-500 last:border-b-0"
-                                    >
-                                      {status === "Open" ? "مفتوح" : "مغلق"}
-                                    </li>
-                                  ))}
-                                </motion.ul>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                            التقييم
-                          </label>
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setOpenDropdown(
-                                  openDropdown === "rating" ? null : "rating"
-                                )
-                              }
-                              className="w-full flex items-center justify-between border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-black dark:text-white rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                            >
-                              <span className="flex items-center gap-2">
-                                <FaStar className="text-[#E41E26]" />
-                                {formData.rating_Avgarage}
-                              </span>
-                              <motion.div
-                                animate={{
-                                  rotate: openDropdown === "rating" ? 180 : 0,
-                                }}
-                                transition={{ duration: 0.3 }}
+                          <AnimatePresence>
+                            {openDropdown === "status" && (
+                              <motion.ul
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 shadow-2xl rounded-xl overflow-hidden max-h-48 overflow-y-auto"
                               >
-                                <FaChevronDown className="text-[#E41E26]" />
-                              </motion.div>
-                            </button>
-
-                            <AnimatePresence>
-                              {openDropdown === "rating" && (
-                                <motion.ul
-                                  initial={{ opacity: 0, y: -5 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -5 }}
-                                  transition={{ duration: 0.2 }}
-                                  className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 shadow-2xl rounded-xl overflow-hidden max-h-48 overflow-y-auto"
-                                >
-                                  {ratingOptions.map((rating) => (
-                                    <li
-                                      key={rating}
-                                      onClick={() =>
-                                        handleSelectChange(
-                                          "rating_Avgarage",
-                                          rating
-                                        )
-                                      }
-                                      className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] dark:hover:from-gray-500 dark:hover:to-gray-400 cursor-pointer text-gray-700 dark:text-gray-300 transition-all text-sm sm:text-base border-b border-gray-100 dark:border-gray-500 last:border-b-0"
-                                    >
-                                      {rating}
-                                    </li>
-                                  ))}
-                                </motion.ul>
-                              )}
-                            </AnimatePresence>
-                          </div>
+                                {["Open", "Closed"].map((status) => (
+                                  <li
+                                    key={status}
+                                    onClick={() =>
+                                      handleSelectChange("status", status)
+                                    }
+                                    className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] dark:hover:from-gray-500 dark:hover:to-gray-400 cursor-pointer text-gray-700 dark:text-gray-300 transition-all text-sm sm:text-base border-b border-gray-100 dark:border-gray-500 last:border-b-0"
+                                  >
+                                    {status === "Open" ? "مفتوح" : "مغلق"}
+                                  </li>
+                                ))}
+                              </motion.ul>
+                            )}
+                          </AnimatePresence>
                         </div>
                       </div>
+
                       <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                         <div>
                           <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
@@ -959,13 +893,12 @@ export default function AdminBranches() {
                           <div className="relative group">
                             <FaClock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
                             <input
-                              type="text"
+                              type="time"
                               name="openingTime"
                               value={formData.openingTime}
                               onChange={handleInputChange}
                               required
                               className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                              placeholder="وقت الفتح"
                             />
                           </div>
                         </div>
@@ -976,13 +909,12 @@ export default function AdminBranches() {
                           <div className="relative group">
                             <FaClock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
                             <input
-                              type="text"
+                              type="time"
                               name="closingTime"
                               value={formData.closingTime}
                               onChange={handleInputChange}
                               required
                               className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                              placeholder="وقت الإغلاق"
                             />
                           </div>
                         </div>
