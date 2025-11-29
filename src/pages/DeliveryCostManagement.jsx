@@ -9,11 +9,11 @@ import {
   FaEdit,
   FaTrash,
   FaSearch,
-  FaFilter,
   FaChevronDown,
   FaSave,
   FaTimes,
   FaTruck,
+  FaBuilding,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
@@ -22,23 +22,28 @@ export default function DeliveryCostManagement() {
   const navigate = useNavigate();
   const [deliveryAreas, setDeliveryAreas] = useState([]);
   const [filteredAreas, setFilteredAreas] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [filter, setFilter] = useState("all");
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const [formBranchesDropdownOpen, setFormBranchesDropdownOpen] =
+    useState(false);
   const [isAdminOrRestaurantOrBranch, setIsAdminOrRestaurantOrBranch] =
     useState(false);
 
   const [formData, setFormData] = useState({
+    branchId: "",
     areaName: "",
-    deliveryCost: "",
-    estimatedTime: "",
+    fee: "",
+    estimatedTimeMin: "",
+    estimatedTimeMax: "",
     isActive: true,
   });
 
-  // Check user role from API endpoint using axios - Same as other pages
+  // Check user role from API endpoint using axios
   useEffect(() => {
     const checkUserRole = async () => {
       try {
@@ -74,62 +79,63 @@ export default function DeliveryCostManagement() {
         console.error("Error fetching user profile:", error);
         setIsAdminOrRestaurantOrBranch(false);
         navigate("/");
-      } finally {
-        setLoading(false);
       }
     };
 
     checkUserRole();
   }, [navigate]);
 
-  // Sample data - In real app, this would come from API
+  // Fetch branches and delivery areas in one effect
   useEffect(() => {
-    const sampleAreas = [
-      {
-        id: 1,
-        areaName: "Downtown Cairo",
-        deliveryCost: 25.0,
-        estimatedTime: "25-35 mins",
-        isActive: true,
-        createdAt: new Date("2024-01-15").toISOString(),
-      },
-      {
-        id: 2,
-        areaName: "Zamalek",
-        deliveryCost: 20.0,
-        estimatedTime: "20-30 mins",
-        isActive: true,
-        createdAt: new Date("2024-01-16").toISOString(),
-      },
-      {
-        id: 3,
-        areaName: "Maadi",
-        deliveryCost: 30.0,
-        estimatedTime: "30-40 mins",
-        isActive: true,
-        createdAt: new Date("2024-01-17").toISOString(),
-      },
-      {
-        id: 4,
-        areaName: "Heliopolis",
-        deliveryCost: 28.0,
-        estimatedTime: "25-35 mins",
-        isActive: false,
-        createdAt: new Date("2024-01-18").toISOString(),
-      },
-      {
-        id: 5,
-        areaName: "Nasr City",
-        deliveryCost: 22.0,
-        estimatedTime: "20-30 mins",
-        isActive: true,
-        createdAt: new Date("2024-01-19").toISOString(),
-      },
-    ];
+    const fetchData = async () => {
+      if (!isAdminOrRestaurantOrBranch) return;
 
-    setDeliveryAreas(sampleAreas);
-    setFilteredAreas(sampleAreas);
-  }, []);
+      try {
+        setLoading(true);
+
+        // Fetch branches
+        const branchesResponse = await axiosInstance.get(
+          "/api/Branches/GetAll"
+        );
+        setBranches(branchesResponse.data);
+
+        // Fetch delivery areas
+        const areasResponse = await axiosInstance.get(
+          "/api/DeliveryFees/GetAll"
+        );
+
+        // Transform API response to match our frontend structure
+        const transformedAreas = areasResponse.data.map((area) => ({
+          id: area.id,
+          areaName: area.areaName,
+          deliveryCost: area.fee,
+          estimatedTime: `${area.estimatedTimeMin}-${area.estimatedTimeMax} دقائق`,
+          estimatedTimeMin: area.estimatedTimeMin,
+          estimatedTimeMax: area.estimatedTimeMax,
+          isActive: area.isActive,
+          branchId: area.branchId,
+          branchName:
+            branchesResponse.data.find((branch) => branch.id === area.branchId)
+              ?.name || "فرع غير معروف",
+          createdAt: area.createdAt || new Date().toISOString(),
+        }));
+
+        setDeliveryAreas(transformedAreas);
+        setFilteredAreas(transformedAreas);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        Swal.fire({
+          icon: "error",
+          title: "خطأ",
+          text: "فشل في تحميل البيانات",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isAdminOrRestaurantOrBranch]);
 
   // Filter areas based on search term and filter
   useEffect(() => {
@@ -163,14 +169,16 @@ export default function DeliveryCostManagement() {
 
     // Validation
     if (
+      !formData.branchId ||
       !formData.areaName.trim() ||
-      !formData.deliveryCost ||
-      !formData.estimatedTime
+      !formData.fee ||
+      !formData.estimatedTimeMin ||
+      !formData.estimatedTimeMax
     ) {
       Swal.fire({
         icon: "error",
-        title: "Missing Information",
-        text: "Please fill in all required fields",
+        title: "معلومات ناقصة",
+        text: "يرجى ملء جميع الحقول المطلوبة",
         timer: 2000,
         showConfirmButton: false,
       });
@@ -178,40 +186,43 @@ export default function DeliveryCostManagement() {
     }
 
     try {
+      const requestData = {
+        branchId: parseInt(formData.branchId),
+        areaName: formData.areaName,
+        fee: parseFloat(formData.fee),
+        estimatedTimeMin: parseInt(formData.estimatedTimeMin),
+        estimatedTimeMax: parseInt(formData.estimatedTimeMax),
+        isActive: formData.isActive, // إضافة حقل isActive هنا
+      };
+
       if (editingId) {
         // Update existing area
         const res = await axiosInstance.put(
-          `/api/DeliveryAreas/${editingId}`,
-          formData
+          `/api/DeliveryFees/Update/${editingId}`,
+          requestData
         );
-        if (res.status === 200) {
-          setDeliveryAreas(
-            deliveryAreas.map((area) =>
-              area.id === editingId ? { ...area, ...formData } : area
-            )
-          );
+        if (res.status === 200 || res.status === 204) {
+          await fetchDeliveryAreas();
           Swal.fire({
             icon: "success",
-            title: "Area Updated",
-            text: "Delivery area has been updated successfully.",
+            title: "تم التحديث",
+            text: "تم تحديث منطقة التوصيل بنجاح",
             timer: 2000,
             showConfirmButton: false,
           });
         }
       } else {
         // Add new area
-        const res = await axiosInstance.post("/api/DeliveryAreas", formData);
-        if (res.status === 201) {
-          const newArea = {
-            ...formData,
-            id: Date.now(),
-            createdAt: new Date().toISOString(),
-          };
-          setDeliveryAreas([...deliveryAreas, newArea]);
+        const res = await axiosInstance.post(
+          "/api/DeliveryFees/Add",
+          requestData
+        );
+        if (res.status === 200 || res.status === 201) {
+          await fetchDeliveryAreas();
           Swal.fire({
             icon: "success",
-            title: "Area Added",
-            text: "New delivery area has been added successfully.",
+            title: "تم الإضافة",
+            text: "تم إضافة منطقة توصيل جديدة بنجاح",
             timer: 2000,
             showConfirmButton: false,
           });
@@ -222,40 +233,75 @@ export default function DeliveryCostManagement() {
     } catch (err) {
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: err.response?.data?.message || "Failed to save delivery area.",
+        title: "خطأ",
+        text: err.response?.data?.message || "فشل في حفظ منطقة التوصيل",
+      });
+    }
+  };
+
+  // Function to refetch delivery areas
+  const fetchDeliveryAreas = async () => {
+    try {
+      const response = await axiosInstance.get("/api/DeliveryFees/GetAll");
+
+      const transformedAreas = response.data.map((area) => ({
+        id: area.id,
+        areaName: area.areaName,
+        deliveryCost: area.fee,
+        estimatedTime: `${area.estimatedTimeMin}-${area.estimatedTimeMax} دقائق`,
+        estimatedTimeMin: area.estimatedTimeMin,
+        estimatedTimeMax: area.estimatedTimeMax,
+        isActive: area.isActive,
+        branchId: area.branchId,
+        branchName:
+          branches.find((branch) => branch.id === area.branchId)?.name ||
+          "فرع غير معروف",
+        createdAt: area.createdAt || new Date().toISOString(),
+      }));
+
+      setDeliveryAreas(transformedAreas);
+      setFilteredAreas(transformedAreas);
+    } catch (error) {
+      console.error("Error fetching delivery areas:", error);
+      Swal.fire({
+        icon: "error",
+        title: "خطأ",
+        text: "فشل في تحميل مناطق التوصيل",
       });
     }
   };
 
   const handleEdit = (area) => {
     setFormData({
+      branchId: area.branchId?.toString() || "",
       areaName: area.areaName,
-      deliveryCost: area.deliveryCost,
-      estimatedTime: area.estimatedTime,
-      isActive: area.isActive,
+      fee: area.deliveryCost?.toString() || "",
+      estimatedTimeMin: area.estimatedTimeMin?.toString() || "",
+      estimatedTimeMax: area.estimatedTimeMax?.toString() || "",
+      isActive: area.isActive, // تعيين القيمة الصحيحة من البيانات الحالية
     });
     setEditingId(area.id);
     setIsAdding(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      title: "هل أنت متأكد؟",
+      text: "لن تتمكن من التراجع عن هذا الإجراء!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#E41E26",
       cancelButtonColor: "#6B7280",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "نعم، احذف!",
+      cancelButtonText: "إلغاء",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axiosInstance.delete(`/api/DeliveryAreas/${id}`);
-          setDeliveryAreas(deliveryAreas.filter((area) => area.id !== id));
+          await axiosInstance.delete(`/api/DeliveryFees/Delete/${id}`);
+          await fetchDeliveryAreas();
           Swal.fire({
-            title: "Deleted!",
-            text: "Delivery area has been deleted.",
+            title: "تم الحذف!",
+            text: "تم حذف منطقة التوصيل",
             icon: "success",
             timer: 2000,
             showConfirmButton: false,
@@ -263,42 +309,45 @@ export default function DeliveryCostManagement() {
         } catch (err) {
           Swal.fire({
             icon: "error",
-            title: "Error",
-            text: "Failed to delete delivery area.",
+            title: "خطأ",
+            text: "فشل في حذف منطقة التوصيل",
           });
         }
       }
     });
   };
 
-  const handleToggleActive = (id, e) => {
+  const handleToggleActive = async (id, e) => {
     e.stopPropagation();
 
-    setDeliveryAreas(
-      deliveryAreas.map((area) =>
-        area.id === id ? { ...area, isActive: !area.isActive } : area
-      )
-    );
+    try {
+      await axiosInstance.put(`/api/DeliveryFees/ChangeActiveStatus/${id}`);
+      await fetchDeliveryAreas();
 
-    Swal.fire({
-      icon: "success",
-      title: "Status Updated!",
-      text: `Delivery area ${
-        deliveryAreas.find((a) => a.id === id).isActive
-          ? "deactivated"
-          : "activated"
-      }`,
-      timer: 1500,
-      showConfirmButton: false,
-    });
+      Swal.fire({
+        icon: "success",
+        title: "تم تحديث الحالة!",
+        text: "تم تحديث حالة منطقة التوصيل",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "خطأ",
+        text: "فشل في تحديث حالة منطقة التوصيل",
+      });
+    }
   };
 
   const resetForm = () => {
     setFormData({
+      branchId: "",
       areaName: "",
-      deliveryCost: "",
-      estimatedTime: "",
-      isActive: true,
+      fee: "",
+      estimatedTimeMin: "",
+      estimatedTimeMax: "",
+      isActive: true, // إعادة التعيين إلى true كقيمة افتراضية
     });
     setEditingId(null);
     setIsAdding(false);
@@ -308,12 +357,28 @@ export default function DeliveryCostManagement() {
     setIsAdding(true);
   };
 
+  const handleFormBranchSelect = (branchId) => {
+    setFormData({
+      ...formData,
+      branchId: branchId.toString(),
+    });
+    setFormBranchesDropdownOpen(false);
+  };
+
+  const getSelectedBranchName = () => {
+    if (!formData.branchId) return "اختر الفرع";
+    const branch = branches.find((b) => b.id === parseInt(formData.branchId));
+    return branch ? branch.name : "اختر الفرع";
+  };
+
   // Check if all required fields are filled
   const isFormValid = () => {
     return (
+      formData.branchId !== "" &&
       formData.areaName.trim() !== "" &&
-      formData.deliveryCost !== "" &&
-      formData.estimatedTime.trim() !== ""
+      formData.fee !== "" &&
+      formData.estimatedTimeMin !== "" &&
+      formData.estimatedTimeMax !== ""
     );
   };
 
@@ -355,19 +420,19 @@ export default function DeliveryCostManagement() {
             </motion.button>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200">
-                Delivery Cost Management
+                إدارة تكاليف التوصيل
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                Manage delivery areas and costs
+                إدارة مناطق وتكاليف التوصيل
               </p>
             </div>
           </div>
           <div className="text-right self-end sm:self-auto">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#E41E26]">
-              {deliveryAreas.length} Areas
+              {deliveryAreas.length} منطقة
             </div>
             <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-              in total
+              الإجمالي
             </div>
           </div>
         </motion.div>
@@ -385,7 +450,7 @@ export default function DeliveryCostManagement() {
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 dark:text-gray-500" />
               <input
                 type="text"
-                placeholder="Search delivery areas..."
+                placeholder="ابحث في مناطق التوصيل..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-white text-black focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -394,60 +459,6 @@ export default function DeliveryCostManagement() {
 
             {/* Filter */}
             <div className="flex gap-2 w-full sm:w-auto">
-              <div className="relative w-full sm:w-48">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setOpenDropdown(openDropdown === "filter" ? null : "filter")
-                  }
-                  className="w-full flex items-center justify-between border border-gray-200 bg-white rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-[#E41E26] transition-all duration-200 text-sm sm:text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                >
-                  <span className="flex items-center gap-2">
-                    <FaFilter className="text-[#E41E26]" />
-                    {filter === "all"
-                      ? "All Areas"
-                      : filter === "active"
-                      ? "Active"
-                      : "Inactive"}
-                  </span>
-                  <motion.div
-                    animate={{ rotate: openDropdown === "filter" ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <FaChevronDown className="text-[#E41E26]" />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence>
-                  {openDropdown === "filter" && (
-                    <motion.ul
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute z-50 mt-2 w-full bg-white border border-gray-200 shadow-2xl rounded-xl overflow-hidden max-h-48 overflow-y-auto dark:bg-gray-700 dark:border-gray-600"
-                    >
-                      {[
-                        { value: "all", label: "All Areas" },
-                        { value: "active", label: "Active" },
-                        { value: "inactive", label: "Inactive" },
-                      ].map((item) => (
-                        <li
-                          key={item.value}
-                          onClick={() => {
-                            setFilter(item.value);
-                            setOpenDropdown(null);
-                          }}
-                          className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] cursor-pointer text-gray-700 transition-all text-sm sm:text-base border-b border-gray-100 last:border-b-0 dark:hover:from-gray-600 dark:hover:to-gray-500 dark:text-gray-300 dark:border-gray-600"
-                        >
-                          {item.label}
-                        </li>
-                      ))}
-                    </motion.ul>
-                  )}
-                </AnimatePresence>
-              </div>
-
               {/* Add New Area Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -456,8 +467,8 @@ export default function DeliveryCostManagement() {
                 className="flex items-center gap-2 bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white px-4 sm:px-5 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base whitespace-nowrap"
               >
                 <FaPlus className="text-sm" />
-                <span className="hidden sm:inline">Add Area</span>
-                <span className="sm:hidden">Add</span>
+                <span className="hidden sm:inline">إضافة منطقة</span>
+                <span className="sm:hidden">إضافة</span>
               </motion.button>
             </div>
           </div>
@@ -495,12 +506,15 @@ export default function DeliveryCostManagement() {
                                 area.isActive
                               )} whitespace-nowrap`}
                             >
-                              {area.isActive ? "Active" : "Inactive"}
+                              {area.isActive ? "نشط" : "غير نشط"}
                             </span>
                           </div>
                           <p className="text-gray-600 dark:text-gray-400 text-sm">
-                            Created{" "}
-                            {new Date(area.createdAt).toLocaleDateString()}
+                            {area.branchName && `الفرع: ${area.branchName} • `}
+                            تم الإنشاء{" "}
+                            {new Date(area.createdAt).toLocaleDateString(
+                              "ar-EG"
+                            )}
                           </p>
                         </div>
                       </div>
@@ -510,10 +524,10 @@ export default function DeliveryCostManagement() {
                           <FaMoneyBillWave className="text-green-600 dark:text-green-400 text-lg flex-shrink-0" />
                           <div>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                              Delivery Cost
+                              تكلفة التوصيل
                             </p>
                             <p className="font-bold text-green-600 dark:text-green-400 text-lg">
-                              EGP {area.deliveryCost.toFixed(2)}
+                              ج.م {area.deliveryCost.toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -521,7 +535,7 @@ export default function DeliveryCostManagement() {
                           <FaTruck className="text-blue-600 dark:text-blue-400 text-lg flex-shrink-0" />
                           <div>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                              Estimated Time
+                              الوقت المتوقع
                             </p>
                             <p className="font-bold text-blue-600 dark:text-blue-400 text-lg">
                               {area.estimatedTime}
@@ -542,7 +556,7 @@ export default function DeliveryCostManagement() {
                             : "bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/50 dark:text-green-300 dark:hover:bg-green-800"
                         } rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium flex-1 sm:flex-none justify-center`}
                       >
-                        {area.isActive ? "Deactivate" : "Activate"}
+                        {area.isActive ? "تعطيل" : "تفعيل"}
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -551,7 +565,7 @@ export default function DeliveryCostManagement() {
                         className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800 rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium flex-1 sm:flex-none justify-center"
                       >
                         <FaEdit className="text-xs sm:text-sm" />
-                        <span className="whitespace-nowrap">Edit</span>
+                        <span className="whitespace-nowrap">تعديل</span>
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -560,7 +574,7 @@ export default function DeliveryCostManagement() {
                         className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-800 rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium flex-1 sm:flex-none justify-center"
                       >
                         <FaTrash className="text-xs sm:text-sm" />
-                        <span className="whitespace-nowrap">Delete</span>
+                        <span className="whitespace-nowrap">حذف</span>
                       </motion.button>
                     </div>
                   </div>
@@ -576,12 +590,12 @@ export default function DeliveryCostManagement() {
               >
                 <FaMapMarkerAlt className="mx-auto text-3xl sm:text-4xl md:text-5xl text-gray-400 dark:text-gray-500 mb-3 sm:mb-4" />
                 <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-600 dark:text-gray-400 mb-2 sm:mb-3">
-                  No delivery areas found
+                  لم يتم العثور على مناطق توصيل
                 </h3>
                 <p className="text-gray-500 dark:text-gray-500 text-sm sm:text-base mb-4 sm:mb-6 max-w-xs sm:max-w-sm mx-auto">
                   {searchTerm || filter !== "all"
-                    ? "Try adjusting your search or filter criteria"
-                    : "Add your first delivery area to get started"}
+                    ? "حاول تعديل معايير البحث أو التصفية"
+                    : "أضف أول منطقة توصيل للبدء"}
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -590,7 +604,7 @@ export default function DeliveryCostManagement() {
                   className="flex items-center gap-2 bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base mx-auto"
                 >
                   <FaPlus className="text-xs sm:text-sm" />
-                  <span>Add Your First Area</span>
+                  <span>أضف أول منطقة</span>
                 </motion.button>
               </motion.div>
             )}
@@ -608,7 +622,7 @@ export default function DeliveryCostManagement() {
                 <div className="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl p-4 sm:p-5 lg:p-6 border border-gray-200/50 dark:bg-gray-800/90 dark:border-gray-600 sticky top-4 sm:top-6 transition-colors duration-300">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">
-                      {editingId ? "Edit Area" : "Add New Area"}
+                      {editingId ? "تعديل المنطقة" : "إضافة منطقة جديدة"}
                     </h3>
                     <button
                       onClick={resetForm}
@@ -622,10 +636,65 @@ export default function DeliveryCostManagement() {
                     onSubmit={handleSubmit}
                     className="space-y-3 sm:space-y-4"
                   >
+                    {/* Branch Dropdown */}
+                    <div>
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                        الفرع *
+                      </label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormBranchesDropdownOpen(
+                              !formBranchesDropdownOpen
+                            )
+                          }
+                          className="w-full flex items-center justify-between border border-gray-200 bg-white rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-[#E41E26] transition-all duration-200 text-sm sm:text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        >
+                          <span className="flex items-center gap-2">
+                            <FaBuilding className="text-[#E41E26]" />
+                            {getSelectedBranchName()}
+                          </span>
+                          <motion.div
+                            animate={{
+                              rotate: formBranchesDropdownOpen ? 180 : 0,
+                            }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <FaChevronDown className="text-[#E41E26]" />
+                          </motion.div>
+                        </button>
+
+                        <AnimatePresence>
+                          {formBranchesDropdownOpen && (
+                            <motion.ul
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -5 }}
+                              transition={{ duration: 0.2 }}
+                              className="absolute z-50 mt-2 w-full bg-white border border-gray-200 shadow-2xl rounded-xl overflow-hidden max-h-48 overflow-y-auto dark:bg-gray-700 dark:border-gray-600"
+                            >
+                              {branches.map((branch) => (
+                                <li
+                                  key={branch.id}
+                                  onClick={() =>
+                                    handleFormBranchSelect(branch.id)
+                                  }
+                                  className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] cursor-pointer text-gray-700 transition-all text-sm sm:text-base border-b border-gray-100 last:border-b-0 dark:hover:from-gray-600 dark:hover:to-gray-500 dark:text-gray-300 dark:border-gray-600"
+                                >
+                                  {branch.name}
+                                </li>
+                              ))}
+                            </motion.ul>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+
                     {/* Area Name */}
                     <div>
                       <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                        Area Name *
+                        اسم المنطقة *
                       </label>
                       <div className="relative group">
                         <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
@@ -636,7 +705,7 @@ export default function DeliveryCostManagement() {
                           onChange={handleInputChange}
                           required
                           className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                          placeholder="Enter area name"
+                          placeholder="أدخل اسم المنطقة"
                         />
                       </div>
                     </div>
@@ -644,14 +713,14 @@ export default function DeliveryCostManagement() {
                     {/* Delivery Cost */}
                     <div>
                       <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                        Delivery Cost (EGP) *
+                        تكلفة التوصيل (ج.م) *
                       </label>
                       <div className="relative group">
                         <FaMoneyBillWave className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
                         <input
                           type="number"
-                          name="deliveryCost"
-                          value={formData.deliveryCost}
+                          name="fee"
+                          value={formData.fee}
                           onChange={handleInputChange}
                           required
                           min="0"
@@ -662,22 +731,43 @@ export default function DeliveryCostManagement() {
                       </div>
                     </div>
 
-                    {/* Estimated Time */}
-                    <div>
-                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                        Estimated Delivery Time *
-                      </label>
-                      <div className="relative group">
-                        <FaTruck className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
-                        <input
-                          type="text"
-                          name="estimatedTime"
-                          value={formData.estimatedTime}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
-                          placeholder="e.g., 25-35 mins"
-                        />
+                    {/* Estimated Time Range */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                          أقل وقت (دقيقة) *
+                        </label>
+                        <div className="relative group">
+                          <FaTruck className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                          <input
+                            type="number"
+                            name="estimatedTimeMin"
+                            value={formData.estimatedTimeMin}
+                            onChange={handleInputChange}
+                            required
+                            min="0"
+                            className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                            placeholder="أقل"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                          أقصى وقت (دقيقة) *
+                        </label>
+                        <div className="relative group">
+                          <FaTruck className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                          <input
+                            type="number"
+                            name="estimatedTimeMax"
+                            value={formData.estimatedTimeMax}
+                            onChange={handleInputChange}
+                            required
+                            min="0"
+                            className="w-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                            placeholder="أقصى"
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -691,7 +781,7 @@ export default function DeliveryCostManagement() {
                         className="w-4 h-4 text-[#E41E26] bg-gray-100 border-gray-300 rounded focus:ring-[#E41E26] focus:ring-2"
                       />
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Active (Available for delivery)
+                        نشط (متاح للتوصيل)
                       </label>
                     </div>
 
@@ -703,7 +793,7 @@ export default function DeliveryCostManagement() {
                         onClick={resetForm}
                         className="flex-1 py-2.5 sm:py-3 border-2 border-[#E41E26] text-[#E41E26] rounded-lg sm:rounded-xl font-semibold hover:bg-[#E41E26] hover:text-white transition-all duration-300 text-sm sm:text-base"
                       >
-                        Cancel
+                        إلغاء
                       </motion.button>
                       <motion.button
                         type="submit"
@@ -717,7 +807,7 @@ export default function DeliveryCostManagement() {
                         }`}
                       >
                         <FaSave className="text-xs sm:text-sm" />
-                        {editingId ? "Update" : "Save"}
+                        {editingId ? "تحديث" : "حفظ"}
                       </motion.button>
                     </div>
                   </form>

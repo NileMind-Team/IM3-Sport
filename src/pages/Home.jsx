@@ -16,6 +16,8 @@ import {
   FaTimes,
   FaLayerGroup,
   FaTag,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -27,6 +29,7 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [isAdminOrRestaurantOrBranch, setIsAdminOrRestaurantOrBranch] =
     useState(false);
   const [loading, setLoading] = useState(true);
@@ -181,6 +184,22 @@ const Home = () => {
     fetchProducts();
   }, [selectedCategory]);
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await axiosInstance.get("/api/Favorites/GetAll");
+        setFavorites(response.data);
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
   const getDayName = (dayNumber) => {
     const days = [
       "الأحد",
@@ -211,6 +230,71 @@ const Home = () => {
 
     setFilteredProducts(filtered);
   }, [searchTerm, products]);
+
+  const isProductInFavorites = (productId) => {
+    return favorites.some((fav) => fav.menuItemId === productId);
+  };
+
+  const handleToggleFavorite = async (product, e) => {
+    e.stopPropagation();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      Swal.fire({
+        icon: "warning",
+        title: "يجب تسجيل الدخول",
+        text: "يجب تسجيل الدخول لإضافة المنتجات إلى المفضلة",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    try {
+      if (isProductInFavorites(product.id)) {
+        // Remove from favorites
+        const favoriteItem = favorites.find(
+          (fav) => fav.menuItemId === product.id
+        );
+        await axiosInstance.delete(`/api/Favorites/Delete/${favoriteItem.id}`);
+        setFavorites(favorites.filter((fav) => fav.menuItemId !== product.id));
+
+        Swal.fire({
+          icon: "success",
+          title: "تم الإزالة من المفضلة",
+          text: `تم إزالة ${product.name} من المفضلة`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } else {
+        // Add to favorites
+        await axiosInstance.post("/api/Favorites/Add", {
+          menuItemId: product.id,
+        });
+
+        // Fetch updated favorites
+        const response = await axiosInstance.get("/api/Favorites/GetAll");
+        setFavorites(response.data);
+
+        Swal.fire({
+          icon: "success",
+          title: "تم الإضافة إلى المفضلة",
+          text: `تم إضافة ${product.name} إلى المفضلة`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      Swal.fire({
+        icon: "error",
+        title: "خطأ",
+        text: "فشل في تحديث المفضلة",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
 
   const handleProductDetails = (product) => {
     navigate(`/product/${product.id}`, { state: { product } });
@@ -879,6 +963,22 @@ const Home = () => {
                       <div className="text-[#E41E26] font-bold text-lg sm:text-xl">
                         {product.price} ج.م
                       </div>
+                      <motion.button
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => handleToggleFavorite(product, e)}
+                        className={`p-2 rounded-full transition-colors ${
+                          isProductInFavorites(product.id)
+                            ? "text-red-500 bg-red-50 dark:bg-red-900/20"
+                            : "text-gray-400 bg-gray-50 dark:bg-gray-700 hover:text-red-500"
+                        }`}
+                      >
+                        {isProductInFavorites(product.id) ? (
+                          <FaHeart size={18} />
+                        ) : (
+                          <FaRegHeart size={18} />
+                        )}
+                      </motion.button>
                     </div>
 
                     <div className="flex gap-2 mt-3 sm:mt-4">

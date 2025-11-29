@@ -108,7 +108,6 @@ export default function Addresses() {
       const res = await axiosInstance.get("/api/Locations/GetAllForUser");
       if (res.status === 200) {
         setAddresses(res.data);
-        // Initialize all maps as collapsed
         const initialExpandedState = {};
         res.data.forEach((address) => {
           initialExpandedState[address.id] = false;
@@ -197,10 +196,8 @@ export default function Addresses() {
     e.preventDefault();
 
     try {
-      // Create a copy of formData without locationUrl if it's empty
       const submitData = { ...formData };
 
-      // Remove locationUrl from data if it's empty
       if (!submitData.locationUrl || submitData.locationUrl.trim() === "") {
         delete submitData.locationUrl;
       }
@@ -376,7 +373,6 @@ export default function Addresses() {
     setShowMapModal(true);
     setMapLoaded(false);
 
-    // تحديد الموقع تلقائياً
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -388,12 +384,12 @@ export default function Addresses() {
         },
         (error) => {
           console.warn("خطأ في تحديد الموقع:", error);
-          setSelectedLocation(defaultCenter); // لو رفض المستخدم الموقع
+          setSelectedLocation(defaultCenter);
         },
         { enableHighAccuracy: true }
       );
     } else {
-      setSelectedLocation(defaultCenter); // لو المتصفح لا يدعم الجيولوجيشن
+      setSelectedLocation(defaultCenter);
     }
   };
 

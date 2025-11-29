@@ -20,6 +20,7 @@ import CouponsManagement from "./pages/CouponsManagement";
 import CitiesManagement from "./pages/CitiesManagement";
 import ProductDetails from "./pages/ProductDetails";
 import Cashier from "./pages/Cashier";
+import Favorites from "./pages/Favorites";
 
 function App() {
   const location = useLocation();
@@ -97,6 +98,7 @@ function App() {
           <Route path="/admin/cities" element={<CitiesManagement />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cashier" element={<Cashier />} />
+          <Route path="/favorites" element={<Favorites />} />
         </Routes>
       </main>
 
