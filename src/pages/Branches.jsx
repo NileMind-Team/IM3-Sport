@@ -14,6 +14,13 @@ import {
   FaEye,
   FaMap,
   FaTimes,
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+  FaCommentAlt,
+  FaChevronDown,
+  FaChevronUp,
+  FaUserCircle,
 } from "react-icons/fa";
 import axiosInstance from "../api/axiosInstance";
 import Swal from "sweetalert2";
@@ -26,6 +33,7 @@ const Branches = () => {
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [showMapModal, setShowMapModal] = useState(false);
   const [selectedBranchForMap, setSelectedBranchForMap] = useState(null);
+  const [showReviews, setShowReviews] = useState({});
 
   useEffect(() => {
     const fetchBranchesAndCities = async () => {
@@ -147,6 +155,57 @@ const Branches = () => {
 
   const toggleBranchDetails = (branch) => {
     setSelectedBranch(selectedBranch?.id === branch.id ? null : branch);
+  };
+
+  const toggleReviews = (branchId) => {
+    setShowReviews((prev) => ({
+      ...prev,
+      [branchId]: !prev[branchId],
+    }));
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) {
+        stars.push(
+          <FaStar key={i} className="text-yellow-500 text-sm sm:text-base" />
+        );
+      } else if (i === fullStars + 1 && hasHalfStar) {
+        stars.push(
+          <FaStarHalfAlt
+            key={i}
+            className="text-yellow-500 text-sm sm:text-base"
+          />
+        );
+      } else {
+        stars.push(
+          <FaRegStar key={i} className="text-gray-300 text-sm sm:text-base" />
+        );
+      }
+    }
+    return stars;
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+
+    const cleanPath = imagePath.trim();
+
+    if (cleanPath.startsWith("http://") || cleanPath.startsWith("https://")) {
+      return cleanPath;
+    }
+
+    const baseUrl = "https://restaurant-template.runasp.net/";
+
+    const normalizedPath = cleanPath.startsWith("/")
+      ? cleanPath.substring(1)
+      : cleanPath;
+
+    return `${baseUrl}${normalizedPath}`;
   };
 
   if (loading) {
@@ -273,6 +332,7 @@ const Branches = () => {
               className="text-white/80 text-xs sm:text-sm md:text-base px-2"
             >
               اكتشف فروع Chicken One القريبة منك وتعرّف على تفاصيل كل فرع
+              وتقييمات العملاء
             </motion.p>
           </div>
         </div>
@@ -432,6 +492,14 @@ const Branches = () => {
                                   </span>
                                 </div>
                               </div>
+
+                              {branch.rating_Avgarage > 0 && (
+                                <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-3 justify-start">
+                                  <div className="flex items-center gap-0.5">
+                                    {renderStars(branch.rating_Avgarage)}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -462,86 +530,213 @@ const Branches = () => {
                         className="border-t border-gray-200 dark:border-gray-600"
                       >
                         <div className="p-3 sm:p-4 md:p-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                             {/* Contact Information */}
-                            <div className="space-y-3 sm:space-y-4">
-                              <h4 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-600 pb-1.5 sm:pb-2">
-                                معلومات التواصل
-                              </h4>
+                            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                              <div className="space-y-3 sm:space-y-4">
+                                <h4 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-600 pb-1.5 sm:pb-2">
+                                  معلومات التواصل
+                                </h4>
 
-                              {/* Address */}
-                              <div className="flex items-start gap-2 sm:gap-3">
-                                <FaMapMarkerAlt className="text-[#E41E26] mt-0.5 sm:mt-1 flex-shrink-0 text-sm sm:text-base" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">
-                                    العنوان
-                                  </p>
-                                  <p className="text-gray-800 dark:text-gray-200 font-medium text-sm sm:text-base">
-                                    {branch.address}
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* Email */}
-                              {branch.email && (
+                                {/* Address */}
                                 <div className="flex items-start gap-2 sm:gap-3">
-                                  <FaEnvelope className="text-[#E41E26] mt-0.5 sm:mt-1 flex-shrink-0 text-sm sm:text-base" />
+                                  <FaMapMarkerAlt className="text-[#E41E26] mt-0.5 sm:mt-1 flex-shrink-0 text-sm sm:text-base" />
                                   <div className="flex-1 min-w-0">
                                     <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">
-                                      البريد الإلكتروني
+                                      العنوان
                                     </p>
-                                    <p className="text-gray-800 dark:text-gray-200 font-medium text-sm sm:text-base break-all">
-                                      {branch.email}
+                                    <p className="text-gray-800 dark:text-gray-200 font-medium text-sm sm:text-base">
+                                      {branch.address}
                                     </p>
                                   </div>
                                 </div>
-                              )}
 
-                              {/* Phone Numbers */}
-                              {branch.phoneNumbers &&
-                                branch.phoneNumbers.length > 0 && (
+                                {/* Email */}
+                                {branch.email && (
                                   <div className="flex items-start gap-2 sm:gap-3">
-                                    <FaPhone className="text-[#E41E26] mt-0.5 sm:mt-1 flex-shrink-0 text-sm sm:text-base" />
+                                    <FaEnvelope className="text-[#E41E26] mt-0.5 sm:mt-1 flex-shrink-0 text-sm sm:text-base" />
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-2">
-                                        أرقام الهاتف
+                                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">
+                                        البريد الإلكتروني
                                       </p>
-                                      <div className="space-y-1.5 sm:space-y-2">
-                                        {branch.phoneNumbers.map(
-                                          (phone, idx) => (
-                                            <div
-                                              key={idx}
-                                              className="flex items-center justify-between bg-gray-50 dark:bg-gray-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2"
-                                            >
-                                              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                                                <span className="text-gray-800 dark:text-gray-200 font-medium text-xs sm:text-sm md:text-base truncate">
-                                                  {phone.phone}
-                                                </span>
-                                                <span className="text-gray-500 dark:text-gray-400 text-xs bg-gray-200 dark:bg-gray-500 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded flex-shrink-0">
-                                                  {getPhoneTypeArabic(
-                                                    phone.type
-                                                  )}
-                                                </span>
-                                              </div>
-                                              {phone.isWhatsapp && (
-                                                <FaWhatsapp className="text-green-500 text-base sm:text-lg md:text-xl flex-shrink-0 ml-1" />
-                                              )}
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
+                                      <p className="text-gray-800 dark:text-gray-200 font-medium text-sm sm:text-base break-all">
+                                        {branch.email}
+                                      </p>
                                     </div>
                                   </div>
                                 )}
+
+                                {/* Phone Numbers */}
+                                {branch.phoneNumbers &&
+                                  branch.phoneNumbers.length > 0 && (
+                                    <div className="flex items-start gap-2 sm:gap-3">
+                                      <FaPhone className="text-[#E41E26] mt-0.5 sm:mt-1 flex-shrink-0 text-sm sm:text-base" />
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-2">
+                                          أرقام الهاتف
+                                        </p>
+                                        <div className="space-y-1.5 sm:space-y-2">
+                                          {branch.phoneNumbers.map(
+                                            (phone, idx) => (
+                                              <div
+                                                key={idx}
+                                                className="flex items-center justify-between bg-gray-50 dark:bg-gray-600 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2"
+                                              >
+                                                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                                                  <span className="text-gray-800 dark:text-gray-200 font-medium text-xs sm:text-sm md:text-base truncate">
+                                                    {phone.phone}
+                                                  </span>
+                                                  <span className="text-gray-500 dark:text-gray-400 text-xs bg-gray-200 dark:bg-gray-500 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded flex-shrink-0">
+                                                    {getPhoneTypeArabic(
+                                                      phone.type
+                                                    )}
+                                                  </span>
+                                                </div>
+                                                {phone.isWhatsapp && (
+                                                  <FaWhatsapp className="text-green-500 text-base sm:text-lg md:text-xl flex-shrink-0 ml-1" />
+                                                )}
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                              </div>
+
+                              {/* Reviews Section */}
+                              {branch.reviews && branch.reviews.length > 0 && (
+                                <div className="space-y-3 sm:space-y-4">
+                                  {/* Reviews Dropdown Header */}
+                                  <div
+                                    className="flex items-center justify-between cursor-pointer"
+                                    onClick={() => toggleReviews(branch.id)}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <h4 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                        <FaCommentAlt className="text-[#E41E26]" />
+                                        تقييمات العملاء
+                                        <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                          ({branch.reviews.length})
+                                        </span>
+                                      </h4>
+                                    </div>
+                                    <div>
+                                      {showReviews[branch.id] ? (
+                                        <FaChevronUp className="text-[#E41E26]" />
+                                      ) : (
+                                        <FaChevronDown className="text-[#E41E26]" />
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Reviews Content */}
+                                  <AnimatePresence>
+                                    {showReviews[branch.id] && (
+                                      <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-600 dark:to-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 overflow-hidden"
+                                      >
+                                        <div className="space-y-3 sm:space-y-4">
+                                          {branch.reviews.map(
+                                            (review, index) => (
+                                              <motion.div
+                                                key={review.id}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{
+                                                  delay: index * 0.1,
+                                                }}
+                                                className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600"
+                                              >
+                                                {/* User Info */}
+                                                <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
+                                                  <div className="flex items-center gap-2 sm:gap-3">
+                                                    {/* User Avatar */}
+                                                    <div className="flex-shrink-0">
+                                                      {review.user?.imageUrl ? (
+                                                        <img
+                                                          src={getImageUrl(
+                                                            review.user.imageUrl
+                                                          )}
+                                                          alt={`${
+                                                            review.user
+                                                              .firstName || ""
+                                                          } ${
+                                                            review.user
+                                                              .lastName || ""
+                                                          }`}
+                                                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                                                          onError={(e) => {
+                                                            e.target.onerror =
+                                                              null;
+                                                            e.target.src = "";
+                                                            e.target.className =
+                                                              "hidden";
+                                                          }}
+                                                        />
+                                                      ) : (
+                                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-[#E41E26] to-[#FDB913] flex items-center justify-center">
+                                                          <FaUserCircle className="text-white text-lg sm:text-xl" />
+                                                        </div>
+                                                      )}
+                                                    </div>
+
+                                                    {/* User Details */}
+                                                    <div className="flex-1 min-w-0">
+                                                      <p className="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-200">
+                                                        {review.user?.firstName}{" "}
+                                                        {review.user?.lastName}
+                                                      </p>
+                                                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+                                                        {review.user?.email}
+                                                      </p>
+                                                    </div>
+                                                  </div>
+
+                                                  <div className="flex-shrink-0">
+                                                    <div
+                                                      className="flex items-center gap-0.5"
+                                                      dir="ltr"
+                                                    >
+                                                      {renderStars(
+                                                        review.rating
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {/* Comment */}
+                                                {review.comment && (
+                                                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:p-4">
+                                                    <div className="flex items-start gap-2">
+                                                      <FaCommentAlt className="text-[#E41E26] mt-0.5 text-xs sm:text-sm flex-shrink-0" />
+                                                      <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                                                        {review.comment}
+                                                      </p>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                              </motion.div>
+                                            )
+                                          )}
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
+                              )}
                             </div>
 
                             {/* Map & Actions */}
-                            <div className="space-y-3 sm:space-y-4">
+                            <div className="space-y-4 sm:space-y-6">
                               <h4 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-600 pb-1.5 sm:pb-2">
                                 الموقع والخدمات
                               </h4>
 
-                              {/* Status Details */}
+                              {/* Status Card */}
                               <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-600 dark:to-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4">
                                 <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
                                   <div className="text-center">
