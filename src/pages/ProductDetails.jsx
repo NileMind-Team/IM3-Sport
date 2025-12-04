@@ -29,7 +29,7 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState([]);
+  const [cartItemsCount, setCartItemsCount] = useState(0);
   const [isAdminOrRestaurantOrBranch, setIsAdminOrRestaurantOrBranch] =
     useState(false);
   const [selectedAddons, setSelectedAddons] = useState({});
@@ -53,8 +53,6 @@ const ProductDetails = () => {
   const [newAddonOptions, setNewAddonOptions] = useState([]);
   const modalRef = useRef(null);
   const addonTypeModalRef = useRef(null);
-
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -90,6 +88,25 @@ const ProductDetails = () => {
     checkUserRole();
   }, []);
 
+  const fetchCartItemsCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await axiosInstance.get("/api/CartItems/GetAll");
+      const cartItems = response.data;
+
+      const totalCount = cartItems.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
+      setCartItemsCount(totalCount);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      setCartItemsCount(0);
+    }
+  };
+
   const fetchProductDetails = async () => {
     try {
       setLoading(true);
@@ -117,7 +134,6 @@ const ProductDetails = () => {
 
       setAddonsData(transformedAddons);
 
-      // حساب السعر بعد الخصم
       const finalPrice = productData.itemOffer
         ? productData.itemOffer.isPercentage
           ? productData.basePrice *
@@ -182,6 +198,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProductDetails();
+    fetchCartItemsCount();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, navigate]);
 
@@ -303,7 +320,22 @@ const ProductDetails = () => {
     return total;
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.warning("يجب تسجيل الدخول لإضافة المنتجات إلى السلة", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        rtl: true,
+      });
+      return;
+    }
+
     if (!product.isActive) {
       toast.warning(`${product.name} غير متوفر حالياً`, {
         position: "top-right",
@@ -344,58 +376,51 @@ const ProductDetails = () => {
       return;
     }
 
-    const cartItem = {
-      ...product,
-      quantity,
-      selectedAddons: { ...selectedAddons },
-      totalPrice: calculateTotalPrice(),
-      timestamp: new Date().getTime(),
-    };
+    try {
+      const options = [];
+      Object.values(selectedAddons).forEach((optionIds) => {
+        optionIds.forEach((optionId) => {
+          options.push(optionId);
+        });
+      });
 
-    const existingItemIndex = cart.findIndex(
-      (item) =>
-        item.id === product.id &&
-        JSON.stringify(item.selectedAddons) === JSON.stringify(selectedAddons)
-    );
+      await axiosInstance.post("/api/CartItems/AddCartItem", {
+        menuItemId: product.id,
+        quantity: quantity,
+        options: options,
+      });
 
-    let updatedCart;
+      await fetchCartItemsCount();
 
-    if (existingItemIndex !== -1) {
-      updatedCart = [...cart];
-      updatedCart[existingItemIndex].quantity += quantity;
-      updatedCart[existingItemIndex].totalPrice =
-        updatedCart[existingItemIndex].quantity *
-        (product.price +
-          Object.values(selectedAddons).reduce((sum, optionIds) => {
-            optionIds.forEach((optionId) => {
-              addonsData.forEach((addon) => {
-                const option = addon.options.find((opt) => opt.id === optionId);
-                if (option) sum += option.price;
-              });
-            });
-            return sum;
-          }, 0));
-    } else {
-      updatedCart = [...cart, cartItem];
-    }
+      toast.success(
+        `تم إضافة ${toArabicNumbers(quantity)} ${product.name} إلى سلة التسوق`,
+        {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+          rtl: true,
+        }
+      );
 
-    setCart(updatedCart);
-
-    toast.success(
-      `تم إضافة ${toArabicNumbers(quantity)} ${product.name} إلى سلة التسوق`,
-      {
+      setQuantity(1);
+      setSelectedAddons({});
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("فشل في إضافة المنتج إلى السلة", {
         position: "top-right",
-        autoClose: 1500,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         theme: "light",
         rtl: true,
-      }
-    );
-
-    setQuantity(1);
+      });
+    }
   };
 
   const handleEditProduct = () => {
@@ -710,7 +735,7 @@ const ProductDetails = () => {
   };
 
   const navigateToCart = () => {
-    navigate("/cart", { state: { cartItems: cart } });
+    navigate("/cart");
   };
 
   if (loading) {
@@ -1008,21 +1033,23 @@ const ProductDetails = () => {
         </div>
       )}
 
-      {cartCount > 0 && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white rounded-full p-3 sm:p-4 shadow-2xl z-40 cursor-pointer hover:scale-110 transition-transform duration-200"
-          onClick={navigateToCart}
-        >
-          <div className="relative">
-            <FaShoppingCart className="w-4 h-4 sm:w-6 sm:h-6" />
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white rounded-full p-3 sm:p-4 shadow-2xl z-40 cursor-pointer hover:scale-110 transition-transform duration-200 ${
+          cartItemsCount === 0 ? "opacity-70" : ""
+        }`}
+        onClick={navigateToCart}
+      >
+        <div className="relative">
+          <FaShoppingCart className="w-4 h-4 sm:w-6 sm:h-6" />
+          {cartItemsCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-white text-[#E41E26] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold">
-              {cartCount}
+              {cartItemsCount}
             </span>
-          </div>
-        </motion.div>
-      )}
+          )}
+        </div>
+      </motion.div>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 md:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">

@@ -14,10 +14,12 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
+import axiosInstance from "../api/axiosInstance";
 
 export default function Cart() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [deliveryOption, setDeliveryOption] = useState("now");
   const [selectedTime, setSelectedTime] = useState("");
   const [couponCode, setCouponCode] = useState("");
@@ -38,108 +40,159 @@ export default function Cart() {
     "8:00 PM - 9:00 PM",
   ];
 
-  const validCoupons = [
-    { code: "WELCOME10", discount: 10 },
-    { code: "FIRSTORDER", discount: 15 },
-    { code: "CHICKEN20", discount: 20 },
-    { code: "SAVE25", discount: 25 },
-  ];
-
-  const sampleCartItems = [
-    {
-      id: 1,
-      name: "Classic Fried Chicken",
-      category: "meals",
-      price: 45.99,
-      image:
-        "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop",
-      description:
-        "Crispy golden fried chicken with our secret blend of 11 herbs and spices. Served with your choice of dipping sauce and fresh fries.",
-      prepTime: "15-20 mins",
-      quantity: 2,
-    },
-    {
-      id: 2,
-      name: "Spicy Chicken Wings",
-      category: "meals",
-      price: 35.99,
-      image:
-        "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400&h=300&fit=crop",
-      description:
-        "Spicy buffalo wings tossed in our signature hot sauce. Perfectly crispy with just the right amount of heat.",
-      prepTime: "10-15 mins",
-      quantity: 1,
-    },
-    {
-      id: 3,
-      name: "Chocolate Milkshake",
-      category: "drinks",
-      price: 18.99,
-      image:
-        "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop",
-      description:
-        "Creamy chocolate milkshake topped with whipped cream and chocolate drizzle. The perfect sweet treat for any time of day.",
-      prepTime: "5 mins",
-      quantity: 1,
-    },
-    {
-      id: 4,
-      name: "Chicken Burger",
-      category: "meals",
-      price: 32.99,
-      image:
-        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop",
-      description:
-        "Juicy chicken burger with fresh vegetables and our special sauce. Served with crispy golden fries.",
-      prepTime: "10-12 mins",
-      quantity: 1,
-    },
-  ];
-
   useEffect(() => {
-    localStorage.removeItem("chickenOneCart");
-    setCartItems(sampleCartItems);
+    fetchCartItems();
+    checkUserAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    setHasAddress(false);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const fetchCartItems = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+      const response = await axiosInstance.get("/api/CartItems/GetAll");
+
+      const transformedItems = response.data.map((item) => ({
+        id: item.id,
+        name: item.menuItem?.name || "Product",
+        category: item.menuItem?.category?.name?.toLowerCase() || "meals",
+        price: item.menuItem?.basePrice || 0,
+        image: item.menuItem?.imageUrl
+          ? `https://restaurant-template.runasp.net/${item.menuItem.imageUrl}`
+          : "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop",
+        description: item.menuItem?.description || "",
+        prepTime: `${item.menuItem?.preparationTimeStart || 0}-${
+          item.menuItem?.preparationTimeEnd || 30
+        } mins`,
+        quantity: item.quantity,
+        totalPrice:
+          item.totalPrice || item.quantity * (item.menuItem?.basePrice || 0),
+        menuItem: item.menuItem,
+        menuItemOptions: item.menuItemOptions || [],
+      }));
+
+      setCartItems(transformedItems);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      Swal.fire({
+        icon: "error",
+        title: "خطأ",
+        text: "فشل في تحميل عناصر السلة",
+        customClass: {
+          popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeItem = (id) => {
+  const checkUserAddress = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setHasAddress(false);
+        return;
+      }
+
+      // يمكنك استدعاء API للتحقق من العناوين
+      // const response = await axiosInstance.get("/api/Addresses/GetAll");
+      // setHasAddress(response.data.length > 0);
+
+      setHasAddress(true);
+    } catch (error) {
+      console.error("Error checking user address:", error);
+      setHasAddress(false);
+    }
+  };
+
+  const updateQuantity = async (id, newQuantity) => {
+    if (newQuantity < 1) return;
+
+    try {
+      const cartItem = cartItems.find((item) => item.id === id);
+      if (!cartItem) return;
+
+      await axiosInstance.put(`/api/CartItems/Update`, {
+        cartItemId: id,
+        quantity: newQuantity,
+      });
+
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                quantity: newQuantity,
+                totalPrice:
+                  newQuantity * (item.menuItem?.basePrice || item.price),
+              }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      Swal.fire({
+        icon: "error",
+        title: "خطأ",
+        text: "فشل في تحديث الكمية",
+        customClass: {
+          popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
+        },
+      });
+    }
+  };
+
+  const removeItem = async (id) => {
     Swal.fire({
-      title: "Remove Item?",
-      text: "Are you sure you want to remove this item from your cart?",
+      title: "إزالة المنتج؟",
+      text: "هل أنت متأكد من إزالة هذا المنتج من سلة التسوق؟",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#E41E26",
       cancelButtonColor: "#6B7280",
-      confirmButtonText: "Yes, remove it!",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "نعم، قم بإزالته!",
+      cancelButtonText: "إلغاء",
       reverseButtons: true,
       customClass: {
         popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-        Swal.fire({
-          title: "Removed!",
-          text: "Item has been removed from your cart.",
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false,
-          customClass: {
-            popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
-          },
-        });
+        try {
+          await axiosInstance.delete(`/api/CartItems/Delete/${id}`);
+
+          setCartItems((prevItems) =>
+            prevItems.filter((item) => item.id !== id)
+          );
+
+          Swal.fire({
+            title: "تمت الإزالة!",
+            text: "تم إزالة المنتج من سلة التسوق",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+            customClass: {
+              popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
+            },
+          });
+        } catch (error) {
+          console.error("Error removing item:", error);
+          Swal.fire({
+            icon: "error",
+            title: "خطأ",
+            text: "فشل في إزالة المنتج",
+            customClass: {
+              popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
+            },
+          });
+        }
       }
     });
   };
@@ -148,14 +201,21 @@ export default function Cart() {
     if (!couponCode.trim()) {
       Swal.fire({
         icon: "error",
-        title: "Oops...",
-        text: "Please enter a coupon code!",
+        title: "خطأ...",
+        text: "الرجاء إدخال رمز الكوبون!",
         customClass: {
           popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
         },
       });
       return;
     }
+
+    const validCoupons = [
+      { code: "WELCOME10", discount: 10 },
+      { code: "FIRSTORDER", discount: 15 },
+      { code: "CHICKEN20", discount: 20 },
+      { code: "SAVE25", discount: 25 },
+    ];
 
     const coupon = validCoupons.find(
       (c) => c.code.toLowerCase() === couponCode.trim().toLowerCase()
@@ -166,8 +226,8 @@ export default function Cart() {
       setIsCouponApplied(true);
       Swal.fire({
         icon: "success",
-        title: "Coupon Applied!",
-        text: `You got ${coupon.discount}% off your order!`,
+        title: "تم تطبيق الكوبون!",
+        text: `لقد حصلت على خصم ${coupon.discount}% على طلبك!`,
         timer: 2000,
         showConfirmButton: false,
         customClass: {
@@ -177,8 +237,8 @@ export default function Cart() {
     } else {
       Swal.fire({
         icon: "error",
-        title: "Invalid Coupon",
-        text: "The coupon code you entered is invalid or expired.",
+        title: "كوبون غير صالح",
+        text: "رمز الكوبون الذي أدخلته غير صالح أو منتهي الصلاحية.",
         customClass: {
           popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
         },
@@ -194,7 +254,7 @@ export default function Cart() {
 
   const calculateSubtotal = () => {
     return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+      (total, item) => total + (item.totalPrice || item.price * item.quantity),
       0
     );
   };
@@ -213,7 +273,7 @@ export default function Cart() {
     if (!hasAddress) {
       Swal.fire({
         icon: "warning",
-        title: "No Delivery Address",
+        title: "لا يوجد عنوان توصيل",
         html: `
           <div class="text-center">
             <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -221,12 +281,12 @@ export default function Cart() {
                 <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
               </svg>
             </div>
-            <p class="text-gray-700 dark:text-gray-300 mb-4">You haven't added any delivery address yet. Please add an address to continue with your order.</p>
+            <p class="text-gray-700 dark:text-gray-300 mb-4">لم تقم بإضافة أي عنوان توصيل حتى الآن. الرجاء إضافة عنوان للمتابعة مع طلبك.</p>
           </div>
         `,
         showCancelButton: true,
-        confirmButtonText: "Add Address",
-        cancelButtonText: "Cancel",
+        confirmButtonText: "إضافة عنوان",
+        cancelButtonText: "إلغاء",
         confirmButtonColor: "#E41E26",
         cancelButtonColor: "#6B7280",
         customClass: {
@@ -243,8 +303,8 @@ export default function Cart() {
     if (cartItems.length === 0) {
       Swal.fire({
         icon: "warning",
-        title: "Cart is Empty",
-        text: "Please add some items to your cart before checkout.",
+        title: "السلة فارغة",
+        text: "الرجاء إضافة بعض المنتجات إلى سلة التسوق قبل المتابعة للدفع.",
         customClass: {
           popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
         },
@@ -255,8 +315,8 @@ export default function Cart() {
     if (deliveryOption === "later" && !selectedTime) {
       Swal.fire({
         icon: "warning",
-        title: "Select Delivery Time",
-        text: "Please select a delivery time for your order.",
+        title: "اختر وقت التوصيل",
+        text: "الرجاء اختيار وقت التوصيل لطلبك.",
         customClass: {
           popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
         },
@@ -264,7 +324,6 @@ export default function Cart() {
       return;
     }
 
-    // Generate order data
     const orderNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
     const orderData = {
       orderNumber,
@@ -279,34 +338,32 @@ export default function Cart() {
       couponCode: isCouponApplied ? couponCode : null,
       status: "preparing",
       estimatedDelivery:
-        deliveryOption === "now" ? "25-35 minutes" : selectedTime,
+        deliveryOption === "now" ? "25-35 دقيقة" : selectedTime,
       customerInfo: {
-        name: "Mohamed Ahmed",
+        name: "محمد أحمد",
         phone: "+20 123 456 7890",
-        address: "123 Main Street, Cairo, Egypt",
+        address: "123 الشارع الرئيسي، القاهرة، مصر",
       },
       createdAt: new Date().toISOString(),
     };
 
-    // Save order to localStorage for tracking
     localStorage.setItem("currentOrder", JSON.stringify(orderData));
 
-    // Enhanced Checkout Modal with better design
     Swal.fire({
       title:
-        '<h2 class="text-2xl font-bold text-gray-800 dark:text-white">Order Confirmation</h2>',
+        '<h2 class="text-2xl font-bold text-gray-800 dark:text-white">تأكيد الطلب</h2>',
       html: `
-        <div class="text-left max-h-96 overflow-y-auto">
-          <!-- Order Summary -->
+        <div class="text-right max-h-96 overflow-y-auto">
+          <!-- ملخص الطلب -->
           <div class="bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 mb-4 border border-[#FDB913]/30 dark:border-gray-600">
             <h3 class="font-bold text-lg text-gray-800 dark:text-white mb-3 flex items-center gap-2">
               <svg class="w-5 h-5 text-[#E41E26] dark:text-[#FDB913]" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
               </svg>
-              Order Summary
+              ملخص الطلب
             </h3>
             
-            <!-- Items List -->
+            <!-- قائمة المنتجات -->
             <div class="space-y-3 mb-4">
               ${cartItems
                 .map(
@@ -320,62 +377,64 @@ export default function Cart() {
                       <h4 class="font-semibold text-gray-800 dark:text-white text-sm">${
                         item.name
                       }</h4>
-                      <p class="text-xs text-gray-600 dark:text-gray-400">Qty: ${
+                      <p class="text-xs text-gray-600 dark:text-gray-400">الكمية: ${
                         item.quantity
-                      } × EGP ${item.price.toFixed(2)}</p>
+                      } × ${(item.price || 0).toFixed(2)} ج.م</p>
                     </div>
                   </div>
-                  <span class="font-bold text-[#E41E26] dark:text-[#FDB913]">EGP ${(
-                    item.price * item.quantity
-                  ).toFixed(2)}</span>
+                  <span class="font-bold text-[#E41E26] dark:text-[#FDB913]">${(
+                    item.totalPrice ||
+                    item.price * item.quantity ||
+                    0
+                  ).toFixed(2)} ج.م</span>
                 </div>
               `
                 )
                 .join("")}
             </div>
 
-            <!-- Price Breakdown -->
+            <!-- تفاصيل السعر -->
             <div class="space-y-2 border-t border-gray-200 dark:border-gray-600 pt-3">
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Subtotal:</span>
-                <span class="font-semibold text-gray-800 dark:text-white">EGP ${calculateSubtotal().toFixed(
+                <span class="text-gray-600 dark:text-gray-400">المجموع الفرعي:</span>
+                <span class="font-semibold text-gray-800 dark:text-white">${calculateSubtotal().toFixed(
                   2
-                )}</span>
+                )} ج.م</span>
               </div>
               ${
                 discount > 0
                   ? `
                 <div class="flex justify-between text-sm">
-                  <span class="text-green-600 dark:text-green-400">Discount (${discount}%):</span>
-                  <span class="font-semibold text-green-600 dark:text-green-400">-EGP ${calculateDiscountAmount().toFixed(
+                  <span class="text-green-600 dark:text-green-400">الخصم (${discount}%):</span>
+                  <span class="font-semibold text-green-600 dark:text-green-400">-${calculateDiscountAmount().toFixed(
                     2
-                  )}</span>
+                  )} ج.م</span>
                 </div>
               `
                   : ""
               }
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Delivery Fee:</span>
-                <span class="font-semibold text-gray-800 dark:text-white">EGP ${deliveryFee.toFixed(
+                <span class="text-gray-600 dark:text-gray-400">رسوم التوصيل:</span>
+                <span class="font-semibold text-gray-800 dark:text-white">${deliveryFee.toFixed(
                   2
-                )}</span>
+                )} ج.م</span>
               </div>
               <div class="flex justify-between text-base font-bold border-t border-gray-200 dark:border-gray-600 pt-2">
-                <span class="text-gray-800 dark:text-white">Total:</span>
-                <span class="text-[#E41E26] dark:text-[#FDB913]">EGP ${calculateTotal().toFixed(
+                <span class="text-gray-800 dark:text-white">الإجمالي:</span>
+                <span class="text-[#E41E26] dark:text-[#FDB913]">${calculateTotal().toFixed(
                   2
-                )}</span>
+                )} ج.م</span>
               </div>
             </div>
           </div>
 
-          <!-- Delivery Information -->
+          <!-- معلومات التوصيل -->
           <div class="bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 mb-4 border border-[#FDB913]/30 dark:border-gray-600">
             <h3 class="font-bold text-lg text-gray-800 dark:text-white mb-3 flex items-center gap-2">
               <svg class="w-5 h-5 text-[#E41E26] dark:text-[#FDB913]" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
               </svg>
-              Delivery Information
+              معلومات التوصيل
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-3">
@@ -385,8 +444,8 @@ export default function Cart() {
                   </svg>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">Customer Name</p>
-                  <p class="font-semibold text-sm text-gray-800 dark:text-white">Mohamed Ahmed</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">اسم العميل</p>
+                  <p class="font-semibold text-sm text-gray-800 dark:text-white">محمد أحمد</p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
@@ -396,7 +455,7 @@ export default function Cart() {
                   </svg>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">Phone Number</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">رقم الهاتف</p>
                   <p class="font-semibold text-sm text-gray-800 dark:text-white">+20 123 456 7890</p>
                 </div>
               </div>
@@ -407,8 +466,8 @@ export default function Cart() {
                   </svg>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">Delivery Address</p>
-                  <p class="font-semibold text-sm text-gray-800 dark:text-white">123 Main Street, Cairo, Egypt</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">عنوان التوصيل</p>
+                  <p class="font-semibold text-sm text-gray-800 dark:text-white">123 الشارع الرئيسي، القاهرة، مصر</p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
@@ -419,10 +478,10 @@ export default function Cart() {
                   </svg>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">Delivery Time</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">وقت التوصيل</p>
                   <p class="font-semibold text-sm text-gray-800 dark:text-white">${
                     deliveryOption === "now"
-                      ? "ASAP (25-35 mins)"
+                      ? "في أقرب وقت (25-35 دقيقة)"
                       : selectedTime
                   }</p>
                 </div>
@@ -430,14 +489,14 @@ export default function Cart() {
             </div>
           </div>
 
-          <!-- Payment Method -->
+          <!-- طريقة الدفع -->
           <div class="bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-[#FDB913]/30 dark:border-gray-600">
             <h3 class="font-bold text-lg text-gray-800 dark:text-white mb-3 flex items-center gap-2">
               <svg class="w-5 h-5 text-[#E41E26] dark:text-[#FDB913]" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
                 <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
               </svg>
-              Payment Method
+              طريقة الدفع
             </h3>
             <div class="flex items-center gap-3 bg-white/80 dark:bg-gray-600/80 rounded-lg p-3">
               <div class="w-10 h-6 bg-[#E41E26] dark:bg-[#FDB913] rounded flex items-center justify-center">
@@ -447,8 +506,8 @@ export default function Cart() {
                 </svg>
               </div>
               <div>
-                <p class="font-semibold text-sm text-gray-800 dark:text-white">Cash on Delivery</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Pay when you receive your order</p>
+                <p class="font-semibold text-sm text-gray-800 dark:text-white">الدفع عند الاستلام</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">ادفع عند استلام طلبك</p>
               </div>
             </div>
           </div>
@@ -456,8 +515,8 @@ export default function Cart() {
       `,
       showCloseButton: true,
       showCancelButton: true,
-      confirmButtonText: "Confirm Order",
-      cancelButtonText: "Review Order",
+      confirmButtonText: "تأكيد الطلب",
+      cancelButtonText: "مراجعة الطلب",
       confirmButtonColor: "#E41E26",
       cancelButtonColor: "#6B7280",
       padding: "2rem",
@@ -472,7 +531,6 @@ export default function Cart() {
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        // Show success animation
         Swal.fire({
           title:
             '<div class="flex flex-col items-center">' +
@@ -481,33 +539,40 @@ export default function Cart() {
             '<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>' +
             "</svg>" +
             "</div>" +
-            '<h2 class="text-2xl font-bold text-gray-800 dark:text-white">Order Confirmed!</h2>' +
+            '<h2 class="text-2xl font-bold text-gray-800 dark:text-white">تم تأكيد الطلب!</h2>' +
             "</div>",
           html: `
             <div class="text-center">
-              <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">Your order has been placed successfully!</p>
+              <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">تم تقديم طلبك بنجاح!</p>
               <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl p-4 border border-green-200 dark:border-green-800">
-                <p class="font-semibold text-green-800 dark:text-green-300">Order #${orderNumber}</p>
-                <p class="text-sm text-green-600 dark:text-green-400 mt-1">Estimated delivery: ${
-                  deliveryOption === "now" ? "25-35 minutes" : selectedTime
+                <p class="font-semibold text-green-800 dark:text-green-300">الطلب رقم #${orderNumber}</p>
+                <p class="text-sm text-green-600 dark:text-green-400 mt-1">الوقت المتوقع للتوصيل: ${
+                  deliveryOption === "now" ? "25-35 دقيقة" : selectedTime
                 }</p>
               </div>
             </div>
           `,
           icon: null,
-          confirmButtonText: "Track My Order",
+          confirmButtonText: "تتبع طلبي",
           confirmButtonColor: "#E41E26",
           customClass: {
             popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
             confirmButton: "px-8 py-3 rounded-xl font-bold text-lg",
           },
         }).then(() => {
-          // Navigate to order tracking page
           navigate("/order-tracking", { state: { orderNumber } });
         });
       }
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#fff8e7] to-[#ffe5b4] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-[#fff8e7] to-[#ffe5b4] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">
@@ -529,20 +594,20 @@ export default function Cart() {
             </motion.button>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
-                Shopping Cart
+                سلة التسوق
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                Review your order and proceed to checkout
+                راجع طلبك و تابع للدفع
               </p>
             </div>
           </div>
           <div className="text-right self-end sm:self-auto">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#E41E26] dark:text-[#FDB913]">
               {cartItems.reduce((total, item) => total + item.quantity, 0)}{" "}
-              Items
+              عناصر
             </div>
             <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-              in your cart
+              في سلة التسوق الخاصة بك
             </div>
           </div>
         </motion.div>
@@ -560,93 +625,116 @@ export default function Cart() {
                   className="text-[#E41E26] dark:text-[#FDB913] sm:w-6 sm:h-6"
                   size={18}
                 />
-                Order Items ({cartItems.length})
+                عناصر الطلب ({cartItems.length})
               </h2>
 
               <div className="space-y-3 sm:space-y-4">
                 <AnimatePresence>
-                  {cartItems.map((item, index) => (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-700 dark:to-gray-600 rounded-xl sm:rounded-2xl border border-[#FDB913]/30 dark:border-gray-600 transition-colors duration-300"
-                    >
-                      {/* Product Image and Details */}
-                      <div className="flex gap-3 sm:gap-4 w-full sm:w-auto sm:flex-1">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg sm:rounded-xl object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="mb-1 sm:mb-2">
-                            <h3 className="font-bold text-gray-800 dark:text-white text-base sm:text-lg">
-                              {item.name}
-                            </h3>
-                          </div>
-                          <p className="text-[#E41E26] dark:text-[#FDB913] font-bold text-base sm:text-lg mb-1 sm:mb-2">
-                            EGP {item.price.toFixed(2)}
-                          </p>
-                          <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1 sm:mb-2 line-clamp-2">
-                            {item.description}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                            <FaClock
-                              className="text-[#E41E26] dark:text-[#FDB913]"
-                              size={12}
-                            />
-                            <span>{item.prepTime}</span>
+                  {cartItems.length === 0 ? (
+                    <div className="text-center py-8 sm:py-12 bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-700 dark:to-gray-600 rounded-xl sm:rounded-2xl border border-[#FDB913]/30 dark:border-gray-600">
+                      <FaShoppingCart className="mx-auto text-4xl sm:text-5xl text-gray-400 mb-3 sm:mb-4" />
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                        سلة التسوق فارغة
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-500 mb-4 px-4">
+                        لم تقم بإضافة أي منتجات إلى سلة التسوق بعد
+                      </p>
+                      <button
+                        onClick={() => navigate("/")}
+                        className="bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all text-sm sm:text-base"
+                      >
+                        تصفح المنتجات
+                      </button>
+                    </div>
+                  ) : (
+                    cartItems.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] dark:from-gray-700 dark:to-gray-600 rounded-xl sm:rounded-2xl border border-[#FDB913]/30 dark:border-gray-600 transition-colors duration-300"
+                      >
+                        {/* Product Image and Details */}
+                        <div className="flex gap-3 sm:gap-4 w-full sm:w-auto sm:flex-1">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg sm:rounded-xl object-cover flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="mb-1 sm:mb-2">
+                              <h3 className="font-bold text-gray-800 dark:text-white text-base sm:text-lg">
+                                {item.name}
+                              </h3>
+                            </div>
+                            <p className="text-[#E41E26] dark:text-[#FDB913] font-bold text-base sm:text-lg mb-1 sm:mb-2">
+                              {(item.price || 0).toFixed(2)} ج.م
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1 sm:mb-2 line-clamp-2">
+                              {item.description}
+                            </p>
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                              <FaClock
+                                className="text-[#E41E26] dark:text-[#FDB913]"
+                                size={12}
+                              />
+                              <span>{item.prepTime}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Quantity Controls, Total Price and Remove Button - All in one row on large screens */}
-                      <div className="flex items-center justify-between w-full sm:w-auto sm:flex-nowrap gap-2 sm:gap-3 mt-3 sm:mt-0">
-                        {/* Quantity Controls */}
-                        <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-gray-700 rounded-lg sm:rounded-xl p-1 sm:p-2 shadow-lg">
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
-                            className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#E41E26] dark:text-[#FDB913]"
+                        {/* Quantity Controls, Total Price and Remove Button */}
+                        <div className="flex items-center justify-between w-full sm:w-auto sm:flex-nowrap gap-2 sm:gap-3 mt-3 sm:mt-0">
+                          {/* Quantity Controls */}
+                          <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-gray-700 rounded-lg sm:rounded-xl p-1 sm:p-2 shadow-lg">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
+                              className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#E41E26] dark:text-[#FDB913]"
+                            >
+                              <FaMinus size={10} className="sm:w-3 sm:h-3" />
+                            </button>
+                            <span className="font-bold text-gray-800 dark:text-white min-w-6 sm:min-w-8 text-center text-sm sm:text-base">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
+                              className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#E41E26] dark:text-[#FDB913]"
+                            >
+                              <FaPlus size={10} className="sm:w-3 sm:h-3" />
+                            </button>
+                          </div>
+
+                          {/* Item Total */}
+                          <div className="text-right min-w-20 sm:min-w-24">
+                            <div className="font-bold text-gray-800 dark:text-white text-base sm:text-lg whitespace-nowrap">
+                              {(
+                                item.totalPrice ||
+                                item.price * item.quantity ||
+                                0
+                              ).toFixed(2)}{" "}
+                              ج.م
+                            </div>
+                          </div>
+
+                          {/* Remove Button */}
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => removeItem(item.id)}
+                            className="p-1 sm:p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md sm:rounded-lg transition-colors duration-200"
                           >
-                            <FaMinus size={10} className="sm:w-3 sm:h-3" />
-                          </button>
-                          <span className="font-bold text-gray-800 dark:text-white min-w-6 sm:min-w-8 text-center text-sm sm:text-base">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
-                            }
-                            className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#E41E26] dark:text-[#FDB913]"
-                          >
-                            <FaPlus size={10} className="sm:w-3 sm:h-3" />
-                          </button>
+                            <FaTrash size={14} className="sm:w-4 sm:h-4" />
+                          </motion.button>
                         </div>
-
-                        {/* Item Total */}
-                        <div className="text-right min-w-20 sm:min-w-24">
-                          <div className="font-bold text-gray-800 dark:text-white text-base sm:text-lg whitespace-nowrap">
-                            EGP {(item.price * item.quantity).toFixed(2)}
-                          </div>
-                        </div>
-
-                        {/* Remove Button */}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => removeItem(item.id)}
-                          className="p-1 sm:p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md sm:rounded-lg transition-colors duration-200"
-                        >
-                          <FaTrash size={14} className="sm:w-4 sm:h-4" />
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    ))
+                  )}
                 </AnimatePresence>
               </div>
             </motion.div>
@@ -663,7 +751,7 @@ export default function Cart() {
                   className="text-[#E41E26] dark:text-[#FDB913] sm:w-6 sm:h-6"
                   size={18}
                 />
-                Delivery Options
+                خيارات التوصيل
               </h2>
 
               <div className="space-y-3 sm:space-y-4">
@@ -685,14 +773,14 @@ export default function Cart() {
                   </div>
                   <div className="flex-1">
                     <div className="font-bold text-gray-800 dark:text-white text-sm sm:text-base">
-                      Deliver Now
+                      التوصيل الآن
                     </div>
                     <div className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
-                      Get your order as soon as possible
+                      احصل على طلبك في أسرع وقت ممكن
                     </div>
                   </div>
                   <div className="text-[#E41E26] dark:text-[#FDB913] font-bold text-sm sm:text-base">
-                    ASAP
+                    في أقرب وقت
                   </div>
                 </div>
 
@@ -714,10 +802,10 @@ export default function Cart() {
                   </div>
                   <div className="flex-1">
                     <div className="font-bold text-gray-800 dark:text-white text-sm sm:text-base">
-                      Schedule Delivery
+                      جدولة التوصيل
                     </div>
                     <div className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
-                      Choose your preferred delivery time
+                      اختر وقت التوصيل المفضل لديك
                     </div>
                   </div>
                 </div>
@@ -730,7 +818,7 @@ export default function Cart() {
                     className="p-3 sm:p-4 bg-white dark:bg-gray-700 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-600"
                   >
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
-                      Select Delivery Time
+                      اختر وقت التوصيل
                     </label>
                     <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                       {deliveryTimes.map((time) => (
@@ -761,20 +849,20 @@ export default function Cart() {
               className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl p-4 sm:p-6 sticky top-4 h-fit max-h-[calc(100vh-2rem)] overflow-y-auto transition-colors duration-300"
             >
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6">
-                Order Summary
+                ملخص الطلب
               </h2>
 
               {/* Coupon Section */}
               <div className="mb-4 sm:mb-6">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                  Coupon Code
+                  رمز الكوبون
                 </label>
                 <div className="flex gap-1 sm:gap-2">
                   <input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Try: WELCOME10"
+                    placeholder="جرب: WELCOME10"
                     disabled={isCouponApplied}
                     className="flex-1 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-[#E41E26] dark:focus:ring-[#FDB913] focus:border-transparent transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
                   />
@@ -809,13 +897,13 @@ export default function Cart() {
                       size={12}
                     />
                     <span>
-                      {discount}% discount applied with {couponCode}
+                      تم تطبيق خصم ${discount}% باستخدام {couponCode}
                     </span>
                   </motion.div>
                 )}
                 {!isCouponApplied && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Try: WELCOME10, FIRSTORDER, CHICKEN20, SAVE25
+                    جرب: WELCOME10, FIRSTORDER, CHICKEN20, SAVE25
                   </p>
                 )}
               </div>
@@ -824,40 +912,40 @@ export default function Cart() {
               <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                    Subtotal
+                    المجموع الفرعي
                   </span>
                   <span className="font-semibold text-gray-800 dark:text-white text-sm sm:text-base">
-                    EGP {calculateSubtotal().toFixed(2)}
+                    {calculateSubtotal().toFixed(2)} ج.م
                   </span>
                 </div>
 
                 {discount > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-green-600 dark:text-green-400 text-sm sm:text-base">
-                      Discount ({discount}%)
+                      الخصم ({discount}%)
                     </span>
                     <span className="font-semibold text-green-600 dark:text-green-400 text-sm sm:text-base">
-                      -EGP {calculateDiscountAmount().toFixed(2)}
+                      -{calculateDiscountAmount().toFixed(2)} ج.م
                     </span>
                   </div>
                 )}
 
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                    Delivery Fee
+                    رسوم التوصيل
                   </span>
                   <span className="font-semibold text-gray-800 dark:text-white text-sm sm:text-base">
-                    EGP {deliveryFee.toFixed(2)}
+                    {deliveryFee.toFixed(2)} ج.م
                   </span>
                 </div>
 
                 <div className="border-t border-gray-200 dark:border-gray-600 pt-3 sm:pt-4">
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-gray-800 dark:text-white text-base sm:text-lg">
-                      Total
+                      الإجمالي
                     </span>
                     <span className="font-bold text-[#E41E26] dark:text-[#FDB913] text-lg sm:text-xl md:text-2xl">
-                      EGP {calculateTotal().toFixed(2)}
+                      {calculateTotal().toFixed(2)} ج.م
                     </span>
                   </div>
                 </div>
@@ -868,9 +956,14 @@ export default function Cart() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleCheckout}
-                className="w-full bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={cartItems.length === 0}
+                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-lg transition-all duration-300 ${
+                  cartItems.length === 0
+                    ? "bg-gray-400 cursor-not-allowed text-white"
+                    : "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white hover:shadow-xl"
+                }`}
               >
-                Proceed to Checkout
+                المتابعة للدفع
               </motion.button>
 
               {/* Continue Shopping */}
@@ -880,7 +973,7 @@ export default function Cart() {
                 onClick={() => navigate("/")}
                 className="w-full mt-3 sm:mt-4 border-2 border-[#E41E26] dark:border-[#FDB913] text-[#E41E26] dark:text-[#FDB913] py-2 sm:py-3 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base hover:bg-[#E41E26] dark:hover:bg-[#FDB913] hover:text-white transition-all duration-300"
               >
-                Continue Shopping
+                مواصلة التسوق
               </motion.button>
             </motion.div>
           </div>
