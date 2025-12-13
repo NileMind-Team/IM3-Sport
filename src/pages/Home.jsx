@@ -1410,100 +1410,6 @@ const Home = () => {
         )}
       </div>
 
-      {/* Admin Floating Buttons */}
-      {isAdminOrRestaurantOrBranch && (
-        <div className="fixed bottom-4 left-4 flex flex-col gap-3 z-40">
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => navigate("/favorites")}
-            className="relative bg-gradient-to-r from-[#FF3366] to-[#FF6B9D] text-white rounded-full p-3 sm:p-4 shadow-2xl hover:shadow-3xl transition-all duration-300 group overflow-hidden no-product-details"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FF6B9D] to-[#FF3366] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-            <div className="relative flex items-center justify-center">
-              <FaHeart className="w-4 h-4 sm:w-6 sm:h-6 relative z-10" />
-
-              {favorites.length > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 bg-white text-[#FF3366] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold shadow-md z-20"
-                >
-                  {favorites.length}
-                </motion.span>
-              )}
-
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-[#FF3366] to-[#FF6B9D] rounded-full opacity-30"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.3, 0.1, 0.3],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                }}
-              />
-            </div>
-
-            <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
-                منتجاتي المفضلة
-                <div className="absolute left-full top-1/2 transform -translate-y-1/2">
-                  <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
-                </div>
-              </div>
-            </div>
-          </motion.button>
-
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleAddNewProduct}
-            className="relative bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full p-3 sm:p-4 shadow-2xl hover:shadow-3xl transition-all duration-300 group overflow-hidden no-product-details"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <FaPlus className="w-4 h-4 sm:w-6 sm:h-6 relative z-10" />
-
-            <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
-                إضافة منتج جديد
-                <div className="absolute left-full top-1/2 transform -translate-y-1/2">
-                  <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
-                </div>
-              </div>
-            </div>
-          </motion.button>
-
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleOpenCategoriesManager}
-            className="relative bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full p-3 sm:p-4 shadow-2xl hover:shadow-3xl transition-all duration-300 group overflow-hidden no-product-details"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <FaList className="w-4 h-4 sm:w-6 sm:h-6 relative z-10" />
-
-            <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
-                إدارة التصنيفات
-                <div className="absolute left-full top-1/2 transform -translate-y-1/2">
-                  <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
-                </div>
-              </div>
-            </div>
-          </motion.button>
-        </div>
-      )}
-
       {/* Cart Button */}
       <motion.div
         initial={{ scale: 0 }}
@@ -1522,6 +1428,104 @@ const Home = () => {
           )}
         </div>
       </motion.div>
+
+      {/* Floating Buttons - Always Visible Favorites Button */}
+      <div className="fixed bottom-4 left-4 flex flex-col gap-3 z-40">
+        {/* Favorites Button - Always Visible */}
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate("/favorites")}
+          className="relative bg-gradient-to-r from-[#FF3366] to-[#FF6B9D] text-white rounded-full p-3 sm:p-4 shadow-2xl hover:shadow-3xl transition-all duration-300 group overflow-hidden no-product-details"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FF6B9D] to-[#FF3366] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+          <div className="relative flex items-center justify-center">
+            <FaHeart className="w-4 h-4 sm:w-6 sm:h-6 relative z-10" />
+
+            {favorites.length > 0 && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-2 -right-2 bg-white text-[#FF3366] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold shadow-md z-20"
+              >
+                {favorites.length}
+              </motion.span>
+            )}
+
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-[#FF3366] to-[#FF6B9D] rounded-full opacity-30"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.1, 0.3],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "loop",
+              }}
+            />
+          </div>
+
+          <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <div className="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+              منتجاتي المفضلة
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2">
+                <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
+              </div>
+            </div>
+          </div>
+        </motion.button>
+
+        {/* Admin Only Buttons */}
+        {isAdminOrRestaurantOrBranch && (
+          <>
+            <motion.button
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleAddNewProduct}
+              className="relative bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full p-3 sm:p-4 shadow-2xl hover:shadow-3xl transition-all duration-300 group overflow-hidden no-product-details"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <FaPlus className="w-4 h-4 sm:w-6 sm:h-6 relative z-10" />
+
+              <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <div className="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+                  إضافة منتج جديد
+                  <div className="absolute left-full top-1/2 transform -translate-y-1/2">
+                    <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+
+            <motion.button
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleOpenCategoriesManager}
+              className="relative bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full p-3 sm:p-4 shadow-2xl hover:shadow-3xl transition-all duration-300 group overflow-hidden no-product-details"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <FaList className="w-4 h-4 sm:w-6 sm:h-6 relative z-10" />
+
+              <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <div className="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+                  إدارة التصنيفات
+                  <div className="absolute left-full top-1/2 transform -translate-y-1/2">
+                    <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+          </>
+        )}
+      </div>
 
       {/* Categories Manager Modal */}
       <AnimatePresence>
