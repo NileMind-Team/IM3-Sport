@@ -42,6 +42,12 @@ export default function MyOrders() {
   const [fetchingOrders, setFetchingOrders] = useState(false);
   const BASE_URL = "https://restaurant-template.runasp.net/";
 
+  const addTwoHoursToDate = (dateString) => {
+    const date = new Date(dateString);
+    date.setHours(date.getHours() + 2);
+    return date;
+  };
+
   const calculatePricesFromItems = (items) => {
     if (!items || items.length === 0) {
       return {
@@ -228,7 +234,6 @@ export default function MyOrders() {
     isInitialLoad,
   ]);
 
-  // Map API status to frontend status
   const mapStatus = (apiStatus) => {
     const statusMap = {
       Pending: "pending",
@@ -859,17 +864,16 @@ export default function MyOrders() {
                                 طلب #{order.orderNumber}
                               </h3>
                               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                                {new Date(order.createdAt).toLocaleDateString(
-                                  "ar-SA",
-                                  {
-                                    weekday: "long",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                )}
+                                {addTwoHoursToDate(
+                                  order.createdAt
+                                ).toLocaleDateString("ar-SA", {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
                               </p>
                               {isAdminOrRestaurantOrBranch && order.userId && (
                                 <div className="flex items-center gap-2 mt-2">
@@ -1045,7 +1049,7 @@ export default function MyOrders() {
                             {getStatusText(orderDetails.status)}
                           </span>
                           <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {new Date(
+                            {addTwoHoursToDate(
                               orderDetails.createdAt
                             ).toLocaleDateString("ar-SA", {
                               year: "numeric",
