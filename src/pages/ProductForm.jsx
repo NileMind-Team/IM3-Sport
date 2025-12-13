@@ -7,7 +7,7 @@ import {
   FaTimes,
   FaUpload,
   FaClock,
-  FaCalendarAlt,
+  // FaCalendarAlt,
   FaPlus,
   FaTrash,
   FaChevronDown,
@@ -37,7 +37,7 @@ const ProductForm = () => {
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingProduct, setIsLoadingProduct] = useState(isEditing);
   const [hasImageChanged, setHasImageChanged] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
+  // const [openDropdown, setOpenDropdown] = useState(null);
   const [initialFormData, setInitialFormData] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [showOptionTypesManager, setShowOptionTypesManager] = useState(false);
@@ -56,7 +56,7 @@ const ProductForm = () => {
     Image: "",
     Description: "",
     IsActive: true,
-    availabilityType: "always",
+    // availabilityType: "always",
     Calories: "",
     PreparationTimeStart: "",
     PreparationTimeEnd: "",
@@ -68,6 +68,7 @@ const ProductForm = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [isDownloadingImage, setIsDownloadingImage] = useState(false);
 
+  /*
   const [schedules, setSchedules] = useState([
     {
       id: Date.now(),
@@ -78,10 +79,12 @@ const ProductForm = () => {
     },
   ]);
   const [initialSchedules, setInitialSchedules] = useState([]);
+  */
 
   const [menuItemOptions, setMenuItemOptions] = useState([]);
   const [optionTypesDropdownOpen, setOptionTypesDropdownOpen] = useState(null);
 
+  /*
   const daysOfWeek = [
     { id: "السبت", name: "السبت" },
     { id: "الأحد", name: "الأحد" },
@@ -91,6 +94,7 @@ const ProductForm = () => {
     { id: "الخميس", name: "الخميس" },
     { id: "الجمعة", name: "الجمعة" },
   ];
+  */
 
   const isArabic = (text) => {
     const arabicRegex = /[\u0600-\u06FF]/;
@@ -509,9 +513,11 @@ const ProductForm = () => {
         );
         const product = response.data;
 
+        /*
         const hasSchedules =
           product.menuItemSchedules && product.menuItemSchedules.length > 0;
         const availabilityType = hasSchedules ? "custom" : "always";
+        */
 
         const initialData = {
           Name: product.name || "",
@@ -522,7 +528,7 @@ const ProductForm = () => {
             : "",
           Description: product.description || "",
           IsActive: product.isActive !== undefined ? product.isActive : true,
-          availabilityType: availabilityType,
+          // availabilityType: availabilityType, // تم تعليق هذا الحقل
           Calories: product.calories || "",
           PreparationTimeStart: product.preparationTimeStart || "",
           PreparationTimeEnd: product.preparationTimeEnd || "",
@@ -538,6 +544,7 @@ const ProductForm = () => {
           setImageUrl(imageUrl);
         }
 
+        /*
         let initialSchedulesData = [];
         if (hasSchedules) {
           const transformedSchedules = product.menuItemSchedules.map(
@@ -556,6 +563,7 @@ const ProductForm = () => {
           initialSchedulesData = [...schedules];
         }
         setInitialSchedules(initialSchedulesData);
+        */
       } catch (error) {
         console.error("Error fetching product data:", error);
         Swal.fire({
@@ -587,21 +595,23 @@ const ProductForm = () => {
       formData.BasePrice !== initialFormData.BasePrice ||
       formData.Description !== initialFormData.Description ||
       formData.IsActive !== initialFormData.IsActive ||
-      formData.availabilityType !== initialFormData.availabilityType ||
+      // formData.availabilityType !== initialFormData.availabilityType ||
       formData.Calories !== initialFormData.Calories ||
       formData.PreparationTimeStart !== initialFormData.PreparationTimeStart ||
       formData.PreparationTimeEnd !== initialFormData.PreparationTimeEnd ||
       hasImageChanged;
 
+    /*
     const schedulesChanged =
       JSON.stringify(schedules) !== JSON.stringify(initialSchedules);
+    */
 
-    setHasChanges(formDataChanged || schedulesChanged);
+    setHasChanges(formDataChanged /* || schedulesChanged */);
   }, [
     formData,
-    schedules,
+    // schedules,
     initialFormData,
-    initialSchedules,
+    // initialSchedules,
     hasImageChanged,
     isEditing,
   ]);
@@ -656,6 +666,7 @@ const ProductForm = () => {
     }
   };
 
+  /*
   const handleAvailabilityTypeChange = (type) => {
     setFormData({
       ...formData,
@@ -674,7 +685,9 @@ const ProductForm = () => {
       ]);
     }
   };
+  */
 
+  /*
   const addSchedule = () => {
     setSchedules([
       ...schedules,
@@ -701,6 +714,7 @@ const ProductForm = () => {
       )
     );
   };
+  */
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -831,6 +845,7 @@ const ProductForm = () => {
       return;
     }
 
+    /*
     if (formData.availabilityType === "custom") {
       const invalidSchedules = schedules.filter(
         (schedule) => !schedule.Day || !schedule.startTime || !schedule.endTime
@@ -865,6 +880,7 @@ const ProductForm = () => {
         return;
       }
     }
+    */
 
     if (!isEditing) {
       let invalidOptions = [];
@@ -929,6 +945,7 @@ const ProductForm = () => {
         );
       }
 
+      /*
       if (formData.availabilityType === "custom") {
         schedules.forEach((schedule, index) => {
           formDataToSend.append(
@@ -949,6 +966,7 @@ const ProductForm = () => {
           );
         });
       }
+      */
 
       if (!isEditing && menuItemOptions.length > 0) {
         let optionIndex = 0;
@@ -1766,7 +1784,7 @@ const ProductForm = () => {
                   </motion.div>
                 )}
 
-                {/* Availability Section */}
+                {/*
                 <div className="bg-gradient-to-r from-[#fff8e7] to-[#ffe5b4] rounded-lg xs:rounded-xl sm:rounded-2xl p-3 xs:p-4 sm:p-6 border border-[#FDB913]/30 dark:from-gray-600 dark:to-gray-500 dark:border-gray-500">
                   <div className="flex items-center gap-2 xs:gap-3 mb-3 xs:mb-4">
                     <FaClock className="text-[#E41E26] text-base xs:text-lg sm:text-xl" />
@@ -1979,6 +1997,7 @@ const ProductForm = () => {
                     </motion.div>
                   )}
                 </div>
+                */}
 
                 <div className="flex gap-2 xs:gap-3 sm:gap-4 pt-3 xs:pt-4 sm:pt-6 border-t border-gray-200 dark:border-gray-600">
                   <motion.button
