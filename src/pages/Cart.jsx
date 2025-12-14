@@ -948,12 +948,6 @@ export default function Cart() {
       const response = await axiosInstance.post("/api/Orders/Add", orderData);
 
       if (response.status === 200 || response.status === 201) {
-        // const orderNumber = Math.random()
-        //   .toString(36)
-        //   .substr(2, 9)
-        //   .toUpperCase();
-        // <p class="font-semibold text-green-800 dark:text-green-300">رقم الطلب #${orderNumber}</p>
-
         Swal.fire({
           title:
             '<h2 class="text-2xl font-bold text-gray-800 dark:text-white">تم تأكيد الطلب!</h2>',
@@ -990,6 +984,26 @@ export default function Cart() {
       }
     } catch (error) {
       console.error("Error creating order:", error);
+
+      if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        const branchClosedError = errors.find(
+          (error) => error.code === "Branch.Closed"
+        );
+
+        if (branchClosedError) {
+          Swal.fire({
+            icon: "error",
+            title: "الفرع مغلق",
+            text: "الفرع المختار مغلق حالياً. الرجاء اختيار فرع آخر أو المحاولة عند فتح الفرع.",
+            customClass: {
+              popup: "rounded-3xl shadow-2xl dark:bg-gray-800 dark:text-white",
+            },
+          });
+          return;
+        }
+      }
+
       Swal.fire({
         icon: "error",
         title: "خطأ",
