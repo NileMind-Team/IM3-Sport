@@ -380,6 +380,38 @@ const Home = () => {
     navigate(`/product/${product.id}`, { state: { product } });
   };
 
+  const extractRequiredOptionsFromError = (errorDescription) => {
+    if (!errorDescription) return [];
+
+    let optionsText = errorDescription
+      .replace("You must select at least one option for:", "")
+      .replace(".", "")
+      .trim();
+
+    const optionsList = optionsText
+      .split(/،|,|\sو\s/)
+      .map((option) => option.trim())
+      .filter(Boolean);
+
+    return optionsList;
+  };
+
+  const formatOptionsForDisplay = (optionsList) => {
+    if (optionsList.length === 0) return "";
+
+    if (optionsList.length === 1) {
+      return optionsList[0];
+    }
+
+    if (optionsList.length === 2) {
+      return `${optionsList[0]} و ${optionsList[1]}`;
+    }
+
+    const lastOption = optionsList[optionsList.length - 1];
+    const otherOptions = optionsList.slice(0, -1);
+    return `${otherOptions.join("، ")} و ${lastOption}`;
+  };
+
   const handleAddToCart = async (product, e) => {
     e.stopPropagation();
 
@@ -433,6 +465,48 @@ const Home = () => {
       });
     } catch (error) {
       console.error("Error adding to cart:", error);
+
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errors = error.response.data.errors;
+        const missingOptionsError = errors.find(
+          (err) => err.code === "MissingRequiredOptions"
+        );
+
+        if (missingOptionsError) {
+          const requiredOptions = extractRequiredOptionsFromError(
+            missingOptionsError.description
+          );
+
+          if (requiredOptions.length > 0) {
+            const formattedOptions = formatOptionsForDisplay(requiredOptions);
+
+            let errorMessage;
+            if (requiredOptions.length === 1) {
+              errorMessage = `يجب تحديد خيار واحد على الأقل من: ${formattedOptions}. الرجاء عرض تفاصيل المنتج لتحديد الخيارات المطلوبة.`;
+            } else {
+              errorMessage = `يجب تحديد خيار واحد على الأقل من كل من: ${formattedOptions}. الرجاء عرض تفاصيل المنتج لتحديد الخيارات المطلوبة.`;
+            }
+
+            Swal.fire({
+              icon: "warning",
+              title: "خيارات مطلوبة",
+              text: errorMessage,
+              showConfirmButton: true,
+              confirmButtonText: "عرض التفاصيل",
+              showCancelButton: true,
+              cancelButtonText: "إلغاء",
+              confirmButtonColor: "#E41E26",
+              cancelButtonColor: "#6B7280",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                handleProductDetails(product);
+              }
+            });
+            return;
+          }
+        }
+      }
+
       Swal.fire({
         icon: "error",
         title: "خطأ",
