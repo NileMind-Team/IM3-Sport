@@ -24,6 +24,141 @@ import {
 import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
 
+const translateOfferErrorMessage = (errorData, useHTML = true) => {
+  if (!errorData) return "حدث خطأ غير معروف";
+
+  if (errorData.errors && typeof errorData.errors === "object") {
+    const errorMessages = [];
+
+    if (errorData.errors.DiscountValue) {
+      errorData.errors.DiscountValue.forEach((msg) => {
+        if (msg.toLowerCase().includes("greater than 0")) {
+          errorMessages.push("قيمة الخصم يجب أن تكون أكبر من الصفر");
+        } else if (msg.toLowerCase().includes("required")) {
+          errorMessages.push("قيمة الخصم مطلوبة");
+        } else if (
+          msg.toLowerCase().includes("percentage") &&
+          msg.toLowerCase().includes("100")
+        ) {
+          errorMessages.push(
+            "قيمة الخصم بالنسبة المئوية يجب أن تكون بين 0 و 100"
+          );
+        } else {
+          errorMessages.push(msg);
+        }
+      });
+    }
+
+    if (errorData.errors.EndDate) {
+      errorData.errors.EndDate.forEach((msg) => {
+        if (msg.toLowerCase().includes("after start date")) {
+          errorMessages.push("تاريخ النهاية يجب أن يكون بعد تاريخ البداية");
+        } else if (msg.toLowerCase().includes("required")) {
+          errorMessages.push("تاريخ النهاية مطلوب");
+        } else {
+          errorMessages.push(msg);
+        }
+      });
+    }
+
+    if (errorData.errors.StartDate) {
+      errorData.errors.StartDate.forEach((msg) => {
+        if (msg.toLowerCase().includes("required")) {
+          errorMessages.push("تاريخ البداية مطلوب");
+        } else if (msg.toLowerCase().includes("future")) {
+          errorMessages.push("تاريخ البداية يجب أن يكون في المستقبل");
+        } else {
+          errorMessages.push(msg);
+        }
+      });
+    }
+
+    if (errorData.errors.MenuItemId) {
+      errorData.errors.MenuItemId.forEach((msg) => {
+        if (msg.toLowerCase().includes("required")) {
+          errorMessages.push("العنصر مطلوب");
+        } else if (
+          msg.toLowerCase().includes("exist") ||
+          msg.toLowerCase().includes("not found")
+        ) {
+          errorMessages.push("العنصر المحدد غير موجود");
+        } else {
+          errorMessages.push(msg);
+        }
+      });
+    }
+
+    if (errorData.errors.BranchesIds) {
+      errorData.errors.BranchesIds.forEach((msg) => {
+        if (
+          msg.toLowerCase().includes("required") ||
+          msg.toLowerCase().includes("at least")
+        ) {
+          errorMessages.push("يجب اختيار فرع واحد على الأقل");
+        } else if (
+          msg.toLowerCase().includes("exist") ||
+          msg.toLowerCase().includes("not found")
+        ) {
+          errorMessages.push("أحد الفروع المحددة غير موجود");
+        } else {
+          errorMessages.push(msg);
+        }
+      });
+    }
+
+    Object.keys(errorData.errors).forEach((key) => {
+      if (
+        ![
+          "DiscountValue",
+          "EndDate",
+          "StartDate",
+          "MenuItemId",
+          "BranchesIds",
+        ].includes(key)
+      ) {
+        errorData.errors[key].forEach((msg) => {
+          errorMessages.push(msg);
+        });
+      }
+    });
+
+    if (errorMessages.length > 1) {
+      if (useHTML) {
+        const htmlMessages = errorMessages.map(
+          (msg) =>
+            `<div style="direction: rtl; text-align: right; margin-bottom: 8px; padding-right: 15px; position: relative;">
+             ${msg}
+             <span style="position: absolute; right: 0; top: 0;">-</span>
+           </div>`
+        );
+        return htmlMessages.join("");
+      } else {
+        return errorMessages.map((msg) => `${msg} -`).join("<br>");
+      }
+    } else if (errorMessages.length === 1) {
+      return errorMessages[0];
+    } else {
+      return "بيانات غير صالحة";
+    }
+  }
+
+  if (typeof errorData.message === "string") {
+    const msg = errorData.message.toLowerCase();
+    if (msg.includes("network") || msg.includes("internet")) {
+      return "يرجى التحقق من اتصالك بالإنترنت";
+    }
+    if (msg.includes("timeout") || msg.includes("time out")) {
+      return "انتهت المهلة، يرجى المحاولة مرة أخرى";
+    }
+    if (msg.includes("unauthorized") || msg.includes("forbidden")) {
+      return "ليس لديك صلاحية للقيام بهذا الإجراء";
+    }
+    return errorData.message;
+  }
+
+  return "حدث خطأ غير متوقع أثناء حفظ العرض";
+};
+
 export default function ItemOffersManagement() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,6 +175,8 @@ export default function ItemOffersManagement() {
   const [loadingItems, setLoadingItems] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [error, setError] = useState(null);
 
   const selectedProductId = location.state?.selectedProductId || "";
   const selectedOfferId = location.state?.selectedOfferId || null;
@@ -130,7 +267,7 @@ export default function ItemOffersManagement() {
         handleEdit(existingOffer);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProductId, selectedOfferId, loading, offers]);
 
   useEffect(() => {
@@ -256,6 +393,7 @@ export default function ItemOffersManagement() {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+    setError(null);
   };
 
   const handleBranchesChange = (branchId) => {
@@ -272,6 +410,7 @@ export default function ItemOffersManagement() {
         };
       }
     });
+    setError(null);
   };
 
   const handleSelectChange = (name, value) => {
@@ -280,6 +419,7 @@ export default function ItemOffersManagement() {
       [name]: value,
     });
     setOpenDropdown(null);
+    setError(null);
   };
 
   const formatDateTimeForAPI = (date, time) => {
@@ -335,6 +475,7 @@ export default function ItemOffersManagement() {
     }
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
       const offerData = {
@@ -381,10 +522,20 @@ export default function ItemOffersManagement() {
       fetchMenuItems();
     } catch (err) {
       console.error("خطأ في حفظ العرض:", err);
+
+      setError(err.response?.data);
+
+      const translatedMessage = translateOfferErrorMessage(
+        err.response?.data,
+        true
+      );
+
       Swal.fire({
         icon: "error",
-        title: "خطأ",
-        text: err.response?.data?.message || "فشل في حفظ عرض العنصر.",
+        title: "حدث خطأ",
+        html: translatedMessage,
+        showConfirmButton: false,
+        timer: 2500,
       });
     } finally {
       setIsSubmitting(false);
@@ -414,6 +565,7 @@ export default function ItemOffersManagement() {
     setEditingId(offer.id);
     setIsAdding(true);
     fetchMenuItems();
+    setError(null);
   };
 
   const handleDelete = async (id) => {
@@ -425,6 +577,7 @@ export default function ItemOffersManagement() {
       confirmButtonColor: "#E41E26",
       cancelButtonColor: "#6B7280",
       confirmButtonText: "نعم، احذفه!",
+      reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -443,6 +596,8 @@ export default function ItemOffersManagement() {
             icon: "error",
             title: "خطأ",
             text: "فشل في حذف عرض العنصر.",
+            showConfirmButton: false,
+            timer: 2500,
           });
         }
       }
@@ -487,6 +642,8 @@ export default function ItemOffersManagement() {
         icon: "error",
         title: "خطأ",
         text: "فشل في تحديث حالة العرض",
+        showConfirmButton: false,
+        timer: 2500,
       });
     }
   };
@@ -506,11 +663,13 @@ export default function ItemOffersManagement() {
     setEditingId(null);
     setIsAdding(false);
     setOpenDropdown(null);
+    setError(null);
   };
 
   const handleAddNewOffer = () => {
     fetchMenuItems();
     setIsAdding(true);
+    setError(null);
   };
 
   const isFormValid = () => {
