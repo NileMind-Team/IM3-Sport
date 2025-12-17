@@ -120,49 +120,6 @@ export const useUsers = () => {
     }
   };
 
-  const handleDelete = async (userEmail) => {
-    Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: `أنت على وشك حذف المستخدم: ${userEmail}`,
-      html: `<div style="text-align: right; direction: rtl;">أنت على وشك حذف المستخدم: <strong>${userEmail}</strong></div>`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#E41E26",
-      cancelButtonColor: "#6B7280",
-      confirmButtonText: "نعم، احذفه!",
-      cancelButtonText: "إلغاء",
-      background: "#ffffff",
-      color: "#000000",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axiosInstance.delete(`/api/Users/Delete/${userEmail}`);
-          setUsers(users.filter((user) => user.email !== userEmail));
-          Swal.fire({
-            title: "تم الحذف!",
-            text: "تم حذف المستخدم بنجاح.",
-            icon: "success",
-            timer: 2500,
-            showConfirmButton: false,
-            background: "#ffffff",
-            color: "#000000",
-          });
-        } catch (err) {
-          Swal.fire({
-            icon: "error",
-            title: "خطأ",
-            text: "فشل في حذف المستخدم.",
-            background: "#ffffff",
-            color: "#000000",
-            showConfirmButton: false,
-            timer: 2500,
-          });
-        }
-      }
-    });
-  };
-
   const handleToggleStatus = async (user) => {
     const newStatus = !user.isActive;
     const action = newStatus ? "تفعيل" : "تعطيل";
@@ -183,6 +140,9 @@ export const useUsers = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          // استخدام الـ endpoint الجديد
+          await axiosInstance.put(`/api/Users/ChangeUserStatus/${user.id}`);
+
           const updatedUsers = users.map((u) =>
             u.id === user.id ? { ...u, isActive: newStatus } : u
           );
@@ -231,7 +191,9 @@ export const useUsers = () => {
       }
     } catch (err) {
       if (err.response?.data?.errors) {
-        const translatedErrors = translateErrorMessageAdminUser(err.response.data);
+        const translatedErrors = translateErrorMessageAdminUser(
+          err.response.data
+        );
 
         let errorMessages = [];
         Object.keys(translatedErrors).forEach((field) => {
@@ -328,7 +290,6 @@ export const useUsers = () => {
     fetchUsers,
     filterUsers,
     handleAssignRole,
-    handleDelete,
     handleToggleStatus,
     handleSubmitUser,
     getSortedUsers,

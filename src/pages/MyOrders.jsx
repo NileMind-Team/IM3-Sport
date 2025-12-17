@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -41,6 +41,7 @@ export default function MyOrders() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fetchingOrders, setFetchingOrders] = useState(false);
   const BASE_URL = "https://restaurant-template.runasp.net/";
+  const refreshIntervalRef = useRef(null);
 
   const addTwoHoursToDate = (dateString) => {
     const date = new Date(dateString);
@@ -93,6 +94,67 @@ export default function MyOrders() {
 
   const getFinalTotal = (order) => {
     return order.totalWithFee || 0;
+  };
+
+  const fetchOrders = async () => {
+    if (isInitialLoad) {
+      return;
+    }
+
+    try {
+      setFetchingOrders(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setOrders([]);
+        setFetchingOrders(false);
+        return;
+      }
+
+      let url = "/api/Orders/GetAllForUser";
+      let params = {};
+
+      if (filter !== "all") {
+        params.status = filter;
+      }
+
+      if (dateRange.start) {
+        params.startRange = dateRange.start;
+      }
+      if (dateRange.end) {
+        params.endRange = dateRange.end;
+      }
+
+      if (isAdminOrRestaurantOrBranch) {
+        url = "/api/Orders/GetAll";
+
+        if (selectedUserId) {
+          params.userId = selectedUserId;
+        }
+      }
+
+      const response = await axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: params,
+      });
+
+      setOrders(response.data || []);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      if (!selectedOrder) {
+        Swal.fire({
+          icon: "error",
+          title: "خطأ",
+          text: "فشل تحميل الطلبات. يرجى المحاولة مرة أخرى.",
+          confirmButtonColor: "#E41E26",
+        });
+      }
+      setOrders([]);
+    } finally {
+      setFetchingOrders(false);
+    }
   };
 
   useEffect(() => {
@@ -166,66 +228,8 @@ export default function MyOrders() {
   }, [isAdminOrRestaurantOrBranch]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (isInitialLoad) {
-        return;
-      }
-
-      try {
-        setFetchingOrders(true);
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          setOrders([]);
-          setFetchingOrders(false);
-          return;
-        }
-
-        let url = "/api/Orders/GetAllForUser";
-        let params = {};
-
-        if (filter !== "all") {
-          params.status = filter;
-        }
-
-        if (dateRange.start) {
-          params.startRange = dateRange.start;
-        }
-        if (dateRange.end) {
-          params.endRange = dateRange.end;
-        }
-
-        if (isAdminOrRestaurantOrBranch) {
-          url = "/api/Orders/GetAll";
-
-          if (selectedUserId) {
-            params.userId = selectedUserId;
-          }
-        }
-
-        const response = await axiosInstance.get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: params,
-        });
-
-        setOrders(response.data || []);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        Swal.fire({
-          icon: "error",
-          title: "خطأ",
-          text: "فشل تحميل الطلبات. يرجى المحاولة مرة أخرى.",
-          confirmButtonColor: "#E41E26",
-        });
-        setOrders([]);
-      } finally {
-        setFetchingOrders(false);
-      }
-    };
-
     fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filter,
     dateRange,
@@ -233,6 +237,48 @@ export default function MyOrders() {
     isAdminOrRestaurantOrBranch,
     isInitialLoad,
   ]);
+
+  useEffect(() => {
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+    }
+
+    refreshIntervalRef.current = setInterval(() => {
+      if (!isInitialLoad && !selectedOrder) {
+        fetchOrders();
+      }
+    }, 60000);
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInitialLoad, selectedOrder]);
+
+  useEffect(() => {
+    if (selectedOrder) {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    } else if (!isInitialLoad) {
+      if (!refreshIntervalRef.current) {
+        refreshIntervalRef.current = setInterval(() => {
+          fetchOrders();
+        }, 60000);
+      }
+    }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOrder, isInitialLoad]);
 
   const mapStatus = (apiStatus) => {
     const statusMap = {
@@ -350,6 +396,10 @@ export default function MyOrders() {
           timer: 2000,
           showConfirmButton: false,
         });
+
+        setTimeout(() => {
+          fetchOrders();
+        }, 500);
       } catch (error) {
         console.error("Error updating order status:", error);
         Swal.fire({
@@ -405,6 +455,10 @@ export default function MyOrders() {
           timer: 2000,
           showConfirmButton: false,
         });
+
+        setTimeout(() => {
+          fetchOrders();
+        }, 500);
       } catch (error) {
         console.error("Error cancelling order:", error);
         Swal.fire({

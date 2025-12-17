@@ -269,7 +269,6 @@ export default function AdminUsers() {
                     setAssigningRole={setAssigningRole}
                     handleAssignRole={handleAssignRole}
                     handleToggleStatus={handleToggleStatus}
-                    handleDelete={handleDelete}
                   />
                 ))
               ) : (
