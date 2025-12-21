@@ -22,6 +22,8 @@ import {
   FaMotorcycle,
   FaCheck,
   FaBan,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
@@ -29,27 +31,110 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import axiosInstance from "../api/axiosInstance";
 
-const fetchOrders = async (startDate, endDate) => {
+const fetchOrders = async (
+  startDate,
+  endDate,
+  pageNumber = 1,
+  pageSize = 10
+) => {
   try {
-    let url = `/api/Orders/GetAll`;
-    const params = {};
+    const requestBody = {
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+      filters: [],
+    };
 
-    if (startDate) {
-      params.startRange = format(startDate, "yyyy-MM-dd");
+    if (startDate && endDate) {
+      const startDateStr = format(startDate, "yyyy-MM-dd");
+      const endDateStr = format(endDate, "yyyy-MM-dd");
+
+      requestBody.filters.push({
+        propertyName: "createdAt",
+        propertyValue: `${startDateStr},${endDateStr}`,
+        range: true,
+      });
     }
-    if (endDate) {
-      params.endRange = format(endDate, "yyyy-MM-dd");
-    }
 
-    const response = await axiosInstance.get(url, { params });
+    console.log(
+      "Request Body for Orders:",
+      JSON.stringify(requestBody, null, 2)
+    );
 
-    if (!response.data || response.data.length === 0) {
+    const response = await axiosInstance.post(
+      "/api/Orders/GetAllWithPagination",
+      requestBody
+    );
+
+    if (
+      !response.data ||
+      !response.data.data ||
+      response.data.data.length === 0
+    ) {
       throw new Error("لا توجد بيانات في الفترة المحددة");
     }
 
     return response.data;
   } catch (error) {
     console.error("Error fetching orders:", error);
+    throw error;
+  }
+};
+
+const fetchAllOrdersForStats = async (startDate, endDate) => {
+  try {
+    let allOrders = [];
+    let currentPage = 1;
+    let hasMorePages = true;
+    const pageSize = 50;
+
+    while (hasMorePages) {
+      const requestBody = {
+        pageNumber: currentPage,
+        pageSize: pageSize,
+        filters: [],
+      };
+
+      if (startDate && endDate) {
+        const startDateStr = format(startDate, "yyyy-MM-dd");
+        const endDateStr = format(endDate, "yyyy-MM-dd");
+
+        requestBody.filters.push({
+          propertyName: "createdAt",
+          propertyValue: `${startDateStr},${endDateStr}`,
+          range: true,
+        });
+      }
+
+      const response = await axiosInstance.post(
+        "/api/Orders/GetAllWithPagination",
+        requestBody
+      );
+
+      if (
+        !response.data ||
+        !response.data.data ||
+        response.data.data.length === 0
+      ) {
+        break;
+      }
+
+      allOrders = [...allOrders, ...response.data.data];
+
+      if (currentPage >= response.data.totalPages) {
+        hasMorePages = false;
+      } else {
+        currentPage++;
+      }
+
+      if (allOrders.length >= 1000) {
+        break;
+      }
+    }
+
+    console.log(`تم جلب ${allOrders.length} طلب للإحصائيات`);
+    return allOrders;
+  } catch (error) {
+    console.error("Error fetching all orders for stats:", error);
     throw error;
   }
 };
@@ -74,8 +159,8 @@ const fetchUsers = async () => {
   }
 };
 
-const calculateSummary = (data, startDate, endDate) => {
-  if (!data || data.length === 0) {
+const calculateSummary = (allOrders, startDate, endDate) => {
+  if (!allOrders || allOrders.length === 0) {
     return {
       totalSales: 0,
       totalOrders: 0,
@@ -92,18 +177,21 @@ const calculateSummary = (data, startDate, endDate) => {
     };
   }
 
-  const totalSales = data.reduce((sum, order) => sum + order.totalWithFee, 0);
-  const totalOrders = data.length;
+  const totalSales = allOrders.reduce(
+    (sum, order) => sum + order.totalWithFee,
+    0
+  );
+  const totalOrders = allOrders.length;
 
-  const deliveryOrders = data.filter(
+  const deliveryOrders = allOrders.filter(
     (order) => order.deliveryFee.fee > 0
   ).length;
-  const pickupOrders = data.filter(
+  const pickupOrders = allOrders.filter(
     (order) => order.deliveryFee.fee === 0
   ).length;
 
   const productSales = {};
-  data.forEach((order) => {
+  allOrders.forEach((order) => {
     if (order.items && order.items.length > 0) {
       order.items.forEach((item) => {
         const productName =
@@ -158,7 +246,6 @@ const OrderDetailsModal = ({ order, onClose, users }) => {
     return user ? `${user.firstName} ${user.lastName}` : userId.substring(0, 8);
   };
 
-  // دالة للحصول على أيقونة الحالة
   const getStatusIcon = (status) => {
     switch (status) {
       case "Pending":
@@ -571,6 +658,11 @@ const SalesReports = () => {
   // eslint-disable-next-line no-unused-vars
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  // eslint-disable-next-line no-unused-vars
+  const [totalItems, setTotalItems] = useState(0);
+  const [allOrdersForStats, setAllOrdersForStats] = useState([]);
 
   useEffect(() => {
     setSummary({
@@ -597,49 +689,65 @@ const SalesReports = () => {
     loadUsers();
   }, []);
 
-  const fetchReportData = async () => {
+  const fetchReportData = async (page = 1, isFilterAction = false) => {
     if (!startDate || !endDate) {
-      Swal.fire({
-        icon: "warning",
-        title: "تاريخ غير مكتمل",
-        text: "يرجى تحديد تاريخ البداية والنهاية أولاً",
-        timer: 3000,
-        showConfirmButton: false,
-        background: "#fff",
-        color: "#333",
-      });
+      if (isFilterAction) {
+        Swal.fire({
+          icon: "warning",
+          title: "تاريخ غير مكتمل",
+          text: "يرجى تحديد تاريخ البداية والنهاية أولاً",
+          timer: 3000,
+          showConfirmButton: false,
+          background: "#fff",
+          color: "#333",
+        });
+      }
       return;
     }
 
     if (startDate > endDate) {
-      Swal.fire({
-        icon: "error",
-        title: "خطأ في التاريخ",
-        text: "تاريخ البداية يجب أن يكون قبل تاريخ النهاية",
-        timer: 3000,
-        showConfirmButton: false,
-        background: "#fff",
-        color: "#333",
-      });
+      if (isFilterAction) {
+        Swal.fire({
+          icon: "error",
+          title: "خطأ في التاريخ",
+          text: "تاريخ البداية يجب أن يكون قبل تاريخ النهاية",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
       return;
     }
 
     setLoading(true);
     try {
-      const orders = await fetchOrders(startDate, endDate);
+      const response = await fetchOrders(startDate, endDate, page, 10);
+      const orders = response.data;
       setReportData(orders);
-      const summaryData = calculateSummary(orders, startDate, endDate);
+      setTotalPages(response.totalPages);
+      setTotalItems(response.totalItems);
+      setCurrentPage(response.pageNumber);
+
+      let allOrders = [];
+      if (isFilterAction) {
+        allOrders = await fetchAllOrdersForStats(startDate, endDate);
+        setAllOrdersForStats(allOrders);
+      } else {
+        allOrders = allOrdersForStats;
+      }
+
+      const summaryData = calculateSummary(allOrders, startDate, endDate);
       setSummary(summaryData);
 
-      Swal.fire({
-        icon: "success",
-        title: "تم تحميل التقرير",
-        text: `تم تحميل ${orders.length} طلب`,
-        timer: 1500,
-        showConfirmButton: false,
-        background: "#fff",
-        color: "#333",
-      });
+      if (isFilterAction) {
+        setTimeout(() => {
+          Swal.fire({
+            icon: "success",
+            title: "تم تطبيق الفلترة بنجاح",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        }, 500);
+      }
     } catch (error) {
       console.error("Error fetching report data:", error);
 
@@ -654,8 +762,6 @@ const SalesReports = () => {
         text: errorMessage,
         timer: 2500,
         showConfirmButton: false,
-        background: "#fff",
-        color: "#333",
       });
 
       setReportData([]);
@@ -665,11 +771,18 @@ const SalesReports = () => {
         deliveryOrders: 0,
         pickupOrders: 0,
         topProducts: [],
-        dateRange: `${format(startDate, "yyyy-MM-dd")} إلى ${format(
-          endDate,
-          "yyyy-MM-dd"
-        )}`,
+        dateRange:
+          startDate && endDate
+            ? `${format(startDate, "yyyy-MM-dd")} إلى ${format(
+                endDate,
+                "yyyy-MM-dd"
+              )}`
+            : "لم يتم تحديد فترة",
       });
+      setTotalPages(1);
+      setCurrentPage(1);
+      setTotalItems(0);
+      setAllOrdersForStats([]);
     } finally {
       setLoading(false);
     }
@@ -688,8 +801,6 @@ const SalesReports = () => {
         text: "فشل في تحميل تفاصيل الطلب",
         timer: 2000,
         showConfirmButton: false,
-        background: "#fff",
-        color: "#333",
       });
     } finally {
       setLoadingDetails(false);
@@ -791,12 +902,63 @@ const SalesReports = () => {
     }
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    fetchReportData(pageNumber, false);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
+    }
+  };
+
+  const getPaginationNumbers = () => {
+    const delta = 2;
+    const range = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      range.unshift("...");
+    }
+    if (currentPage + delta < totalPages - 1) {
+      range.push("...");
+    }
+
+    range.unshift(1);
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    return range;
+  };
+
   const handlePrint = async () => {
     return new Promise((resolve, reject) => {
       try {
         setIsPrinting(true);
 
-        if (!reportData || reportData.length === 0) {
+        const allOrders =
+          allOrdersForStats.length > 0 ? allOrdersForStats : reportData;
+
+        if (!allOrders || allOrders.length === 0) {
           Swal.fire({
             icon: "warning",
             title: "لا توجد بيانات",
@@ -810,14 +972,14 @@ const SalesReports = () => {
           return;
         }
 
+        const printSummary = calculateSummary(allOrders, startDate, endDate);
+
         Swal.fire({
           title: "جاري الطباعة",
-          text: "يتم تحضير التقرير للطباعة...",
+          text: `يتم تحضير ${allOrders.length} طلب للطباعة...`,
           icon: "info",
           timer: 500,
           showConfirmButton: false,
-          background: "#fff",
-          color: "#333",
         }).then(() => {
           const printContent = `
 <!DOCTYPE html>
@@ -1031,30 +1193,30 @@ const SalesReports = () => {
       ? `<div>إلى: ${new Date(endDate).toLocaleDateString("ar-EG")}</div>`
       : ""
   }
-  <div>عدد السجلات: ${reportData.length}</div>
+  <div>عدد السجلات: ${allOrders.length}</div>
 </div>
 
 <div class="stats-container">
   <div class="stat-card">
     <h3>إجمالي المبيعات</h3>
-    <p>${formatCurrency(summary?.totalSales || 0)}</p>
+    <p>${formatCurrency(printSummary.totalSales || 0)}</p>
   </div>
   <div class="stat-card">
     <h3>إجمالي الطلبات</h3>
-    <p>${summary?.totalOrders || 0}</p>
+    <p>${printSummary.totalOrders || 0}</p>
   </div>
   <div class="stat-card">
     <h3>طلبات التوصيل</h3>
-    <p>${summary?.deliveryOrders || 0}</p>
+    <p>${printSummary.deliveryOrders || 0}</p>
   </div>
   <div class="stat-card">
     <h3>طلبات الاستلام</h3>
-    <p>${summary?.pickupOrders || 0}</p>
+    <p>${printSummary.pickupOrders || 0}</p>
   </div>
 </div>
 
 ${
-  reportData.length === 0
+  allOrders.length === 0
     ? `
   <div class="no-data">
     <h3>لا توجد طلبات في الفترة المحددة</h3>
@@ -1074,7 +1236,7 @@ ${
       </tr>
     </thead>
     <tbody>
-      ${reportData
+      ${allOrders
         .map((order) => {
           const userName = findUserName(order.userId);
           const statusClass = getPrintStatusClass(order.status);
@@ -1103,7 +1265,7 @@ ${
       <tr style="background-color: #f0f0f0 !important; font-weight: bold;">
         <td colspan="6" style="text-align: left; padding-right: 20px;">المجموع الكلي:</td>
         <td class="total-amount" style="text-align: center;">${formatCurrency(
-          reportData.reduce((sum, order) => sum + (order.totalWithFee || 0), 0)
+          printSummary.totalSales || 0
         )}</td>
       </tr>
     </tbody>
@@ -1112,7 +1274,7 @@ ${
 }
 
 ${
-  summary?.topProducts && summary.topProducts.length > 0
+  printSummary?.topProducts && printSummary.topProducts.length > 0
     ? `
 <div style="margin-top: 30px;">
   <div style="text-align: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #ddd;">
@@ -1128,7 +1290,7 @@ ${
       </tr>
     </thead>
     <tbody>
-      ${summary.topProducts
+      ${printSummary.topProducts
         .map(
           (product, index) => `
         <tr>
@@ -1198,7 +1360,8 @@ ${
   };
 
   const handleDateFilter = () => {
-    fetchReportData();
+    setCurrentPage(1);
+    fetchReportData(1, true);
   };
 
   if (loading) {
@@ -1487,16 +1650,11 @@ ${
               className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg"
             >
               <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <FaListAlt className="text-[#E41E26] text-xl" />
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white">
-                      تفاصيل الطلبات
-                    </h3>
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    إجمالي الطلبات: {reportData.length}
-                  </div>
+                <div className="flex items-center gap-2">
+                  <FaListAlt className="text-[#E41E26] text-xl" />
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                    تفاصيل الطلبات
+                  </h3>
                 </div>
               </div>
 
@@ -1612,18 +1770,73 @@ ${
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span className="text-xl font-bold text-[#E41E26] dark:text-[#FDB913]">
-                          {formatCurrency(
-                            reportData.reduce(
-                              (sum, order) => sum + (order.totalWithFee || 0),
-                              0
-                            )
-                          )}
+                          {formatCurrency(summary?.totalSales || 0)}
                         </span>
                       </td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
+
+              {/* Pagination Controls - Only at bottom */}
+              {totalPages > 1 && (
+                <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-center gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className={`p-2 sm:p-3 rounded-xl transition-all ${
+                        currentPage === 1
+                          ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                      }`}
+                    >
+                      <FaChevronRight className="text-sm sm:text-base" />
+                    </motion.button>
+
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      {getPaginationNumbers().map((pageNum, index) => (
+                        <React.Fragment key={index}>
+                          {pageNum === "..." ? (
+                            <span className="px-2 sm:px-3 py-1 sm:py-2 text-gray-500">
+                              ...
+                            </span>
+                          ) : (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`px-3 sm:px-4 py-1 sm:py-2 rounded-xl font-semibold transition-all ${
+                                currentPage === pageNum
+                                  ? "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white shadow-lg"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                              }`}
+                            >
+                              {pageNum}
+                            </motion.button>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`p-2 sm:p-3 rounded-xl transition-all ${
+                        currentPage === totalPages
+                          ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                      }`}
+                    >
+                      <FaChevronLeft className="text-sm sm:text-base" />
+                    </motion.button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 

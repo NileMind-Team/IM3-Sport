@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -18,7 +18,8 @@ import {
   FaBox,
   FaTag,
   FaPlusCircle,
-  FaSpinner,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
@@ -43,26 +44,9 @@ export default function MyOrders() {
   const BASE_URL = "https://restaurant-template.runasp.net/";
   const refreshIntervalRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const observerRef = useRef(null);
-  const lastOrderRef = useCallback(
-    (node) => {
-      if (isLoadingMore) return;
-      if (observerRef.current) observerRef.current.disconnect();
-
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore && !fetchingOrders) {
-          loadMoreOrders();
-        }
-      });
-
-      if (node) observerRef.current.observe(node);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isLoadingMore, hasMore, fetchingOrders]
-  );
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const addTwoHoursToDate = (dateString) => {
     const date = new Date(dateString);
@@ -117,72 +101,61 @@ export default function MyOrders() {
     return order.totalWithFee || 0;
   };
 
-  const buildFilters = () => {
-    const filters = [];
+  const buildFiltersArray = () => {
+    const filtersArray = [];
 
-    if (filter !== "all") {
-      filters.push({
-        propertyName: "Status",
+    if (filter && filter !== "all") {
+      filtersArray.push({
+        propertyName: "status",
         propertyValue: filter,
         range: false,
       });
     }
 
     if (isAdminOrRestaurantOrBranch && selectedUserId) {
-      filters.push({
-        propertyName: "UserId",
+      filtersArray.push({
+        propertyName: "userId",
         propertyValue: selectedUserId,
         range: false,
       });
     }
 
     if (dateRange.start && dateRange.end) {
-      filters.push({
-        propertyName: "CreatedAt",
-        propertyValue: `${dateRange.start}T00:00:00,${dateRange.end}T23:59:59`,
-        range: true,
-      });
-    } else if (dateRange.start) {
-      filters.push({
-        propertyName: "CreatedAt",
-        propertyValue: `${dateRange.start}T00:00:00,${dateRange.start}T23:59:59`,
+      filtersArray.push({
+        propertyName: "createdAt",
+        propertyValue: dateRange.start,
         range: true,
       });
     }
 
-    return filters;
+    return filtersArray;
   };
 
-  const fetchOrders = async (pageNumber = 1, isLoadMore = false) => {
-    if (isInitialLoad && !isLoadMore) {
+  const fetchOrders = async () => {
+    if (isInitialLoad) {
       return;
     }
 
     try {
-      if (isLoadMore) {
-        setIsLoadingMore(true);
-      } else {
-        setFetchingOrders(true);
-      }
-
+      setFetchingOrders(true);
       const token = localStorage.getItem("token");
 
       if (!token) {
-        if (!isLoadMore) {
-          setOrders([]);
-          setFetchingOrders(false);
-        }
+        setOrders([]);
+        setFetchingOrders(false);
         return;
       }
 
-      let url = "/api/Orders/GetAllForUser";
-      let method = "get";
-      let params = {};
-      let data = null;
+      const requestBody = {
+        pageNumber: currentPage,
+        pageSize: pageSize,
+        filters: buildFiltersArray(),
+      };
 
-      if (filter !== "all") {
-        params.status = filter;
-      }
+      console.log("Request Body:", JSON.stringify(requestBody, null, 2));
+
+      let url = "/api/Orders/GetAllWithPagination";
+      let params = {};
 
       if (dateRange.start) {
         params.startRange = dateRange.start;
@@ -191,32 +164,16 @@ export default function MyOrders() {
         params.endRange = dateRange.end;
       }
 
-      if (isAdminOrRestaurantOrBranch) {
-        url = "/api/Orders/GetAllWithPagination";
-        method = "post";
-
-        data = {
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          filters: buildFilters(),
-        };
-      } else {
-        if (dateRange.start) {
-          params.startRange = dateRange.start;
-        }
-        if (dateRange.end) {
-          params.endRange = dateRange.end;
+      if (!isAdminOrRestaurantOrBranch) {
+        url = "/api/Orders/GetAllForUser";
+        if (filter !== "all") {
+          params.status = filter;
         }
       }
 
       let response;
-      if (method === "post") {
-        console.log("Sending request with data:", data);
-        response = await axiosInstance.post(url, data, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      if (isAdminOrRestaurantOrBranch) {
+        response = await axiosInstance.post(url, requestBody);
       } else {
         response = await axiosInstance.get(url, {
           headers: {
@@ -226,28 +183,23 @@ export default function MyOrders() {
         });
       }
 
-      let newOrders;
-      if (isAdminOrRestaurantOrBranch) {
-        newOrders = response.data?.data || [];
-        setHasMore(newOrders.length === pageSize);
-      } else {
-        newOrders = response.data || [];
-        setHasMore(false);
-      }
+      const responseData = response.data;
 
-      if (isLoadMore) {
-        setOrders((prev) => [...prev, ...newOrders]);
-        setCurrentPage(pageNumber);
+      if (isAdminOrRestaurantOrBranch) {
+        const ordersData = responseData.data || [];
+        setOrders(ordersData);
+        setTotalPages(responseData.totalPages || 1);
+        setTotalItems(responseData.totalItems || 0);
+        setCurrentPage(responseData.pageNumber || 1);
+        setPageSize(responseData.pageSize || 10);
       } else {
-        setOrders(newOrders);
-        setCurrentPage(1);
-        setHasMore(
-          isAdminOrRestaurantOrBranch && newOrders.length === pageSize
-        );
+        setOrders(responseData || []);
+        setTotalPages(1);
+        setTotalItems(responseData?.length || 0);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
-      if (!selectedOrder && !isLoadMore) {
+      if (!selectedOrder) {
         Swal.fire({
           icon: "error",
           title: "خطأ",
@@ -255,21 +207,12 @@ export default function MyOrders() {
           confirmButtonColor: "#E41E26",
         });
       }
-      if (!isLoadMore) {
-        setOrders([]);
-      }
+      setOrders([]);
+      setTotalPages(1);
+      setTotalItems(0);
     } finally {
-      if (isLoadMore) {
-        setIsLoadingMore(false);
-      } else {
-        setFetchingOrders(false);
-      }
+      setFetchingOrders(false);
     }
-  };
-
-  const loadMoreOrders = () => {
-    if (!hasMore || isLoadingMore || fetchingOrders) return;
-    fetchOrders(currentPage + 1, true);
   };
 
   useEffect(() => {
@@ -343,7 +286,7 @@ export default function MyOrders() {
   }, [isAdminOrRestaurantOrBranch]);
 
   useEffect(() => {
-    fetchOrders(1);
+    fetchOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filter,
@@ -351,6 +294,8 @@ export default function MyOrders() {
     selectedUserId,
     isAdminOrRestaurantOrBranch,
     isInitialLoad,
+    currentPage,
+    pageSize,
   ]);
 
   useEffect(() => {
@@ -360,7 +305,7 @@ export default function MyOrders() {
 
     refreshIntervalRef.current = setInterval(() => {
       if (!isInitialLoad && !selectedOrder) {
-        fetchOrders(1);
+        fetchOrders();
       }
     }, 60000);
 
@@ -381,7 +326,7 @@ export default function MyOrders() {
     } else if (!isInitialLoad) {
       if (!refreshIntervalRef.current) {
         refreshIntervalRef.current = setInterval(() => {
-          fetchOrders(1);
+          fetchOrders();
         }, 60000);
       }
     }
@@ -504,7 +449,7 @@ export default function MyOrders() {
         });
 
         setTimeout(() => {
-          fetchOrders(1);
+          fetchOrders();
         }, 500);
       } catch (error) {
         console.error("Error cancelling order:", error);
@@ -623,7 +568,61 @@ export default function MyOrders() {
     setDateRange({ start: "", end: "" });
     setSelectedUserId("");
     setCurrentPage(1);
-    setOrders([]);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    scrollToTop();
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      scrollToTop();
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      scrollToTop();
+    }
+  };
+
+  const getPaginationNumbers = () => {
+    if (totalPages <= 1) return [1];
+
+    const delta = 2;
+    const range = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      range.unshift("...");
+    }
+    if (currentPage + delta < totalPages - 1) {
+      range.push("...");
+    }
+
+    range.unshift(1);
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    return range;
   };
 
   if (loading && isInitialLoad) {
@@ -668,7 +667,7 @@ export default function MyOrders() {
             </div>
             <div className="text-right self-end sm:self-auto">
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#E41E26]">
-                {orders.length} طلب
+                {totalItems} طلب
               </div>
               <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                 إجمالي
@@ -742,8 +741,8 @@ export default function MyOrders() {
                               key={item.value}
                               onClick={() => {
                                 setFilter(item.value);
-                                setOpenDropdown(null);
                                 setCurrentPage(1);
+                                setOpenDropdown(null);
                               }}
                               className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] cursor-pointer text-gray-700 transition-all text-sm sm:text-base border-b border-gray-100 last:border-b-0 dark:hover:from-gray-600 dark:hover:to-gray-500 dark:text-gray-300 dark:border-gray-600"
                             >
@@ -804,8 +803,8 @@ export default function MyOrders() {
                             <li
                               onClick={() => {
                                 setSelectedUserId("");
-                                setOpenDropdown(null);
                                 setCurrentPage(1);
+                                setOpenDropdown(null);
                               }}
                               className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] cursor-pointer text-gray-700 transition-all text-sm sm:text-base border-b border-gray-100 dark:hover:from-gray-600 dark:hover:to-gray-500 dark:text-gray-300 dark:border-gray-600"
                             >
@@ -821,8 +820,8 @@ export default function MyOrders() {
                                   key={user.id}
                                   onClick={() => {
                                     setSelectedUserId(user.id);
-                                    setOpenDropdown(null);
                                     setCurrentPage(1);
+                                    setOpenDropdown(null);
                                   }}
                                   className="px-4 py-3 hover:bg-gradient-to-r hover:from-[#fff8e7] hover:to-[#ffe5b4] cursor-pointer text-gray-700 transition-all text-sm sm:text-base border-b border-gray-100 last:border-b-0 dark:hover:from-gray-600 dark:hover:to-gray-500 dark:text-gray-300 dark:border-gray-600"
                                 >
@@ -906,7 +905,10 @@ export default function MyOrders() {
                       <>
                         {(dateRange.start || dateRange.end) && (
                           <button
-                            onClick={clearDateRange}
+                            onClick={() => {
+                              clearDateRange();
+                              setCurrentPage(1);
+                            }}
                             className="px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base whitespace-nowrap"
                           >
                             مسح التواريخ
@@ -914,7 +916,10 @@ export default function MyOrders() {
                         )}
                         {isAdminOrRestaurantOrBranch && selectedUserId && (
                           <button
-                            onClick={clearUserFilter}
+                            onClick={() => {
+                              clearUserFilter();
+                              setCurrentPage(1);
+                            }}
                             className="px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base whitespace-nowrap"
                           >
                             مسح المستخدم
@@ -952,12 +957,10 @@ export default function MyOrders() {
               <AnimatePresence>
                 {orders.map((order, index) => {
                   const finalTotal = getFinalTotal(order);
-                  const isLastOrder = index === orders.length - 1;
 
                   return (
                     <motion.div
                       key={order.id}
-                      ref={isLastOrder ? lastOrderRef : null}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
@@ -1074,20 +1077,6 @@ export default function MyOrders() {
               </AnimatePresence>
             )}
 
-            {/* Loading More Indicator */}
-            {isLoadingMore && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-center py-6"
-              >
-                <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
-                  <FaSpinner className="animate-spin text-[#E41E26]" />
-                  <span>جاري تحميل المزيد...</span>
-                </div>
-              </motion.div>
-            )}
-
             {!fetchingOrders && orders.length === 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -1119,6 +1108,66 @@ export default function MyOrders() {
               </motion.div>
             )}
           </div>
+
+          {/* Pagination - Show only for admin users with pagination */}
+          {isAdminOrRestaurantOrBranch && totalPages > 1 && (
+            <div className="mt-8 flex flex-col items-center">
+              <div className="flex items-center justify-center gap-1 sm:gap-2">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className={`p-2 sm:p-3 rounded-xl transition-all ${
+                    currentPage === 1
+                      ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                  }`}
+                >
+                  <FaChevronRight className="text-sm sm:text-base" />
+                </motion.button>
+
+                <div className="flex items-center gap-1 sm:gap-2">
+                  {getPaginationNumbers().map((pageNum, index) => (
+                    <React.Fragment key={index}>
+                      {pageNum === "..." ? (
+                        <span className="px-2 sm:px-3 py-1 sm:py-2 text-gray-500">
+                          ...
+                        </span>
+                      ) : (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`px-3 sm:px-4 py-1 sm:py-2 rounded-xl font-semibold transition-all ${
+                            currentPage === pageNum
+                              ? "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white shadow-lg"
+                              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                          }`}
+                        >
+                          {pageNum}
+                        </motion.button>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`p-2 sm:p-3 rounded-xl transition-all ${
+                    currentPage === totalPages
+                      ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                  }`}
+                >
+                  <FaChevronLeft className="text-sm sm:text-base" />
+                </motion.button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1252,9 +1301,7 @@ export default function MyOrders() {
                               const basePrice =
                                 item.menuItemBasePriceSnapshotAtOrder > 0
                                   ? item.menuItemBasePriceSnapshotAtOrder
-                                  : item.menuItem
-                                  ? item.menuItem.basePrice
-                                  : 0;
+                                  : item.menuItem?.basePrice || 0;
                               const totalPrice =
                                 item.totalPrice < 0
                                   ? Math.abs(item.totalPrice)
