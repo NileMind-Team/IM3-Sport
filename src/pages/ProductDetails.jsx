@@ -1616,29 +1616,61 @@ const ProductDetails = () => {
                         </div>
                       ))}
 
-                    <button
+                    {/* التعديلات هنا: عرض التعليمات مباشرة إذا كانت موجودة */}
+                    <div
                       onClick={handleOpenNotesModal}
-                      className="w-full bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border-2 border-dashed border-indigo-300 dark:border-indigo-600 rounded-xl md:rounded-2xl p-3 md:p-4 text-center hover:border-solid hover:border-indigo-400 dark:hover:border-indigo-500 transition-all duration-300"
+                      className={`w-full rounded-xl md:rounded-2xl p-3 md:p-4 text-center transition-all duration-300 cursor-pointer ${
+                        additionalNotes
+                          ? "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-solid border-green-300 dark:border-green-600 hover:border-green-400 dark:hover:border-green-500"
+                          : "bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border-2 border-dashed border-indigo-300 dark:border-indigo-600 hover:border-solid hover:border-indigo-400 dark:hover:border-indigo-500"
+                      }`}
                       dir="rtl"
                     >
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <div className="bg-indigo-100 dark:bg-indigo-800/50 p-2 rounded-full">
-                          <FaStickyNote className="text-indigo-600 dark:text-indigo-400 text-xl" />
+                        <div
+                          className={`p-2 rounded-full ${
+                            additionalNotes
+                              ? "bg-green-100 dark:bg-green-800/50"
+                              : "bg-indigo-100 dark:bg-indigo-800/50"
+                          }`}
+                        >
+                          <FaStickyNote
+                            className={`text-xl ${
+                              additionalNotes
+                                ? "text-green-600 dark:text-green-400"
+                                : "text-indigo-600 dark:text-indigo-400"
+                            }`}
+                          />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-indigo-700 dark:text-indigo-300 text-base md:text-lg">
+                          <h4
+                            className={`font-semibold text-base md:text-lg ${
+                              additionalNotes
+                                ? "text-green-700 dark:text-green-300"
+                                : "text-indigo-700 dark:text-indigo-300"
+                            }`}
+                          >
                             {additionalNotes
-                              ? "تم إضافة تعليمات إضافية"
+                              ? "تعليمات إضافية"
                               : "إضافة تعليمات إضافية"}
                           </h4>
-                          <p className="text-indigo-600/70 dark:text-indigo-400/70 text-xs md:text-sm mt-1">
+                          <p
+                            className={`text-xs md:text-sm mt-1 ${
+                              additionalNotes
+                                ? "text-green-600/70 dark:text-green-400/70"
+                                : "text-indigo-600/70 dark:text-indigo-400/70"
+                            }`}
+                          >
                             {additionalNotes
-                              ? "انقر لتعديل التعليمات الإضافية"
-                              : ""}
+                              ? `انقر لتعديل التعليمات: ${additionalNotes.substring(
+                                  0,
+                                  60
+                                )}${additionalNotes.length > 60 ? "..." : ""}`
+                              : "انقر لإضافة تعليمات إضافية"}
                           </p>
                         </div>
                       </div>
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>

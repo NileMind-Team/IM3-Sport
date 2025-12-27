@@ -890,12 +890,16 @@ export default function Cart() {
   };
 
   const handleSaveNotes = () => {
-    handleCloseNotesModal();
-    toast.success("تم حفظ التعليمات الإضافية", {
-      position: "top-right",
-      autoClose: 1500,
-      rtl: true,
-    });
+    if (selectedProduct) {
+      updateCartItem();
+    } else {
+      handleCloseNotesModal();
+      toast.success("تم حفظ التعليمات الإضافية", {
+        position: "top-right",
+        autoClose: 1500,
+        rtl: true,
+      });
+    }
   };
 
   const handleClearNotes = () => {
@@ -1611,32 +1615,58 @@ export default function Cart() {
                 </div>
               )}
 
-              <button
+              <div
                 onClick={handleOpenNotesModal}
-                className="w-full bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border-2 border-dashed border-indigo-300 dark:border-indigo-600 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center hover:border-solid hover:border-indigo-400 dark:hover:border-indigo-500 transition-all duration-300 mb-4 sm:mb-5 lg:mb-6"
+                className={`w-full rounded-lg sm:rounded-xl p-3 sm:p-4 text-center transition-all duration-300 mb-4 sm:mb-5 lg:mb-6 cursor-pointer ${
+                  itemNotes
+                    ? "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-solid border-green-300 dark:border-green-600 hover:border-green-400 dark:hover:border-green-500"
+                    : "bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border-2 border-dashed border-indigo-300 dark:border-indigo-600 hover:border-solid hover:border-indigo-400 dark:hover:border-indigo-500"
+                }`}
                 dir="rtl"
               >
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="bg-indigo-100 dark:bg-indigo-800/50 p-1.5 sm:p-2 rounded-full">
-                    <FaStickyNote className="text-indigo-600 dark:text-indigo-400 text-lg sm:text-xl" />
+                  <div
+                    className={`p-1.5 sm:p-2 rounded-full ${
+                      itemNotes
+                        ? "bg-green-100 dark:bg-green-800/50"
+                        : "bg-indigo-100 dark:bg-indigo-800/50"
+                    }`}
+                  >
+                    <FaStickyNote
+                      className={`text-lg sm:text-xl ${
+                        itemNotes
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-indigo-600 dark:text-indigo-400"
+                      }`}
+                    />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-indigo-700 dark:text-indigo-300 text-sm sm:text-base">
-                      {itemNotes
-                        ? "تم إضافة تعليمات إضافية"
-                        : "إضافة تعليمات إضافية"}
+                    <h4
+                      className={`font-semibold text-sm sm:text-base ${
+                        itemNotes
+                          ? "text-green-700 dark:text-green-300"
+                          : "text-indigo-700 dark:text-indigo-300"
+                      }`}
+                    >
+                      {itemNotes ? "تعليمات إضافية" : "إضافة تعليمات إضافية"}
                     </h4>
-                    <p className="text-indigo-600/70 dark:text-indigo-400/70 text-xs mt-0.5 sm:mt-1">
+                    <p
+                      className={`text-xs mt-0.5 sm:mt-1 ${
+                        itemNotes
+                          ? "text-green-600/70 dark:text-green-400/70"
+                          : "text-indigo-600/70 dark:text-indigo-400/70"
+                      }`}
+                    >
                       {itemNotes
-                        ? `انقر لتعديل التعليمات الإضافية: ${itemNotes.substring(
+                        ? `انقر لتعديل التعليمات: ${itemNotes.substring(
                             0,
-                            50
-                          )}${itemNotes.length > 50 ? "..." : ""}`
+                            60
+                          )}${itemNotes.length > 60 ? "..." : ""}`
                         : "انقر لإضافة تعليمات إضافية"}
                     </p>
                   </div>
                 </div>
-              </button>
+              </div>
             </div>
 
             {/* Footer - Quantity and Actions */}

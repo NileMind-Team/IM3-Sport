@@ -27,6 +27,7 @@ import {
   FaInfoCircle,
   FaListAlt,
   FaTruck,
+  FaEnvelope,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
@@ -1519,7 +1520,7 @@ export default function MyOrders() {
                             )}
                           </div>
 
-                          {/* Customer/Delivery Info - التعديل هنا */}
+                          {/* Customer/Delivery Info */}
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <div className="flex items-center gap-2">
                               <FaMapMarkerAlt className="text-[#E41E26] flex-shrink-0 w-3 h-3" />
@@ -1527,10 +1528,7 @@ export default function MyOrders() {
                                 {order.location
                                   ? order.location.streetName ||
                                     "لم يتم تحديد العنوان"
-                                  : order.deliveryFee?.areaName ===
-                                    "الاستلام من المكان"
-                                  ? "الاستلام من المطعم"
-                                  : "لم يتم تحديد العنوان"}
+                                  : "الاستلام من المطعم"}
                               </span>
                             </div>
                             {order.location?.phoneNumber && (
@@ -1930,74 +1928,79 @@ export default function MyOrders() {
                     </div>
                   ) : orderDetails ? (
                     <div className="space-y-4 sm:space-y-6">
-                      {/* Customer Information - التعديل هنا */}
+                      {/* Customer Information */}
                       <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5">
                         <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2 text-base sm:text-lg">
                           <FaUser className="text-[#E41E26] flex-shrink-0" />
-                          {orderDetails.location
-                            ? "معلومات العميل"
-                            : "معلومات الاستلام"}
+                          معلومات العميل
                         </h3>
                         <div className="space-y-2 sm:space-y-3">
-                          {orderDetails.location ? (
-                            <>
-                              <div className="flex items-start gap-2 sm:gap-3">
-                                <FaPhone className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
-                                <div className="min-w-0">
-                                  <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
-                                    {orderDetails.location?.phoneNumber ||
-                                      "غير متاح"}
-                                  </p>
-                                </div>
+                          {/* اسم العميل */}
+                          {orderDetails.user?.firstName && (
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <FaUser className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
+                                  {orderDetails.user.firstName}{" "}
+                                  {orderDetails.user.lastName || ""}
+                                </p>
                               </div>
+                            </div>
+                          )}
 
-                              <div className="flex items-start gap-2 sm:gap-3">
-                                <FaMapMarkerAlt className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
-                                <div className="min-w-0">
-                                  <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
-                                    {orderDetails.location?.streetName || ""}{" "}
-                                    {orderDetails.location?.buildingNumber ||
-                                      ""}
-                                  </p>
-                                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
-                                    {orderDetails.location?.city?.name || ""} -
-                                    الطابق{" "}
-                                    {orderDetails.location?.floorNumber || ""}،
-                                    شقة{" "}
-                                    {orderDetails.location?.flatNumber || ""}
-                                  </p>
-                                  {orderDetails.location
-                                    ?.detailedDescription && (
-                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 break-words">
-                                      {
-                                        orderDetails.location
-                                          .detailedDescription
-                                      }
-                                    </p>
-                                  )}
-                                </div>
+                          {/* البريد الإلكتروني */}
+                          {orderDetails.user?.email && (
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <FaEnvelope className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
+                                  {orderDetails.user.email}
+                                </p>
                               </div>
-                            </>
+                            </div>
+                          )}
+
+                          {/* رقم الهاتف */}
+                          {orderDetails.user?.phoneNumber && (
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <FaPhone className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
+                                  {orderDetails.user.phoneNumber}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* العنوان */}
+                          {orderDetails.location ? (
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <FaMapMarkerAlt className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+                              <div className="min-w-0">
+                                <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
+                                  {orderDetails.location.streetName || ""}{" "}
+                                  {orderDetails.location.buildingNumber || ""}
+                                </p>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
+                                  {orderDetails.location.city?.name || ""} -
+                                  الطابق{" "}
+                                  {orderDetails.location.floorNumber || ""}، شقة{" "}
+                                  {orderDetails.location.flatNumber || ""}
+                                </p>
+                                {orderDetails.location.detailedDescription && (
+                                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 break-words">
+                                    {orderDetails.location.detailedDescription}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           ) : (
                             <div className="flex items-start gap-2 sm:gap-3">
-                              <FaMapMarkerAlt className="text-[#E41E26] mt-0.5 flex-shrink-0" />
+                              <FaMapMarkerAlt className="text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
                               <div className="min-w-0">
-                                <p className="font-bold text-gray-800 dark:text-gray-200 break-words text-base sm:text-lg">
+                                <p className="font-medium text-gray-800 dark:text-gray-200 break-words">
                                   الاستلام من المطعم
                                 </p>
-                                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 break-words mt-1">
-                                  سيتم استلام الطلب مباشرة من المطعم
-                                </p>
-                                {orderDetails.deliveryFee?.areaName &&
-                                  orderDetails.deliveryFee?.areaName !==
-                                    "الاستلام من المكان" && (
-                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                      <span className="font-medium">
-                                        منطقة التوصيل:
-                                      </span>{" "}
-                                      {orderDetails.deliveryFee.areaName}
-                                    </p>
-                                  )}
                               </div>
                             </div>
                           )}
