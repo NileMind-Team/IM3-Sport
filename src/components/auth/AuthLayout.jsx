@@ -53,8 +53,9 @@ export default function AuthLayout({
             {/* Brand Content */}
             <div className="space-y-6 mb-8">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight text-right">
-                مرحباً بك في{" "}
-                <span className="text-[#E41E26]">New - ElZawy</span>
+                مرحباً بك في
+                <br />
+                <span className="text-[#E41E26] block mt-2">New - ElZawy</span>
               </h1>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-right">
                 انضم إلى مجتمعنا واستمتع بأفضل الخدمات مع نظام أمان متكامل.
