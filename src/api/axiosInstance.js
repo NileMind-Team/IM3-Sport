@@ -10,6 +10,9 @@ axiosInstance.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  config.headers.Tenant = "New_Zawy";
+
   return config;
 });
 
