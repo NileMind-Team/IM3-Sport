@@ -108,7 +108,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
                 <FaEnvelope className="text-[#E41E26] text-sm" />
-                <span className="text-sm">info@ChickenOne.com</span>
+                <span className="text-sm">info@New-ElZawy.com</span>
               </div>
               <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
                 <FaMapMarkerAlt className="text-[#E41E26] text-sm" />
