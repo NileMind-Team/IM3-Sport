@@ -24,8 +24,9 @@ export const loginWithGoogle = createAsyncThunk(
       const returnUrl = encodeURIComponent(
         `${window.location.origin}/auth/callback`
       );
-      window.location.href = `https://restaurant-template.runasp.net/api/account/login/google?returnUrl=${returnUrl}`;
+      const tenant = "New_Zawy";
 
+      window.location.href = `https://restaurant-template.runasp.net/api/account/login/google?returnUrl=${returnUrl}&Tenant=${tenant}`;
       return null;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
