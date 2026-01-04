@@ -138,10 +138,96 @@ export default function MyOrders() {
     }
   };
 
-  const addTwoHoursToDate = (dateString) => {
+  const formatArabicGregorianDate = (dateString) => {
+    if (!dateString) return "";
+
     const date = new Date(dateString);
+
     date.setHours(date.getHours() + 2);
-    return date;
+
+    const year = date.toLocaleDateString("ar-SA-u-ca-gregory", {
+      calendar: "gregory",
+      year: "numeric",
+      numberingSystem: "arab",
+    });
+
+    const month = date.toLocaleDateString("ar-SA-u-ca-gregory", {
+      calendar: "gregory",
+      month: "long",
+      numberingSystem: "arab",
+    });
+
+    const day = date.toLocaleDateString("ar-SA-u-ca-gregory", {
+      calendar: "gregory",
+      day: "numeric",
+      numberingSystem: "arab",
+    });
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "م" : "ص";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    const arabicNumbers = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    const hoursStr = hours
+      .toString()
+      .split("")
+      .map((digit) => arabicNumbers[parseInt(digit)] || digit)
+      .join("");
+    const minutesStr = minutes
+      .split("")
+      .map((digit) => arabicNumbers[parseInt(digit)] || digit)
+      .join("");
+
+    return `${day} ${month} ${year} الساعة ${hoursStr}:${minutesStr} ${ampm}`;
+  };
+
+  const formatShortArabicDate = (dateString) => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    date.setHours(date.getHours() + 2);
+
+    const year = date.toLocaleDateString("ar-SA-u-ca-gregory", {
+      calendar: "gregory",
+      year: "numeric",
+      numberingSystem: "arab",
+    });
+
+    const month = date.toLocaleDateString("ar-SA-u-ca-gregory", {
+      calendar: "gregory",
+      month: "short",
+      numberingSystem: "arab",
+    });
+
+    const day = date.toLocaleDateString("ar-SA-u-ca-gregory", {
+      calendar: "gregory",
+      day: "numeric",
+      numberingSystem: "arab",
+    });
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "م" : "ص";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    const arabicNumbers = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    const hoursStr = hours
+      .toString()
+      .split("")
+      .map((digit) => arabicNumbers[parseInt(digit)] || digit)
+      .join("");
+    const minutesStr = minutes
+      .split("")
+      .map((digit) => arabicNumbers[parseInt(digit)] || digit)
+      .join("");
+
+    return `${day} ${month} ${year} ${hoursStr}:${minutesStr} ${ampm}`;
   };
 
   const calculateItemFinalPrice = (item) => {
@@ -239,7 +325,6 @@ export default function MyOrders() {
   const formatDateForApi = (dateString, isStart = true) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    date.setHours(date.getHours() + 2);
 
     if (isStart) {
       return date.toISOString().slice(0, 10) + "T00:00:00.000Z";
@@ -1431,16 +1516,7 @@ export default function MyOrders() {
                                 طلب #{order.orderNumber}
                               </h3>
                               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                                {addTwoHoursToDate(
-                                  order.createdAt
-                                ).toLocaleDateString("ar-SA", {
-                                  weekday: "long",
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
+                                {formatArabicGregorianDate(order.createdAt)}
                               </p>
                               {isAdminOrRestaurantOrBranch && order.userId && (
                                 <div className="flex items-center gap-2 mt-2">
@@ -1899,15 +1975,7 @@ export default function MyOrders() {
                             {getStatusText(orderDetails.status)}
                           </span>
                           <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                            {addTwoHoursToDate(
-                              orderDetails.createdAt
-                            ).toLocaleDateString("ar-SA", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {formatShortArabicDate(orderDetails.createdAt)}
                           </span>
                         </div>
                       )}
@@ -2464,15 +2532,7 @@ export default function MyOrders() {
                                 تاريخ الإنشاء:
                               </span>
                               <span className="font-medium text-gray-800 dark:text-gray-200">
-                                {addTwoHoursToDate(
-                                  orderDetails.createdAt
-                                ).toLocaleDateString("ar-SA", {
-                                  year: "numeric",
-                                  month: "numeric",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
+                                {formatShortArabicDate(orderDetails.createdAt)}
                               </span>
                             </div>
                             {orderDetails.updatedAt && (
@@ -2481,15 +2541,9 @@ export default function MyOrders() {
                                   تاريخ التحديث:
                                 </span>
                                 <span className="font-medium text-gray-800 dark:text-gray-200">
-                                  {addTwoHoursToDate(
+                                  {formatShortArabicDate(
                                     orderDetails.updatedAt
-                                  ).toLocaleDateString("ar-SA", {
-                                    year: "numeric",
-                                    month: "numeric",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  )}
                                 </span>
                               </div>
                             )}
@@ -2499,15 +2553,9 @@ export default function MyOrders() {
                                   تاريخ التسليم:
                                 </span>
                                 <span className="font-medium text-gray-800 dark:text-gray-200">
-                                  {addTwoHoursToDate(
+                                  {formatShortArabicDate(
                                     orderDetails.deliveredAt
-                                  ).toLocaleDateString("ar-SA", {
-                                    year: "numeric",
-                                    month: "numeric",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  )}
                                 </span>
                               </div>
                             )}
