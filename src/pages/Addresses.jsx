@@ -495,6 +495,12 @@ export default function Addresses() {
           showAddressSuccessAlert(
             "تم إضافة العنوان: تم إضافة عنوانك الجديد بنجاح"
           );
+          if (location.state?.fromCart) {
+            setTimeout(() => {
+              navigate("/cart", { state: { addressAdded: true } });
+            }, 1500);
+            return;
+          }
         }
       }
 
@@ -568,7 +574,7 @@ export default function Addresses() {
       if (location.state?.fromCart) {
         setTimeout(() => {
           navigate("/cart", { state: { fromAddresses: true } });
-        }, 2500);
+        }, 1500);
       }
     } catch (err) {
       showAddressErrorAlert(err.response?.data);
@@ -705,7 +711,13 @@ export default function Addresses() {
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        onClick={() => navigate(-1)}
+        onClick={() => {
+          if (location.state?.fromCart) {
+            navigate("/cart");
+          } else {
+            navigate(-1);
+          }
+        }}
         className={`fixed top-3 sm:top-4 left-3 sm:left-4 z-50 ${
           darkMode
             ? "bg-gray-800/80 text-white border-gray-600 hover:bg-[#E41E26]"
