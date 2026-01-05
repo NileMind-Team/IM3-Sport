@@ -104,7 +104,7 @@ function App() {
       )}
 
       {/* Main content */}
-      <main className="flex-grow w-full bg-white dark:bg-gray-900 transition-colors duration-300 relative z-20">
+      <main className="flex-grow w-full bg-white dark:bg-gray-900 transition-colors duration-300">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<AuthPage />} />

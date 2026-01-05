@@ -17,10 +17,10 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { name: "الرئيسية", path: "/" },
+    { name: "الصفحة الرئيسية", path: "/" },
     { name: "عربة التسوق", path: "/cart" },
-    { name: "من نحن", path: "/about" },
-    { name: "اتصل بنا", path: "/contact" },
+    { name: "عناويني", path: "/addresses" },
+    { name: "المفضلة", path: "/favorites" },
   ];
 
   const categories = [
