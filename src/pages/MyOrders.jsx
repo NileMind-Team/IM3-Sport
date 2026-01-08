@@ -1731,7 +1731,8 @@ export default function MyOrders() {
                               </motion.button>
                             )}
 
-                            {order.status !== "Cancelled" &&
+                            {isAdminOrRestaurantOrBranch &&
+                              order.status !== "Cancelled" &&
                               order.status !== "Delivered" && (
                                 <motion.button
                                   whileHover={{ scale: 1.05 }}
@@ -2746,7 +2747,8 @@ export default function MyOrders() {
                           </motion.button>
                         )}
 
-                        {orderDetails.status !== "Cancelled" &&
+                        {isAdminOrRestaurantOrBranch &&
+                          orderDetails.status !== "Cancelled" &&
                           orderDetails.status !== "Delivered" && (
                             <motion.button
                               whileHover={{ scale: 1.05 }}

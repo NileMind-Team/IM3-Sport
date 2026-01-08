@@ -1613,7 +1613,7 @@ const Home = () => {
                             addingToCart === product.id
                               ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white cursor-wait"
                               : isProductAvailableForCart(product)
-                              ? "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white"
+                              ? "bg-[#E41E26] text-white hover:bg-[#d11c24]"
                               : "bg-gray-400 text-gray-200 cursor-not-allowed"
                           }`}
                         >
@@ -1722,7 +1722,7 @@ const Home = () => {
                             addingToCart === product.id
                               ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white cursor-wait"
                               : isProductAvailableForCart(product)
-                              ? "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white"
+                              ? "bg-[#E41E26] text-white hover:bg-[#d11c24]"
                               : "bg-gray-400 text-gray-200 cursor-not-allowed"
                           }`}
                         >

@@ -24,6 +24,7 @@ import Favorites from "./pages/Favorites";
 import Branches from "./pages/Branches";
 import ItemOffersManagement from "./pages/ItemOffersManagement";
 import SalesReports from "./pages/SalesReports";
+import TimeDateSalesReport from "./pages/TimeDateSalesReport";
 
 function App() {
   const location = useLocation();
@@ -97,12 +98,10 @@ function App() {
           right: "10px",
         }}
       />
-
       {/* Navbar */}
       {shouldShowNavbarFooter && (
         <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       )}
-
       {/* Main content */}
       <main className="flex-grow w-full bg-white dark:bg-gray-900 transition-colors duration-300">
         <Routes>
@@ -134,9 +133,12 @@ function App() {
           <Route path="/admin/item-offers" element={<ItemOffersManagement />} />
           <Route path="/admin/reports" element={<SalesReports />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route
+            path="/admin/time-date-reports"
+            element={<TimeDateSalesReport />}
+          />
         </Routes>
       </main>
-
       {/* Footer */}
       {shouldShowNavbarFooter && (
         <div className="relative" style={{ zIndex: 1 }}>
