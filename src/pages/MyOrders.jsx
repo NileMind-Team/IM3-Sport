@@ -580,6 +580,28 @@ export default function MyOrders() {
 
   // Function to normalize WebSocket order format to match our app format
   const normalizeWebSocketOrder = (wsOrder) => {
+    let createdAt = wsOrder.CreatedAt || wsOrder.createdAt;
+    let updatedAt = wsOrder.UpdatedAt || wsOrder.updatedAt;
+    let deliveredAt = wsOrder.DeliveredAt || wsOrder.deliveredAt;
+
+    if (createdAt && createdAt.includes("T")) {
+      const date = new Date(createdAt);
+      date.setHours(date.getHours() - 2);
+      createdAt = date.toISOString();
+    }
+
+    if (updatedAt && updatedAt.includes("T")) {
+      const date = new Date(updatedAt);
+      date.setHours(date.getHours() - 2);
+      updatedAt = date.toISOString();
+    }
+
+    if (deliveredAt && deliveredAt.includes("T")) {
+      const date = new Date(deliveredAt);
+      date.setHours(date.getHours() - 2);
+      deliveredAt = date.toISOString();
+    }
+
     return {
       id: wsOrder.Id,
       orderNumber: wsOrder.OrderNumber || wsOrder.orderNumber,
@@ -632,9 +654,9 @@ export default function MyOrders() {
       deliveryCost: wsOrder.DeliveryCost || wsOrder.deliveryCost,
       totalWithFee: wsOrder.TotalWithFee || wsOrder.totalWithFee,
       notes: wsOrder.Notes || wsOrder.notes,
-      createdAt: wsOrder.CreatedAt || wsOrder.createdAt,
-      updatedAt: wsOrder.UpdatedAt || wsOrder.updatedAt,
-      deliveredAt: wsOrder.DeliveredAt || wsOrder.deliveredAt,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      deliveredAt: deliveredAt,
       items: wsOrder.Items
         ? wsOrder.Items.map((item) => ({
             id: item.Id,
