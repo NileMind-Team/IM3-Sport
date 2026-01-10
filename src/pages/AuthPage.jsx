@@ -93,6 +93,7 @@ export default function AuthPage() {
   const [timer, setTimer] = useState(60);
   const [showWelcome, setShowWelcome] = useState(false);
   const [loggedUserName, setLoggedUserName] = useState("");
+  const [loggedUserImage, setLoggedUserImage] = useState("");
 
   // Login states
   const [loginData, setLoginData] = useState({
@@ -181,6 +182,7 @@ export default function AuthPage() {
 
           if (result?.token) {
             setLoggedUserName(result.firstName || result.email || "مستخدم");
+            setLoggedUserImage(result.imageUrl || "");
             setShowWelcome(true);
 
             setTimeout(() => {
@@ -252,6 +254,7 @@ export default function AuthPage() {
         localStorage.setItem("user", JSON.stringify(res));
 
         setLoggedUserName(res.firstName || res.email || "مستخدم");
+        setLoggedUserImage(res.imageUrl || "");
         setShowWelcome(true);
 
         Swal.close();
@@ -563,7 +566,10 @@ export default function AuthPage() {
       isGoogleLoading={isGoogleLoading}
     >
       {showWelcome ? (
-        <WelcomeAnimation userName={loggedUserName} />
+        <WelcomeAnimation
+          userName={loggedUserName}
+          userImage={loggedUserImage}
+        />
       ) : waitingForConfirmation ? (
         <WaitingConfirmation
           forgetMode={forgetMode}
