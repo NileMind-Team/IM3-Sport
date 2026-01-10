@@ -99,6 +99,7 @@ const loginSlice = createSlice({
   initialState: {
     isLoading: false,
     isGoogleLoading: false,
+    isGoogleCallbackProcessing: false, // New state for Google callback processing
     isLogged: !!localStorage.getItem("token"),
     token: localStorage.getItem("token") || null,
     user: JSON.parse(localStorage.getItem("user")) || null,
@@ -199,10 +200,12 @@ const loginSlice = createSlice({
 
       .addCase(handleGoogleCallback.pending, (state) => {
         state.isLoading = true;
+        state.isGoogleCallbackProcessing = true; // Set processing flag
         state.error = null;
       })
       .addCase(handleGoogleCallback.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isGoogleCallbackProcessing = false; // Clear processing flag
         const data = action.payload;
 
         if (data?.token) {
@@ -224,6 +227,7 @@ const loginSlice = createSlice({
       })
       .addCase(handleGoogleCallback.rejected, (state, action) => {
         state.isLoading = false;
+        state.isGoogleCallbackProcessing = false;
         state.error = action.payload;
 
         Swal.fire({

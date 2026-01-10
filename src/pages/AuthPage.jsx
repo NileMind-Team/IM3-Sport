@@ -94,6 +94,7 @@ export default function AuthPage() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [loggedUserName, setLoggedUserName] = useState("");
   const [loggedUserImage, setLoggedUserImage] = useState("");
+  const [isProcessingGoogle, setIsProcessingGoogle] = useState(false);
 
   // Login states
   const [loginData, setLoginData] = useState({
@@ -175,6 +176,7 @@ export default function AuthPage() {
 
     if (token) {
       window.history.replaceState(null, "", "/auth");
+      setIsProcessingGoogle(true); // Set processing flag
 
       const processGoogleLogin = async () => {
         try {
@@ -184,6 +186,7 @@ export default function AuthPage() {
             setLoggedUserName(result.firstName || result.email || "مستخدم");
             setLoggedUserImage(result.imageUrl || "");
             setShowWelcome(true);
+            setIsProcessingGoogle(false); // Clear processing flag
 
             setTimeout(() => {
               setShowWelcome(false);
@@ -191,6 +194,8 @@ export default function AuthPage() {
             }, 3000);
           }
         } catch (err) {
+          setIsProcessingGoogle(false); // Clear processing flag on error
+
           if (window.innerWidth < 768) {
             showAuthMobileAlertToast(
               "حدث خطأ أثناء تسجيل الدخول باستخدام Google",
@@ -562,6 +567,7 @@ export default function AuthPage() {
       onTabChange={handleTabChange}
       onBack={() => navigate(-1)}
       showWelcome={showWelcome}
+      isProcessingGoogle={isProcessingGoogle}
       onGoogleLogin={handleGoogleLogin}
       isGoogleLoading={isGoogleLoading}
     >
@@ -570,6 +576,11 @@ export default function AuthPage() {
           userName={loggedUserName}
           userImage={loggedUserImage}
         />
+      ) : isProcessingGoogle ? (
+        // Show only loading during Google processing
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26] dark:border-[#E41E26] mb-6"></div>
+        </div>
       ) : waitingForConfirmation ? (
         <WaitingConfirmation
           forgetMode={forgetMode}
