@@ -351,9 +351,9 @@ export default function MyOrders() {
     const date = new Date(dateString);
 
     if (isStart) {
-      return date.toISOString().slice(0, 10) + "T00:00:00.000Z";
+      return date.toISOString().slice(0, 10) + "T22:00:00.000Z";
     } else {
-      return date.toISOString().slice(0, 10) + "T23:59:59.999Z";
+      return date.toISOString().slice(0, 10) + "T21:59:59.999Z";
     }
   };
 
