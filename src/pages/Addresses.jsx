@@ -949,6 +949,12 @@ export default function Addresses() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
+                    onClick={(e) => {
+                      // إضافة onClick هنا ليعمل على الـdiv كله
+                      if (!e.target.closest("button")) {
+                        handleSetDefault(address.id, e);
+                      }
+                    }}
                     className={`${
                       darkMode
                         ? "bg-gray-700/80 border-gray-600"
@@ -963,44 +969,69 @@ export default function Addresses() {
                         : ""
                     }`}
                   >
-                    <div
-                      className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSetDefault(address.id, e);
-                      }}
-                    >
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                          <div
-                            className={`p-1 sm:p-2 rounded-lg sm:rounded-xl bg-gradient-to-r ${getAddressTypeColor()} border border-gray-300`}
-                          >
-                            <FaMapMarkerAlt className="text-[#E41E26]" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                              <h3
-                                className={`font-bold ${
-                                  darkMode ? "text-white" : "text-gray-800"
-                                } text-base sm:text-lg md:text-xl truncate`}
-                              >
-                                {address.city.name}
-                              </h3>
-                              {address.isDefaultLocation && (
-                                <span className="bg-[#E41E26] text-white text-xs px-2 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1 self-start sm:self-center border border-white">
-                                  <FaStar className="text-xs" />
-                                  افتراضي
-                                </span>
-                              )}
-                            </div>
-                            <p
-                              className={`${
-                                darkMode ? "text-gray-300" : "text-gray-600"
-                              } text-xs sm:text-sm capitalize truncate mt-1`}
+                        {/* هنا تم التعديل: وضعنا checkbox الافتراضي في أعلى اليمين للشاشات الصغيرة */}
+                        <div className="flex items-start justify-between mb-2 sm:mb-3">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                            <div
+                              className={`p-1 sm:p-2 rounded-lg sm:rounded-xl bg-gradient-to-r ${getAddressTypeColor()} border border-gray-300 flex-shrink-0`}
                             >
-                              {address.streetName}
-                            </p>
+                              <FaMapMarkerAlt className="text-[#E41E26]" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <h3
+                                  className={`font-bold ${
+                                    darkMode ? "text-white" : "text-gray-800"
+                                  } text-base sm:text-lg md:text-xl truncate`}
+                                >
+                                  {address.city.name}
+                                </h3>
+                                {address.isDefaultLocation && (
+                                  <span className="bg-[#E41E26] text-white text-xs px-2 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1 self-start sm:self-center border border-white">
+                                    <FaStar className="text-xs" />
+                                    افتراضي
+                                  </span>
+                                )}
+                              </div>
+                              <p
+                                className={`${
+                                  darkMode ? "text-gray-300" : "text-gray-600"
+                                } text-xs sm:text-sm capitalize truncate mt-1`}
+                              >
+                                {address.streetName}
+                              </p>
+                            </div>
                           </div>
+
+                          {/* تشيك بوكس دائري مع علامة ✓ - في أعلى اليمين للشاشات الصغيرة */}
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSetDefault(address.id, e);
+                            }}
+                            className={`relative w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 cursor-pointer transition-all duration-200 flex items-center justify-center ml-2 flex-shrink-0 sm:hidden ${
+                              address.isDefaultLocation
+                                ? "border-[#E41E26] bg-[#E41E26]"
+                                : darkMode
+                                  ? "border-gray-500 bg-gray-800 hover:border-[#E41E26] group-hover:border-[#E41E26]"
+                                  : "border-gray-300 bg-white hover:border-[#E41E26] group-hover:border-[#E41E26]"
+                            }`}
+                          >
+                            {address.isDefaultLocation && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                                className="text-white text-xs sm:text-sm font-bold"
+                              >
+                                ✓
+                              </motion.div>
+                            )}
+                          </motion.div>
                         </div>
 
                         <div
@@ -1095,7 +1126,6 @@ export default function Addresses() {
                       </div>
 
                       <div className="flex flex-row sm:flex-col lg:flex-row gap-1 sm:gap-2 justify-end sm:justify-start items-center">
-                        {/* تشيك بوكس دائري مع علامة ✓ */}
                         <motion.div
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
@@ -1103,7 +1133,7 @@ export default function Addresses() {
                             e.stopPropagation();
                             handleSetDefault(address.id, e);
                           }}
-                          className={`relative w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 cursor-pointer transition-all duration-200 flex items-center justify-center ${
+                          className={`relative w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 cursor-pointer transition-all duration-200 items-center justify-center hidden sm:flex ${
                             address.isDefaultLocation
                               ? "border-[#E41E26] bg-[#E41E26]"
                               : darkMode
