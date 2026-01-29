@@ -563,7 +563,6 @@ export default function Addresses() {
     try {
       await axiosInstance.put(`/api/Locations/ChangeDefaultLocation/${id}`);
 
-      // تحديث الحالة المحلية فورياً
       setAddresses((prevAddresses) =>
         prevAddresses.map((addr) => ({
           ...addr,
@@ -577,8 +576,20 @@ export default function Addresses() {
 
       if (location.state?.fromCart) {
         setTimeout(() => {
-          navigate("/cart", { state: { fromAddresses: true } });
-        }, 1500);
+          Swal.fire({
+            background: "transparent",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+
+          setTimeout(() => {
+            Swal.close();
+            navigate("/cart", { state: { fromAddresses: true } });
+          }, 500);
+        }, 100);
       }
     } catch (err) {
       console.error("Error setting default address:", err);
@@ -950,7 +961,6 @@ export default function Addresses() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     onClick={(e) => {
-                      // إضافة onClick هنا ليعمل على الـdiv كله
                       if (!e.target.closest("button")) {
                         handleSetDefault(address.id, e);
                       }
@@ -1005,7 +1015,6 @@ export default function Addresses() {
                             </div>
                           </div>
 
-                          {/* تشيك بوكس دائري مع علامة ✓ - في أعلى اليمين للشاشات الصغيرة */}
                           <motion.div
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}
