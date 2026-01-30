@@ -65,7 +65,7 @@ const HeroSwipper = () => {
         setError(null);
 
         const response = await axiosInstance.get(
-          "/api/MenuItems/GetAllSliderItems"
+          "/api/MenuItems/GetAllSliderItems",
         );
         const sliderItems = response.data;
 
@@ -104,9 +104,15 @@ const HeroSwipper = () => {
             ? `https://restaurant-template.runasp.net/${item.imageUrl}`
             : "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&h=450&fit=crop&crop=center";
 
-          const preparationTime = item.preparationTimeEnd
-            ? `${item.preparationTimeStart}-${item.preparationTimeEnd} دقيقة`
-            : `${item.preparationTimeStart} دقيقة`;
+          let preparationTime = null;
+
+          if (item.preparationTimeStart) {
+            if (item.preparationTimeEnd) {
+              preparationTime = `${item.preparationTimeStart}-${item.preparationTimeEnd} دقيقة`;
+            } else {
+              preparationTime = `${item.preparationTimeStart} دقيقة`;
+            }
+          }
 
           return {
             id: item.id,
@@ -262,12 +268,14 @@ const HeroSwipper = () => {
                       </p>
 
                       <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 md:mb-3 flex-wrap">
-                        <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-md px-1.5 py-0.5 sm:px-2 sm:py-1 w-fit">
-                          <FaClock className="text-blue-300" size={9} />
-                          <span className="text-white font-medium text-[10px] sm:text-xs whitespace-nowrap">
-                            {slide.preparationTime}
-                          </span>
-                        </div>
+                        {slide.preparationTime && (
+                          <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-md px-1.5 py-0.5 sm:px-2 sm:py-1 w-fit">
+                            <FaClock className="text-blue-300" size={9} />
+                            <span className="text-white font-medium text-[10px] sm:text-xs whitespace-nowrap">
+                              {slide.preparationTime}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Price Section */}
@@ -323,7 +331,7 @@ const HeroSwipper = () => {
                               </span>
                               <span className="text-[9px] sm:text-[10px] md:text-xs font-bold whitespace-nowrap">
                                 {formatPrice(
-                                  slide.originalPrice - slide.discountPrice
+                                  slide.originalPrice - slide.discountPrice,
                                 )}{" "}
                                 ج.م
                               </span>
