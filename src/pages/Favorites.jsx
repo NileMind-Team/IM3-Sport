@@ -91,12 +91,6 @@ const Favorites = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
         const response = await axiosInstance.get("/api/Favorites/GetAll");
         setFavorites(response.data);
 

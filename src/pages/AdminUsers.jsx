@@ -10,6 +10,8 @@ import {
   FaUser,
   FaUserShield,
   FaUserTag,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
@@ -22,7 +24,6 @@ import UserForm from "../components/adminUsers/UserForm";
 
 export default function AdminUsers() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -36,22 +37,32 @@ export default function AdminUsers() {
   const [formErrors, setFormErrors] = useState({});
 
   const {
-    users,
     filteredUsers,
     isLoading,
     isAdmin,
-    availableRoles,
     assigningRole,
     setAssigningRole,
     checkAdminAndFetchUsers,
-    filterUsers,
+    searchUsers,
     handleAssignRole,
     handleToggleStatus,
     handleSubmitUser,
     getSortedUsers,
     getAvailableRolesToAssign,
+    getFilteredAvailableRoles,
     isCurrentUser,
+    currentPage,
+    totalPages,
+    searchTerm,
+    setSearchTerm,
+    isSearching,
+    handlePageChange,
+    handlePrevPage,
+    handleNextPage,
+    getPaginationNumbers,
   } = useUsers();
+
+  const filteredAvailableRoles = getFilteredAvailableRoles();
 
   const showWarningAlert = (title, message) => {
     if (window.innerWidth < 768) {
@@ -94,10 +105,6 @@ export default function AdminUsers() {
     };
     initialize();
   }, [checkAdminAndFetchUsers, navigate]);
-
-  useEffect(() => {
-    filterUsers(searchTerm);
-  }, [searchTerm, users, filterUsers]);
 
   const handleRoleToggle = (role) => {
     setFormData((prev) => ({
@@ -269,8 +276,12 @@ export default function AdminUsers() {
             </motion.button>
           </motion.div>
 
-          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            searchUsers={searchUsers}
+            isSearching={isSearching}
+          />
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             <div
               className={`space-y-3 sm:space-y-4 md:space-y-5 ${
@@ -278,22 +289,78 @@ export default function AdminUsers() {
               }`}
             >
               {sortedUsers.length > 0 ? (
-                sortedUsers.map((user, index) => (
-                  <UserCard
-                    key={user.id}
-                    user={user}
-                    index={index}
-                    isCurrentUser={isCurrentUser}
-                    getRoleBadgeColor={getRoleBadgeColor}
-                    getRoleIcon={getRoleIcon}
-                    getStatusBadge={getStatusBadge}
-                    getAvailableRolesToAssign={getAvailableRolesToAssign}
-                    assigningRole={assigningRole}
-                    setAssigningRole={setAssigningRole}
-                    handleAssignRole={handleAssignRole}
-                    handleToggleStatus={handleToggleStatus}
-                  />
-                ))
+                <>
+                  {sortedUsers.map((user, index) => (
+                    <UserCard
+                      key={user.id}
+                      user={user}
+                      index={index}
+                      isCurrentUser={isCurrentUser}
+                      getRoleBadgeColor={getRoleBadgeColor}
+                      getRoleIcon={getRoleIcon}
+                      getStatusBadge={getStatusBadge}
+                      getAvailableRolesToAssign={getAvailableRolesToAssign}
+                      assigningRole={assigningRole}
+                      setAssigningRole={setAssigningRole}
+                      handleAssignRole={handleAssignRole}
+                      handleToggleStatus={handleToggleStatus}
+                    />
+                  ))}
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="mt-6 sm:mt-8 flex flex-col items-center">
+                      <div className="flex items-center justify-center gap-1 sm:gap-2">
+                        <button
+                          onClick={handlePrevPage}
+                          disabled={currentPage === 1}
+                          className={`p-2 sm:p-3 rounded-xl border ${
+                            currentPage === 1
+                              ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed border-gray-300"
+                              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+                          }`}
+                        >
+                          <FaChevronRight className="text-sm sm:text-base" />
+                        </button>
+
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          {getPaginationNumbers().map((pageNum, index) => (
+                            <React.Fragment key={index}>
+                              {pageNum === "..." ? (
+                                <span className="px-2 sm:px-3 py-1 sm:py-2 text-gray-500">
+                                  ...
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => handlePageChange(pageNum)}
+                                  className={`px-3 sm:px-4 py-1 sm:py-2 rounded-xl font-semibold border ${
+                                    currentPage === pageNum
+                                      ? "bg-[#E41E26] text-white shadow-lg border-[#E41E26]"
+                                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+                                  }`}
+                                >
+                                  {pageNum}
+                                </button>
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </div>
+
+                        <button
+                          onClick={handleNextPage}
+                          disabled={currentPage === totalPages}
+                          className={`p-2 sm:p-3 rounded-xl border ${
+                            currentPage === totalPages
+                              ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed border-gray-300"
+                              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+                          }`}
+                        >
+                          <FaChevronLeft className="text-sm sm:text-base" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <EmptyState
                   searchTerm={searchTerm}
@@ -307,7 +374,7 @@ export default function AdminUsers() {
                 isAdding={isAdding}
                 formData={formData}
                 setFormData={setFormData}
-                availableRoles={availableRoles}
+                availableRoles={filteredAvailableRoles}
                 handleRoleToggle={handleRoleToggle}
                 handleSubmit={handleSubmit}
                 resetForm={resetForm}

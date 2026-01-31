@@ -17,7 +17,9 @@ export const useBranches = () => {
         setBranches(res.data);
       }
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     } finally {
@@ -32,7 +34,9 @@ export const useBranches = () => {
         setCities(res.data);
       }
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     }
@@ -40,15 +44,14 @@ export const useBranches = () => {
 
   const fetchManagers = useCallback(async () => {
     try {
-      const res = await axiosInstance.get("/api/Users/GetAll");
+      const res = await axiosInstance.get("/api/Users/GetAllList");
       if (res.status === 200) {
-        const branchManagers = res.data.filter(
-          (user) => user.roles && user.roles.includes("Branch")
-        );
-        setManagers(branchManagers);
+        setManagers(res.data);
       }
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     }
@@ -73,7 +76,9 @@ export const useBranches = () => {
       await fetchBranches();
       return res;
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     }
@@ -83,12 +88,14 @@ export const useBranches = () => {
     try {
       const res = await axiosInstance.put(
         `/api/Branches/Update/${branchId}`,
-        branchData
+        branchData,
       );
       await fetchBranches();
       return res;
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     }
@@ -99,7 +106,9 @@ export const useBranches = () => {
       await axiosInstance.delete(`/api/Branches/Delete/${branchId}`);
       await fetchBranches();
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     }
@@ -110,7 +119,9 @@ export const useBranches = () => {
       await axiosInstance.put(`/api/Branches/ChangeActiveStatus/${branchId}`);
       await fetchBranches();
     } catch (err) {
-      const errorMessage = translateErrorMessageAdminBranches(err.response?.data);
+      const errorMessage = translateErrorMessageAdminBranches(
+        err.response?.data,
+      );
       setError(errorMessage);
       throw errorMessage;
     }

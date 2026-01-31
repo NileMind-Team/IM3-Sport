@@ -33,6 +33,7 @@ import Swal from "sweetalert2";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import * as signalR from "@microsoft/signalr";
 
 export default function MyOrders() {
   const navigate = useNavigate();
@@ -52,7 +53,6 @@ export default function MyOrders() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fetchingOrders, setFetchingOrders] = useState(false);
   const BASE_URL = "https://restaurant-template.runasp.net/";
-  const wsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -67,8 +67,7 @@ export default function MyOrders() {
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [loadingBranches, setLoadingBranches] = useState(false);
   const [isAdminOrRestaurant, setIsAdminOrRestaurant] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [wsStatus, setWsStatus] = useState("🔌 Connecting...");
+  const signalRConnectionRef = useRef(null);
 
   const isMobile = () => {
     return window.innerWidth < 768;
@@ -247,7 +246,7 @@ export default function MyOrders() {
     const optionsTotal =
       item.options?.reduce(
         (sum, option) => sum + (option.optionPriceAtOrder || 0),
-        0
+        0,
       ) || 0;
 
     const itemDiscount = item.totalDiscount || item.TotalDiscount || 0;
@@ -483,7 +482,7 @@ export default function MyOrders() {
         showMessage(
           "error",
           "خطأ",
-          "فشل تحميل الطلبات. يرجى المحاولة مرة أخرى."
+          "فشل تحميل الطلبات. يرجى المحاولة مرة أخرى.",
         );
       }
       setOrders([]);
@@ -494,93 +493,84 @@ export default function MyOrders() {
     }
   };
 
-  // WebSocket Connection
-  const connectWebSocket = () => {
-    const wsUrl = "wss://proxyserver.runasp.net/ws";
-    const tenant = "New_Zawy";
-    const joinGroup = `${tenant}-orders`;
+  const getOrderGroupName = async () => {
+    const token = localStorage.getItem("token");
 
-    setWsStatus("🔌 Connecting...");
-
-    wsRef.current = new WebSocket(wsUrl);
-
-    wsRef.current.addEventListener("open", () => {
-      setWsStatus("✅ Connected");
-      console.log("WebSocket connection established");
-
-      // Send JOIN message
-      const joinMessage = `JOIN:${tenant}:${joinGroup}`;
-      wsRef.current.send(joinMessage);
-      console.log("Joined group:", joinMessage);
+    const response = await axiosInstance.get("/api/Orders/GetGroup", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    wsRef.current.addEventListener("message", (event) => {
-      console.log("📦 WebSocket message received:", event.data);
+    return response.data;
+  };
 
-      try {
-        const wsOrder = JSON.parse(event.data);
+  const connectSignalR = async () => {
+    try {
+      const tenantName = "New_Zawy";
+      const groupFromApi = await getOrderGroupName();
+      const fullGroupName = `${tenantName}-${groupFromApi}`;
 
-        // Convert WebSocket order format to match our app format
-        const normalizedOrder = normalizeWebSocketOrder(wsOrder);
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl("https://restaurant-template.runasp.net/hubs/orders", {
+          accessTokenFactory: () => localStorage.getItem("token"),
+        })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
 
-        // Add new order to the beginning of the list
-        setOrders((prevOrders) => {
-          // Check if order already exists
-          const existingOrderIndex = prevOrders.findIndex(
-            (o) =>
-              o.id === normalizedOrder.id ||
-              o.orderNumber === normalizedOrder.orderNumber
-          );
+      connection.on("OrderCreated", (json) => {
+        try {
+          const wsOrder = typeof json === "string" ? JSON.parse(json) : json;
+          const normalizedOrder = normalizeWebSocketOrder(wsOrder);
 
-          if (existingOrderIndex === -1) {
-            // New order, add to the beginning
-            return [normalizedOrder, ...prevOrders];
-          } else {
-            // Update existing order
-            const updatedOrders = [...prevOrders];
-            updatedOrders[existingOrderIndex] = {
-              ...updatedOrders[existingOrderIndex],
-              ...normalizedOrder,
-            };
-            return updatedOrders;
-          }
-        });
+          setOrders((prev) => {
+            const exists = prev.find(
+              (o) =>
+                o.id === normalizedOrder.id ||
+                o.orderNumber === normalizedOrder.orderNumber,
+            );
 
-        // Update total items count
-        setTotalItems((prev) => prev + 1);
+            if (exists) return prev;
+            return [normalizedOrder, ...prev];
+          });
 
-        // Show notification for new orders
-        if (normalizedOrder.orderNumber) {
           showMessage(
             "info",
             "طلب جديد",
             `تم استلام طلب جديد #${normalizedOrder.orderNumber}`,
-            { timer: 3000, forceSwal: false }
+            { forceSwal: false },
           );
+        } catch (err) {
+          console.error("SignalR parse error", err);
         }
-      } catch (err) {
-        console.error("❌ WebSocket JSON Error:", err, event.data);
-      }
-    });
+      });
 
-    wsRef.current.addEventListener("close", () => {
-      setWsStatus("⚠️ Disconnected");
-      console.log("WebSocket disconnected");
+      await connection.start();
+      console.log("✅ SignalR Connected");
 
-      // Attempt to reconnect after 5 seconds
-      setTimeout(() => {
-        if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-          console.log("Attempting to reconnect WebSocket...");
-          connectWebSocket();
-        }
-      }, 5000);
-    });
+      await connection.invoke("JoinBranch", fullGroupName);
+      console.log("✅ Joined Branch:", fullGroupName);
 
-    wsRef.current.addEventListener("error", (err) => {
-      console.error("❌ WebSocket Error:", err);
-      setWsStatus("❌ Connection Error");
-    });
+      signalRConnectionRef.current = connection;
+    } catch (err) {
+      console.error("❌ SignalR Connection Error", err);
+    }
   };
+
+  useEffect(() => {
+    if (!isInitialLoad) {
+      connectSignalR();
+    }
+
+    return () => {
+      if (signalRConnectionRef.current) {
+        signalRConnectionRef.current.stop();
+        signalRConnectionRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInitialLoad]);
 
   // Function to normalize WebSocket order format to match our app format
   const normalizeWebSocketOrder = (wsOrder) => {
@@ -725,7 +715,7 @@ export default function MyOrders() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       console.log("Status update response:", response);
@@ -738,15 +728,15 @@ export default function MyOrders() {
           "تم بنجاح!",
           `تم تحديث حالة الطلب #${
             selectedOrderForStatus.orderNumber
-          } إلى "${getStatusText(newStatus)}"`
+          } إلى "${getStatusText(newStatus)}"`,
         );
 
         setOrders(
           orders.map((order) =>
             order.id === selectedOrderForStatus.id
               ? { ...order, status: newStatus }
-              : order
-          )
+              : order,
+          ),
         );
 
         if (selectedOrder?.id === selectedOrderForStatus.id && orderDetails) {
@@ -801,7 +791,7 @@ export default function MyOrders() {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         setOrders(
@@ -811,8 +801,8 @@ export default function MyOrders() {
                   ...order,
                   status: "Cancelled",
                 }
-              : order
-          )
+              : order,
+          ),
         );
 
         if (selectedOrder?.id === orderId && orderDetails) {
@@ -848,7 +838,7 @@ export default function MyOrders() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.status === 200) {
@@ -859,7 +849,7 @@ export default function MyOrders() {
       showMessage(
         "error",
         "خطأ",
-        "فشل إرسال طلب إعادة الطباعة. يرجى المحاولة مرة أخرى."
+        "فشل إرسال طلب إعادة الطباعة. يرجى المحاولة مرة أخرى.",
       );
     }
   };
@@ -1003,22 +993,6 @@ export default function MyOrders() {
     pageSize,
   ]);
 
-  // Initialize WebSocket connection
-  useEffect(() => {
-    if (!isInitialLoad) {
-      connectWebSocket();
-    }
-
-    // Cleanup WebSocket on component unmount
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInitialLoad]);
-
   const mapStatus = (apiStatus) => {
     const statusMap = {
       Pending: "pending",
@@ -1118,7 +1092,7 @@ export default function MyOrders() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         details = response.data;
       } else {
@@ -1128,7 +1102,7 @@ export default function MyOrders() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         details = response.data;
       }
@@ -1332,7 +1306,7 @@ export default function MyOrders() {
                       type="button"
                       onClick={() =>
                         setOpenDropdown(
-                          openDropdown === "status" ? null : "status"
+                          openDropdown === "status" ? null : "status",
                         )
                       }
                       className="w-full flex items-center justify-between border-2 border-gray-300 bg-white rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-[#E41E26] focus:border-[#E41E26] transition-all duration-200 text-sm sm:text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-[#E41E26]"
@@ -1403,7 +1377,7 @@ export default function MyOrders() {
                         type="button"
                         onClick={() =>
                           setOpenDropdown(
-                            openDropdown === "user" ? null : "user"
+                            openDropdown === "user" ? null : "user",
                           )
                         }
                         className="w-full flex items-center justify-between border-2 border-gray-300 bg-white rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-[#E41E26] focus:border-[#E41E26] transition-all duration-200 text-sm sm:text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-[#E41E26]"
@@ -1509,7 +1483,7 @@ export default function MyOrders() {
                         type="button"
                         onClick={() =>
                           setOpenDropdown(
-                            openDropdown === "branch" ? null : "branch"
+                            openDropdown === "branch" ? null : "branch",
                           )
                         }
                         className="w-full flex items-center justify-between border-2 border-gray-300 bg-white rounded-xl px-4 py-3 text-black focus:ring-2 focus:ring-[#E41E26] focus:border-[#E41E26] transition-all duration-200 text-sm sm:text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-[#E41E26]"
@@ -1518,7 +1492,7 @@ export default function MyOrders() {
                           <FaStore className="text-[#E41E26]" />
                           {selectedBranchId
                             ? branches.find(
-                                (b) => b.id.toString() === selectedBranchId
+                                (b) => b.id.toString() === selectedBranchId,
                               )?.name || "فرع غير معروف"
                             : "جميع الفروع"}
                         </span>
@@ -1723,7 +1697,7 @@ export default function MyOrders() {
                                     <span className="text-sm text-gray-600 dark:text-gray-400">
                                       {branches.find(
                                         (b) =>
-                                          b.id === order.deliveryFee?.branchId
+                                          b.id === order.deliveryFee?.branchId,
                                       )?.name || "فرع غير معروف"}
                                     </span>
                                   </div>
@@ -1732,7 +1706,7 @@ export default function MyOrders() {
                             <div className="flex-shrink-0">
                               <div
                                 className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                                  order.status
+                                  order.status,
                                 )} whitespace-nowrap`}
                               >
                                 {getStatusText(order.status)}
@@ -1983,7 +1957,7 @@ export default function MyOrders() {
                       </span>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                          selectedOrderForStatus.status
+                          selectedOrderForStatus.status,
                         )}`}
                       >
                         {getStatusText(selectedOrderForStatus.status)}
@@ -2068,17 +2042,17 @@ export default function MyOrders() {
                                 <div className="flex items-center gap-2 mt-1">
                                   <div
                                     className={`px-2 py-1 rounded text-xs ${getStatusColor(
-                                      selectedOrderForStatus.status
+                                      selectedOrderForStatus.status,
                                     )}`}
                                   >
                                     {getStatusText(
-                                      selectedOrderForStatus.status
+                                      selectedOrderForStatus.status,
                                     )}
                                   </div>
                                   <span className="text-gray-500">→</span>
                                   <div
                                     className={`px-2 py-1 rounded text-xs ${getStatusColor(
-                                      newStatus
+                                      newStatus,
                                     )}`}
                                   >
                                     {getStatusText(newStatus)}
@@ -2159,7 +2133,7 @@ export default function MyOrders() {
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
                           <span
                             className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${getStatusColor(
-                              orderDetails.status
+                              orderDetails.status,
                             )} whitespace-nowrap self-start`}
                           >
                             {getStatusText(orderDetails.status)}
@@ -2280,7 +2254,7 @@ export default function MyOrders() {
                                     .find(
                                       (b) =>
                                         b.id ===
-                                        orderDetails.deliveryFee?.branchId
+                                        orderDetails.deliveryFee?.branchId,
                                     )
                                     ?.name?.charAt(0) || "ف"}
                                 </div>
@@ -2289,7 +2263,7 @@ export default function MyOrders() {
                                     {branches.find(
                                       (b) =>
                                         b.id ===
-                                        orderDetails.deliveryFee?.branchId
+                                        orderDetails.deliveryFee?.branchId,
                                     )?.name || "فرع غير معروف"}
                                   </p>
                                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
@@ -2446,11 +2420,11 @@ export default function MyOrders() {
                                               <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
                                                 +ج.م{" "}
                                                 {option.optionPriceAtOrder?.toFixed(
-                                                  2
+                                                  2,
                                                 ) || "0.00"}
                                               </span>
                                             </div>
-                                          )
+                                          ),
                                         )}
                                       </div>
                                     </div>
@@ -2557,7 +2531,7 @@ export default function MyOrders() {
                               <span className="font-medium text-sm sm:text-base">
                                 +ج.م{" "}
                                 {orderDetails.calculatedPrices?.totalAdditions?.toFixed(
-                                  2
+                                  2,
                                 ) || "0.00"}
                               </span>
                             </div>
@@ -2711,7 +2685,7 @@ export default function MyOrders() {
                               </span>
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                                  orderDetails.status
+                                  orderDetails.status,
                                 )}`}
                               >
                                 {getStatusText(orderDetails.status)}
@@ -2732,7 +2706,7 @@ export default function MyOrders() {
                                 </span>
                                 <span className="font-medium text-gray-800 dark:text-gray-200">
                                   {formatShortArabicDate(
-                                    orderDetails.updatedAt
+                                    orderDetails.updatedAt,
                                   )}
                                 </span>
                               </div>
@@ -2744,7 +2718,7 @@ export default function MyOrders() {
                                 </span>
                                 <span className="font-medium text-gray-800 dark:text-gray-200">
                                   {formatShortArabicDate(
-                                    orderDetails.deliveredAt
+                                    orderDetails.deliveredAt,
                                   )}
                                 </span>
                               </div>
@@ -2763,7 +2737,7 @@ export default function MyOrders() {
                               e.stopPropagation();
                               handleUpdateStatus(
                                 orderDetails.id,
-                                orderDetails.status
+                                orderDetails.status,
                               );
                             }}
                             className="flex-1 flex items-center justify-center gap-2 bg-blue-500 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all text-sm sm:text-base border border-blue-600"

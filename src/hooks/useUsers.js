@@ -12,6 +12,13 @@ export const useUsers = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [availableRoles, setAvailableRoles] = useState([]);
   const [assigningRole, setAssigningRole] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  // eslint-disable-next-line no-unused-vars
+  const [pageSize, setPageSize] = useState(5);
+  const [totalCount, setTotalCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const showErrorAlert = (title, message) => {
     if (window.innerWidth < 768) {
@@ -79,7 +86,10 @@ export const useUsers = () => {
       const profileRes = await axiosInstance.get("/api/Account/Profile");
       const userRoles = profileRes.data.roles;
 
-      if (!userRoles || !userRoles.includes("Admin")) {
+      if (
+        !userRoles ||
+        (!userRoles.includes("Admin") && !userRoles.includes("Restaurant"))
+      ) {
         Swal.fire({
           icon: "error",
           title: "تم رفض الوصول",
@@ -110,7 +120,7 @@ export const useUsers = () => {
     } finally {
       setIsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchRoles = async () => {
@@ -124,36 +134,144 @@ export const useUsers = () => {
     }
   };
 
-  const fetchUsers = async () => {
+  const buildFiltersArray = () => {
+    const filtersArray = [];
+
+    if (searchTerm.trim()) {
+      filtersArray.push({
+        propertyName: "email",
+        propertyValue: searchTerm,
+        range: false,
+      });
+    }
+
+    return filtersArray;
+  };
+
+  const fetchUsers = async (page = 1) => {
     try {
-      const res = await axiosInstance.get("/api/Users/GetAll");
+      setIsSearching(true);
+
+      const requestBody = {
+        pageNumber: page,
+        pageSize: pageSize,
+        filters: buildFiltersArray(),
+      };
+
+      const res = await axiosInstance.post("/api/Users/GetAll", requestBody);
+
       if (res.status === 200) {
-        setUsers(res.data);
-        setFilteredUsers(res.data);
+        const responseData = res.data;
+        const usersData = responseData.items || responseData.data || [];
+
+        setUsers(usersData);
+        setFilteredUsers(usersData);
+        setTotalPages(responseData.totalPages || 1);
+        setTotalCount(responseData.totalCount || usersData.length);
+        setCurrentPage(page);
       }
     } catch (err) {
-      console.error("فشل في جلب المستخدمين", err);
+      console.error("فشل في جلب المستخدمين:", err);
       showErrorAlert("خطأ", "فشل في جلب بيانات المستخدمين.");
+    } finally {
+      setIsSearching(false);
     }
+  };
+
+  const searchUsers = async () => {
+    if (!searchTerm.trim()) {
+      await fetchUsers(1);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const requestBody = {
+        pageNumber: 1,
+        pageSize: pageSize,
+        filters: buildFiltersArray(),
+      };
+
+      const res = await axiosInstance.post("/api/Users/GetAll", requestBody);
+
+      if (res.status === 200) {
+        const responseData = res.data;
+        const usersData = responseData.items || responseData.data || [];
+
+        setUsers(usersData);
+        setFilteredUsers(usersData);
+        setTotalPages(responseData.totalPages || 1);
+        setTotalCount(responseData.totalCount || usersData.length);
+        setCurrentPage(1);
+      }
+    } catch (err) {
+      console.error("فشل في البحث:", err);
+      showErrorAlert("خطأ", "فشل في البحث عن المستخدمين.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    fetchUsers(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      fetchUsers(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      fetchUsers(currentPage + 1);
+    }
+  };
+
+  const getPaginationNumbers = () => {
+    const delta = 2;
+    const range = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      range.unshift("...");
+    }
+    if (currentPage + delta < totalPages - 1) {
+      range.push("...");
+    }
+
+    range.unshift(1);
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    return range;
   };
 
   const handleAssignRole = async (userId, roleName) => {
     try {
       await axiosInstance.post(
-        `/api/Users/AssignRole?userId=${userId}&role=${roleName}`
+        `/api/Users/AssignRole?userId=${userId}&role=${roleName}`,
       );
 
       const updatedUsers = users.map((user) =>
         user.id === userId
           ? { ...user, roles: [...(user.roles || []), roleName] }
-          : user
+          : user,
       );
 
       setUsers(updatedUsers);
 
       showSuccessAlert(
         "تم تعيين الصلاحية",
-        `تم تعيين الصلاحية ${roleName} بنجاح.`
+        `تم تعيين الصلاحية ${roleName} بنجاح.`,
       );
 
       setAssigningRole(null);
@@ -186,13 +304,13 @@ export const useUsers = () => {
           await axiosInstance.put(`/api/Users/ChangeUserStatus/${user.id}`);
 
           const updatedUsers = users.map((u) =>
-            u.id === user.id ? { ...u, isActive: newStatus } : u
+            u.id === user.id ? { ...u, isActive: newStatus } : u,
           );
           setUsers(updatedUsers);
 
           showSuccessAlert(
             `${action === "تفعيل" ? "تم التفعيل" : "تم التعطيل"}!`,
-            `تم ${action} المستخدم بنجاح.`
+            `تم ${action} المستخدم بنجاح.`,
           );
         } catch (err) {
           showErrorAlert("خطأ", `فشل في ${action} المستخدم.`);
@@ -208,7 +326,7 @@ export const useUsers = () => {
         await fetchUsers();
         showSuccessAlert(
           "تمت إضافة المستخدم",
-          "تمت إضافة المستخدم الجديد بنجاح."
+          "تمت إضافة المستخدم الجديد بنجاح.",
         );
         onSuccess?.();
         return { success: true };
@@ -216,7 +334,7 @@ export const useUsers = () => {
     } catch (err) {
       if (err.response?.data?.errors) {
         const translatedErrors = translateErrorMessageAdminUser(
-          err.response.data
+          err.response.data,
         );
 
         let errorMessages = [];
@@ -254,7 +372,7 @@ export const useUsers = () => {
                   `<div style="text-align: right; direction: rtl; margin-bottom: 8px; padding-right: 15px; position: relative;">
                ${msg}
                <span style="position: absolute; right: 0; top: 0;"></span>
-             </div>`
+             </div>`,
               )
               .join(""),
             background: "#ffffff",
@@ -272,25 +390,6 @@ export const useUsers = () => {
     }
   };
 
-  const filterUsers = (searchTerm) => {
-    if (!searchTerm.trim()) {
-      setFilteredUsers(users);
-      return;
-    }
-
-    const filtered = users.filter((user) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        user.firstName?.toLowerCase().includes(searchLower) ||
-        user.lastName?.toLowerCase().includes(searchLower) ||
-        user.email?.toLowerCase().includes(searchLower) ||
-        user.phoneNumber?.includes(searchTerm)
-      );
-    });
-
-    setFilteredUsers(filtered);
-  };
-
   const getSortedUsers = (usersList) => {
     if (!currentUser) return usersList;
 
@@ -304,9 +403,30 @@ export const useUsers = () => {
     return sortedUsers;
   };
 
+  const getFilteredAvailableRoles = () => {
+    if (!currentUser) return availableRoles;
+
+    const currentUserRoles = currentUser.roles || [];
+
+    if (currentUserRoles.includes("Admin")) {
+      return availableRoles;
+    }
+
+    if (
+      currentUserRoles.includes("Restaurant") &&
+      !currentUserRoles.includes("Admin")
+    ) {
+      return availableRoles.filter((role) => role.name !== "Admin");
+    }
+
+    return availableRoles;
+  };
+
   const getAvailableRolesToAssign = (user) => {
     const userRoles = user.roles || [];
-    return availableRoles.filter((role) => !userRoles.includes(role.name));
+    return getFilteredAvailableRoles().filter(
+      (role) => !userRoles.includes(role.name),
+    );
   };
 
   const isCurrentUser = (user) => {
@@ -324,12 +444,24 @@ export const useUsers = () => {
     setAssigningRole,
     checkAdminAndFetchUsers,
     fetchUsers,
-    filterUsers,
+    searchUsers,
     handleAssignRole,
     handleToggleStatus,
     handleSubmitUser,
     getSortedUsers,
     getAvailableRolesToAssign,
+    getFilteredAvailableRoles,
     isCurrentUser,
+    currentPage,
+    totalPages,
+    totalCount,
+    pageSize,
+    searchTerm,
+    setSearchTerm,
+    isSearching,
+    handlePageChange,
+    handlePrevPage,
+    handleNextPage,
+    getPaginationNumbers,
   };
 };
