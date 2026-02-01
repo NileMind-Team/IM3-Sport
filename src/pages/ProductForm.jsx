@@ -247,7 +247,7 @@ const ProductForm = () => {
       const maxSize = 5 * 1024 * 1024;
       if (blob.size > maxSize) {
         throw new Error(
-          `حجم الصورة (${formatBytes(blob.size)}) يتجاوز الحد الأقصى (5MB)`
+          `حجم الصورة (${formatBytes(blob.size)}) يتجاوز الحد الأقصى (5MB)`,
         );
       }
 
@@ -265,7 +265,7 @@ const ProductForm = () => {
       if (!allowedTypes.includes(mimeType.toLowerCase())) {
         const fileType = mimeType.split("/")[1] || "غير معروف";
         throw new Error(
-          `صيغة الملف (${fileType}) غير مدعومة. الصيغ المدعومة: JPG, JPEG, PNG, JFIF, HEIF/HEIC, WebP`
+          `صيغة الملف (${fileType}) غير مدعومة. الصيغ المدعومة: JPG, JPEG, PNG, JFIF, HEIF/HEIC, WebP`,
         );
       }
 
@@ -290,7 +290,7 @@ const ProductForm = () => {
 
       showSuccessAlert(
         "تم تحميل الصورة!",
-        `تم تحميل الصورة بنجاح (${formatBytes(file.size)})`
+        `تم تحميل الصورة بنجاح (${formatBytes(file.size)})`,
       );
 
       return file;
@@ -298,7 +298,7 @@ const ProductForm = () => {
       console.error("Error downloading image:", error);
       showErrorAlert(
         "خطأ في تحميل الصورة",
-        error.message || "فشل في تحميل الصورة من الرابط المقدم"
+        error.message || "فشل في تحميل الصورة من الرابط المقدم",
       );
       return null;
     } finally {
@@ -341,7 +341,7 @@ const ProductForm = () => {
     const fetchOptionTypes = async () => {
       try {
         const response = await axiosInstance.get(
-          "/api/MenuItemOptionTypes/GetAll"
+          "/api/MenuItemOptionTypes/GetAll",
         );
         setOptionTypes(response.data);
       } catch (error) {
@@ -382,8 +382,8 @@ const ProductForm = () => {
   const updateMenuItemOption = (id, field, value) => {
     setMenuItemOptions(
       menuItemOptions.map((optionType) =>
-        optionType.id === id ? { ...optionType, [field]: value } : optionType
-      )
+        optionType.id === id ? { ...optionType, [field]: value } : optionType,
+      ),
     );
   };
 
@@ -404,8 +404,8 @@ const ProductForm = () => {
                 },
               ],
             }
-          : optionType
-      )
+          : optionType,
+      ),
     );
   };
 
@@ -416,11 +416,11 @@ const ProductForm = () => {
           ? {
               ...optionType,
               options: optionType.options.filter(
-                (option) => option.id !== optionId
+                (option) => option.id !== optionId,
               ),
             }
-          : optionType
-      )
+          : optionType,
+      ),
     );
   };
 
@@ -431,11 +431,11 @@ const ProductForm = () => {
           ? {
               ...optionType,
               options: optionType.options.map((option) =>
-                option.id === optionId ? { ...option, [field]: value } : option
+                option.id === optionId ? { ...option, [field]: value } : option,
               ),
             }
-          : optionType
-      )
+          : optionType,
+      ),
     );
   };
 
@@ -477,13 +477,13 @@ const ProductForm = () => {
           name: editingOptionType.name,
           canSelectMultipleOptions: editingOptionType.canSelectMultipleOptions,
           isSelectionRequired: editingOptionType.isSelectionRequired,
-        }
+        },
       );
 
       setOptionTypes(
         optionTypes.map((type) =>
-          type.id === editingOptionType.id ? { ...editingOptionType } : type
-        )
+          type.id === editingOptionType.id ? { ...editingOptionType } : type,
+        ),
       );
 
       setEditingOptionType(null);
@@ -507,7 +507,7 @@ const ProductForm = () => {
           name: newOptionType.name,
           canSelectMultipleOptions: newOptionType.canSelectMultipleOptions,
           isSelectionRequired: newOptionType.isSelectionRequired,
-        }
+        },
       );
 
       const newOptionTypeData = response.data;
@@ -540,11 +540,11 @@ const ProductForm = () => {
       if (result.isConfirmed) {
         try {
           await axiosInstance.delete(
-            `/api/MenuItemOptionTypes/Delete/${optionTypeId}`
+            `/api/MenuItemOptionTypes/Delete/${optionTypeId}`,
           );
 
           setOptionTypes(
-            optionTypes.filter((type) => type.id !== optionTypeId)
+            optionTypes.filter((type) => type.id !== optionTypeId),
           );
 
           showSuccessAlert("تم الحذف!", "تم حذف نوع الإضافة بنجاح");
@@ -563,7 +563,7 @@ const ProductForm = () => {
       try {
         setIsLoadingProduct(true);
         const response = await axiosInstance.get(
-          `/api/MenuItems/Get/${productId}`
+          `/api/MenuItems/Get/${productId}`,
         );
         const product = response.data;
 
@@ -791,7 +791,7 @@ const ProductForm = () => {
       if (file.size > maxSize) {
         showErrorAlert(
           "حجم الملف كبير",
-          `حجم الصورة (${formatBytes(file.size)}) يتجاوز الحد الأقصى (5MB)`
+          `حجم الصورة (${formatBytes(file.size)}) يتجاوز الحد الأقصى (5MB)`,
         );
         return;
       }
@@ -810,7 +810,7 @@ const ProductForm = () => {
         const fileType = file.type.split("/")[1] || "غير معروف";
         showErrorAlert(
           "نوع ملف غير مدعوم",
-          `صيغة الملف (${fileType}) غير مدعومة. الصيغ المدعومة: JPG, JPEG, PNG, JFIF, HEIF/HEIC, WebP`
+          `صيغة الملف (${fileType}) غير مدعومة. الصيغ المدعومة: JPG, JPEG, PNG, JFIF, HEIF/HEIC, WebP`,
         );
         return;
       }
@@ -881,7 +881,7 @@ const ProductForm = () => {
   const hasRequiredOptionTypes = () => {
     const requiredOptionTypes = menuItemOptions.filter((optionType) => {
       const optionTypeData = optionTypes.find(
-        (type) => type.id === optionType.typeId
+        (type) => type.id === optionType.typeId,
       );
       return optionTypeData?.isSelectionRequired === true;
     });
@@ -927,7 +927,7 @@ const ProductForm = () => {
     ) {
       showErrorAlert(
         "وقت تحضير غير صحيح",
-        "وقت البدء يجب أن يكون أقل من وقت الانتهاء في وقت التحضير"
+        "وقت البدء يجب أن يكون أقل من وقت الانتهاء في وقت التحضير",
       );
       setIsLoading(false);
       return;
@@ -972,14 +972,14 @@ const ProductForm = () => {
         optionType.options.forEach((option, optionIndex) => {
           if (!option.name.trim()) {
             invalidOptions.push(
-              `اسم الإضافة ${optionIndex + 1} في النوع ${typeIndex + 1} مطلوب`
+              `اسم الإضافة ${optionIndex + 1} في النوع ${typeIndex + 1} مطلوب`,
             );
           }
           if (!option.price || parseFloat(option.price) < 0) {
             invalidOptions.push(
               `سعر الإضافة ${optionIndex + 1} في النوع ${
                 typeIndex + 1
-              } يجب أن يكون رقمًا صحيحًا`
+              } يجب أن يكون رقمًا صحيحًا`,
             );
           }
         });
@@ -988,7 +988,7 @@ const ProductForm = () => {
       if (invalidOptions.length > 0) {
         showErrorAlert(
           "خطأ في الإضافات",
-          invalidOptions.slice(0, 3).join("\n")
+          invalidOptions.slice(0, 3).join("\n"),
         );
         setIsLoading(false);
         return;
@@ -997,7 +997,7 @@ const ProductForm = () => {
       if (formData.IsPriceBasedOnRequest && !hasRequiredOptionTypes()) {
         showErrorAlert(
           "خطأ في الإعدادات",
-          "المنتج بسعر حسب الطلب يجب أن يحتوي على أنواع إضافات مطلوبة للاختيار"
+          "المنتج بسعر حسب الطلب يجب أن يحتوي على أنواع إضافات مطلوبة للاختيار",
         );
         setIsLoading(false);
         return;
@@ -1015,7 +1015,7 @@ const ProductForm = () => {
       } else {
         formDataToSend.append(
           "BasePrice",
-          parseFloat(formData.BasePrice).toString()
+          parseFloat(formData.BasePrice).toString(),
         );
       }
 
@@ -1030,14 +1030,14 @@ const ProductForm = () => {
       if (formData.PreparationTimeStart) {
         formDataToSend.append(
           "PreparationTimeStart",
-          formData.PreparationTimeStart.toString()
+          formData.PreparationTimeStart.toString(),
         );
       }
 
       if (formData.PreparationTimeEnd) {
         formDataToSend.append(
           "PreparationTimeEnd",
-          formData.PreparationTimeEnd.toString()
+          formData.PreparationTimeEnd.toString(),
         );
       }
 
@@ -1072,19 +1072,19 @@ const ProductForm = () => {
             formDataToSend.append(`${prefix}.name`, option.name);
             formDataToSend.append(
               `${prefix}.price`,
-              parseFloat(option.price).toString()
+              parseFloat(option.price).toString(),
             );
             formDataToSend.append(
               `${prefix}.isAvailableNow`,
-              option.isAvailableNow.toString()
+              option.isAvailableNow.toString(),
             );
             formDataToSend.append(
               `${prefix}.isActive`,
-              option.isActive.toString()
+              option.isActive.toString(),
             );
             formDataToSend.append(
               `${prefix}.typeId`,
-              optionType.typeId.toString()
+              optionType.typeId.toString(),
             );
             optionIndex++;
           });
@@ -1105,7 +1105,7 @@ const ProductForm = () => {
             console.error("Error converting old image URL to file:", error);
             showErrorAlert(
               "خطأ في الصورة",
-              "فشل في تحميل الصورة القديمة. يرجى إعادة رفع الصورة."
+              "فشل في تحميل الصورة القديمة. يرجى إعادة رفع الصورة.",
             );
             setIsLoading(false);
             return;
@@ -1123,7 +1123,7 @@ const ProductForm = () => {
           } else {
             showErrorAlert(
               "خطأ في الصورة",
-              "يرجى تحميل الصورة من الرابط أولاً أو استخدام صورة أخرى"
+              "يرجى تحميل الصورة من الرابط أولاً أو استخدام صورة أخرى",
             );
             setIsLoading(false);
             return;
@@ -1145,7 +1145,7 @@ const ProductForm = () => {
       if (response.status === 200 || response.status === 204) {
         showSuccessAlert(
           isEditing ? "تم تحديث المنتج!" : "تم إضافة المنتج!",
-          `${formData.Name} تم ${isEditing ? "تحديثه" : "إضافته"} بنجاح`
+          `${formData.Name} تم ${isEditing ? "تحديثه" : "إضافته"} بنجاح`,
         );
         navigate("/");
       }
@@ -1678,7 +1678,7 @@ const ProductForm = () => {
                               </label>
                               <div className="flex gap-2">
                                 <input
-                                  type="url"
+                                  type="text"
                                   value={imageUrl}
                                   onChange={(e) => setImageUrl(e.target.value)}
                                   placeholder="أدخل رابط الصورة"
@@ -1783,7 +1783,7 @@ const ProductForm = () => {
                     <div className="space-y-4 xs:space-y-5">
                       {menuItemOptions.map((optionType, typeIndex) => {
                         const optionTypeData = optionTypes.find(
-                          (type) => type.id === optionType.typeId
+                          (type) => type.id === optionType.typeId,
                         );
                         const isRequired = optionTypeData?.isSelectionRequired;
 
@@ -1829,7 +1829,7 @@ const ProductForm = () => {
                                     setOptionTypesDropdownOpen(
                                       optionTypesDropdownOpen === optionType.id
                                         ? null
-                                        : optionType.id
+                                        : optionType.id,
                                     )
                                   }
                                   className="w-full flex items-center justify-between border border-gray-300 bg-white rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-purple-500 transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
@@ -1838,7 +1838,7 @@ const ProductForm = () => {
                                     {optionType.typeId
                                       ? optionTypes.find(
                                           (type) =>
-                                            type.id === optionType.typeId
+                                            type.id === optionType.typeId,
                                         )?.name || "اختر النوع"
                                       : "اختر النوع"}
                                   </span>
@@ -1874,7 +1874,7 @@ const ProductForm = () => {
                                           updateMenuItemOption(
                                             optionType.id,
                                             "typeId",
-                                            type.id
+                                            type.id,
                                           );
                                           setOptionTypesDropdownOpen(null);
                                         }}
@@ -1920,7 +1920,7 @@ const ProductForm = () => {
                                           optionType.id,
                                           option.id,
                                           "name",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       className="w-full border border-gray-300 bg-white rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
@@ -1941,7 +1941,7 @@ const ProductForm = () => {
                                           optionType.id,
                                           option.id,
                                           "price",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       step="0.01"
@@ -1964,7 +1964,7 @@ const ProductForm = () => {
                                                 optionType.id,
                                                 option.id,
                                                 "isAvailableNow",
-                                                e.target.checked
+                                                e.target.checked,
                                               )
                                             }
                                             className="text-purple-600 focus:ring-purple-500"
@@ -1982,7 +1982,7 @@ const ProductForm = () => {
                                                 optionType.id,
                                                 option.id,
                                                 "isActive",
-                                                e.target.checked
+                                                e.target.checked,
                                               )
                                             }
                                             className="text-purple-600 focus:ring-purple-500"
@@ -1999,7 +1999,7 @@ const ProductForm = () => {
                                         onClick={() =>
                                           removeOptionFromType(
                                             optionType.id,
-                                            option.id
+                                            option.id,
                                           )
                                         }
                                         className="text-red-500 hover:text-red-700 transition-colors p-1"
@@ -2304,8 +2304,8 @@ const ProductForm = () => {
                     {isLoading
                       ? "جاري الحفظ..."
                       : isEditing
-                      ? "تحديث المنتج"
-                      : "حفظ المنتج"}
+                        ? "تحديث المنتج"
+                        : "حفظ المنتج"}
                   </motion.button>
                 </div>
               </form>
