@@ -1502,7 +1502,7 @@ export default function Addresses() {
                             darkMode ? "text-gray-300" : "text-gray-700"
                           } mb-1 sm:mb-2`}
                         >
-                          تفاصيل إضافية *
+                          تفاصيل العنوان *
                         </label>
                         <textarea
                           name="detailedDescription"
@@ -1515,7 +1515,7 @@ export default function Addresses() {
                               ? "border-gray-600 bg-gray-800 text-white"
                               : "border-gray-300 bg-white text-black"
                           } rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none`}
-                          placeholder="أي تفاصيل إضافية عن موقعك..."
+                          placeholder="مثال : بجوار مسجد الرحمة"
                         />
                       </div>
 
