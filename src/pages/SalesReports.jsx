@@ -1134,7 +1134,7 @@ const SalesReports = () => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تقرير المبيعات - New El-Zawy</title>
+<title>تقرير المبيعات - El-Zawy New</title>
 <style>
   @media print {
     @page { margin: 0; size: A4 portrait; }
@@ -1287,7 +1287,7 @@ const SalesReports = () => {
 <body>
 
 <div class="print-header">
-  <h1>تقرير المبيعات - New El-Zawy</h1>
+  <h1>تقرير المبيعات - El-Zawy New</h1>
   <p>نظام إدارة المطاعم</p>
 </div>
 
@@ -1447,7 +1447,7 @@ ${
     /\d/g,
     (d) => toArabicNumbers(d),
   )}</p>
-  <p>New El-Zawy © ${toArabicNumbers(new Date().getFullYear())}</p>
+  <p>El-Zawy New © ${toArabicNumbers(new Date().getFullYear())}</p>
 </div>
 
 </body>
