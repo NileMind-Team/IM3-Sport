@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,8 @@ import {
   FaClock,
   FaChevronDown,
   FaSpinner,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
@@ -368,6 +370,10 @@ export default function ItemOffersManagement() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  // eslint-disable-next-line no-unused-vars
+  const [pageSize, setPageSize] = useState(5);
 
   const selectedProductId = location.state?.selectedProductId || "";
   const selectedOfferId = location.state?.selectedOfferId || null;
@@ -470,10 +476,42 @@ export default function ItemOffersManagement() {
     }
   }, [selectedProductId]);
 
+  useEffect(() => {
+    if (isAdminOrRestaurantOrBranch) {
+      fetchOffers(branches);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize]);
+
+  const buildFiltersArray = () => {
+    const filtersArray = [];
+
+    if (searchTerm) {
+      filtersArray.push({
+        propertyName: "menuItem.name",
+        propertyValue: searchTerm,
+        range: false,
+      });
+    }
+
+    return filtersArray;
+  };
+
   const fetchOffers = async (branchesList = branches) => {
     try {
-      const response = await axiosInstance.get("/api/ItemOffers/GetAll");
-      const offersData = response.data;
+      const requestBody = {
+        pageNumber: currentPage,
+        pageSize: pageSize,
+        filters: buildFiltersArray(),
+      };
+
+      const response = await axiosInstance.post(
+        "/api/ItemOffers/GetAll",
+        requestBody,
+      );
+
+      const responseData = response.data;
+      const offersData = responseData.items || responseData.data || [];
 
       const offersWithDetails = offersData.map((offer) => {
         const adjustedStartDate = adjustTimeFromAPI(offer.startDate);
@@ -498,9 +536,16 @@ export default function ItemOffersManagement() {
 
       setOffers(offersWithDetails);
       setFilteredOffers(offersWithDetails);
+
+      setTotalPages(
+        responseData.totalPages ||
+          Math.ceil((responseData.totalCount || offersData.length) / pageSize),
+      );
     } catch (error) {
       console.error("خطأ في جلب العروض:", error);
       showMessage("error", "خطأ", "فشل في تحميل بيانات العروض");
+      setOffers([]);
+      setFilteredOffers([]);
     }
   };
 
@@ -532,32 +577,13 @@ export default function ItemOffersManagement() {
   };
 
   useEffect(() => {
-    let filtered = offers;
-
-    if (searchTerm) {
-      filtered = filtered.filter((offer) => {
-        if (offer.menuItem) {
-          const itemMatch =
-            offer.menuItem.name
-              ?.toLowerCase()
-              .includes(searchTerm.toLowerCase()) ||
-            (offer.menuItem.description &&
-              offer.menuItem.description
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase()));
-
-          const branchMatch = offer.branchNames.some((name) =>
-            name.toLowerCase().includes(searchTerm.toLowerCase()),
-          );
-
-          return itemMatch || branchMatch;
-        }
-        return false;
-      });
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    } else {
+      fetchOffers(branches);
     }
-
-    setFilteredOffers(filtered);
-  }, [searchTerm, offers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -671,6 +697,7 @@ export default function ItemOffersManagement() {
       }
 
       resetForm();
+      setCurrentPage(1);
       fetchOffers();
     } catch (err) {
       console.error("خطأ في حفظ العرض:", err);
@@ -731,6 +758,7 @@ export default function ItemOffersManagement() {
       if (result.isConfirmed) {
         try {
           await axiosInstance.delete(`/api/ItemOffers/Delete/${id}`);
+          setCurrentPage(1);
           fetchOffers();
           showMessage("success", "تم الحذف!", "تم حذف عرض العنصر.");
         } catch (err) {
@@ -815,6 +843,49 @@ export default function ItemOffersManagement() {
     );
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const getPaginationNumbers = () => {
+    const delta = 2;
+    const range = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      range.unshift("...");
+    }
+    if (currentPage + delta < totalPages - 1) {
+      range.push("...");
+    }
+
+    range.unshift(1);
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    return range;
+  };
+
   const getStatusColor = (offer) => {
     if (!offer.isEnabled)
       return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
@@ -896,7 +967,7 @@ export default function ItemOffersManagement() {
                 {offers.length} عرض
               </div>
               <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                إجمالاً
+                في الصفحة الحالية
               </div>
             </div>
           </motion.div>
@@ -1180,6 +1251,60 @@ export default function ItemOffersManagement() {
                     <span>إنشاء أول عرض</span>
                   </motion.button>
                 </motion.div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex flex-col items-center">
+                  <div className="flex items-center justify-center gap-1 sm:gap-2">
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className={`p-2 sm:p-3 rounded-xl ${
+                        currentPage === 1
+                          ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                      }`}
+                    >
+                      <FaChevronRight className="text-sm sm:text-base" />
+                    </button>
+
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      {getPaginationNumbers().map((pageNum, index) => (
+                        <React.Fragment key={index}>
+                          {pageNum === "..." ? (
+                            <span className="px-2 sm:px-3 py-1 sm:py-2 text-gray-500">
+                              ...
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`px-3 sm:px-4 py-1 sm:py-2 rounded-xl font-semibold ${
+                                currentPage === pageNum
+                                  ? "bg-gradient-to-r from-[#E41E26] to-[#E41E26] text-white shadow-lg"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`p-2 sm:p-3 rounded-xl ${
+                        currentPage === totalPages
+                          ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                      }`}
+                    >
+                      <FaChevronLeft className="text-sm sm:text-base" />
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
 
