@@ -22,6 +22,7 @@ import {
   FaSpinner,
   FaChevronLeft,
   FaChevronRight,
+  FaStar,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
@@ -350,6 +351,34 @@ const showMessage = (type, title, text, options = {}) => {
         toast.info(text, toastOptions);
     }
   }
+};
+
+const getStatusColor = (offer) => {
+  if (!offer.isEnabled)
+    return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800";
+  if (new Date(offer.endDate) < new Date())
+    return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600";
+  if (new Date(offer.startDate) > new Date())
+    return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800";
+  return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800";
+};
+
+const getStatusText = (offer) => {
+  if (!offer.isEnabled) return "غير نشط";
+  if (new Date(offer.endDate) < new Date()) return "منتهي";
+  if (new Date(offer.startDate) > new Date()) return "قادم";
+  return "نشط";
+};
+
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString("ar-EG", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 export default function ItemOffersManagement() {
@@ -886,34 +915,6 @@ export default function ItemOffersManagement() {
     return range;
   };
 
-  const getStatusColor = (offer) => {
-    if (!offer.isEnabled)
-      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-    if (new Date(offer.endDate) < new Date())
-      return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
-    if (new Date(offer.startDate) > new Date())
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-    return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  };
-
-  const getStatusText = (offer) => {
-    if (!offer.isEnabled) return "غير نشط";
-    if (new Date(offer.endDate) < new Date()) return "منتهي";
-    if (new Date(offer.startDate) > new Date()) return "قادم";
-    return "نشط";
-  };
-
-  const formatDateTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("ar-EG", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-4">
@@ -1018,48 +1019,73 @@ export default function ItemOffersManagement() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl p-4 sm:p-6 hover:shadow-2xl transition-all duration-300 dark:bg-gray-800/90 border border-gray-300"
+                    className={`bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl p-4 sm:p-5 lg:p-6 hover:shadow-2xl transition-all duration-300 dark:bg-gray-800/90 border border-gray-300 ${
+                      offer.isEnabled &&
+                      new Date(offer.startDate) <= new Date() &&
+                      new Date(offer.endDate) >= new Date()
+                        ? "border-green-300 dark:border-green-700"
+                        : "border-gray-300 dark:border-gray-600"
+                    }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-                          <div className="p-3 sm:p-4 bg-gradient-to-r from-[#fff5f5] to-[#ffe5e5] dark:from-gray-700 dark:to-gray-600 rounded-xl sm:rounded-2xl border border-[#E41E26]/30 dark:border-gray-500">
-                            {offer.isPercentage ? (
-                              <FaPercent className="text-[#E41E26] dark:text-[#E41E26] text-xl sm:text-2xl" />
-                            ) : (
-                              <FaMoneyBillWave className="text-[#E41E26] dark:text-[#E41E26] text-xl sm:text-2xl" />
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-bold text-gray-800 dark:text-gray-200 text-xl sm:text-2xl truncate">
-                                {offer.menuItem?.name ||
-                                  `عنصر #${offer.menuItemId}`}
-                              </h3>
-                              <span
-                                className={`px-3 py-1.5 rounded-full text-sm font-semibold ${getStatusColor(
-                                  offer,
-                                )} whitespace-nowrap`}
-                              >
-                                {getStatusText(offer)}
-                              </span>
+                        {/* Header with icon and status */}
+                        <div className="flex items-start justify-between mb-3 sm:mb-4">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                            <div
+                              className={`p-3 sm:p-4 bg-gradient-to-r from-[#fff5f5] to-[#ffe5e5] dark:from-gray-700 dark:to-gray-600 rounded-xl sm:rounded-2xl border border-[#E41E26]/30 dark:border-gray-500 flex-shrink-0`}
+                            >
+                              {offer.isPercentage ? (
+                                <FaPercent className="text-[#E41E26] dark:text-[#E41E26] text-xl sm:text-2xl" />
+                              ) : (
+                                <FaMoneyBillWave className="text-[#E41E26] dark:text-[#E41E26] text-xl sm:text-2xl" />
+                              )}
                             </div>
-                            {offer.menuItem?.description ? (
-                              <p className="text-gray-600 dark:text-gray-400 text-base mb-2">
-                                {offer.menuItem.description}
-                              </p>
-                            ) : (
-                              <p className="text-gray-400 dark:text-gray-500 text-base mb-2 italic">
-                                لا يوجد وصف
-                              </p>
-                            )}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <h3
+                                  className={`font-bold ${
+                                    offer.isEnabled
+                                      ? "text-gray-800 dark:text-gray-200"
+                                      : "text-gray-500 dark:text-gray-400"
+                                  } text-base sm:text-lg md:text-xl truncate`}
+                                >
+                                  {offer.menuItem?.name ||
+                                    `عنصر #${offer.menuItemId}`}
+                                </h3>
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs whitespace-nowrap inline-flex items-center gap-1 self-start sm:self-center ${getStatusColor(
+                                    offer,
+                                  )}`}
+                                >
+                                  {offer.isEnabled && (
+                                    <FaStar className="text-xs" />
+                                  )}
+                                  {getStatusText(offer)}
+                                </span>
+                              </div>
+                              {offer.menuItem?.description ? (
+                                <p
+                                  className={`${offer.isEnabled ? "text-gray-600 dark:text-gray-400" : "text-gray-400 dark:text-gray-500"} text-xs sm:text-sm truncate mt-1`}
+                                >
+                                  {offer.menuItem.description}
+                                </p>
+                              ) : (
+                                <p className="text-gray-400 dark:text-gray-500 text-xs sm:text-sm italic truncate mt-1">
+                                  لا يوجد وصف
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="space-y-4 mb-4">
+                        {/* Discount and Price Info - Full Width */}
+                        <div
+                          className={`mb-4 ${offer.isEnabled ? "opacity-100" : "opacity-75"}`}
+                        >
                           <div className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl border border-green-200 dark:border-green-700 p-4 sm:p-5">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4 flex-1">
                                 {offer.isPercentage ? (
                                   <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
                                     <FaPercent className="text-green-600 dark:text-green-400 text-2xl" />
@@ -1081,7 +1107,7 @@ export default function ItemOffersManagement() {
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-3 sm:gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4 flex-1">
                                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
                                   <FaHamburger className="text-blue-600 dark:text-blue-400 text-2xl" />
                                 </div>
@@ -1092,7 +1118,7 @@ export default function ItemOffersManagement() {
                                   <p className="font-bold text-blue-600 dark:text-blue-400 text-2xl">
                                     {offer.menuItem?.basePrice === 0 ? (
                                       <span className="text-[#E41E26] dark:text-[#E41E26] font-bold">
-                                        السعر حسب الطلب
+                                        حسب الطلب
                                       </span>
                                     ) : (
                                       `ج.م ${
@@ -1104,10 +1130,13 @@ export default function ItemOffersManagement() {
                               </div>
                             </div>
                           </div>
+                        </div>
 
+                        {/* Date Info - Full Width */}
+                        <div className="mb-4">
                           <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl border border-orange-200 dark:border-orange-700 p-4 sm:p-5">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4 flex-1">
                                 <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
                                   <FaCalendarAlt className="text-orange-600 dark:text-orange-400 text-2xl" />
                                 </div>
@@ -1121,7 +1150,7 @@ export default function ItemOffersManagement() {
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-3 sm:gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4 flex-1">
                                 <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
                                   <FaCalendarAlt className="text-purple-600 dark:text-purple-400 text-2xl" />
                                 </div>
@@ -1138,26 +1167,34 @@ export default function ItemOffersManagement() {
                           </div>
                         </div>
 
-                        <div className="mb-4">
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                              <FaStore className="text-blue-600 dark:text-blue-400 text-lg" />
+                        {/* Branches */}
+                        <div className="mb-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                              <FaStore className="text-blue-600 dark:text-blue-400 text-sm" />
                             </div>
-                            <p className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                               الفروع المطبق عليها:
                             </p>
                           </div>
                           {offer.branchNames && offer.branchNames.length > 0 ? (
-                            <div className="flex flex-wrap gap-3">
-                              {offer.branchNames.map((branchName, index) => (
-                                <span
-                                  key={index}
-                                  className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium flex items-center gap-2 shadow-md border border-white"
-                                >
-                                  <FaStore className="text-sm" />
-                                  {branchName}
+                            <div className="flex flex-wrap gap-2">
+                              {offer.branchNames
+                                .slice(0, 2)
+                                .map((branchName, index) => (
+                                  <span
+                                    key={index}
+                                    className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-xs font-medium flex items-center gap-1"
+                                  >
+                                    <FaStore className="text-xs" />
+                                    {branchName}
+                                  </span>
+                                ))}
+                              {offer.branchNames.length > 2 && (
+                                <span className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-xs font-medium">
+                                  +{offer.branchNames.length - 2}
                                 </span>
-                              ))}
+                              )}
                             </div>
                           ) : (
                             <div className="text-center py-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-300">
@@ -1169,16 +1206,16 @@ export default function ItemOffersManagement() {
                           )}
                         </div>
 
-                        <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                          <div className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-300">
-                            <FaClock className="text-gray-400 dark:text-gray-500" />
-                          </div>
+                        {/* Created At */}
+                        <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 text-xs mt-2">
+                          <FaClock className="text-xs" />
                           <span>
                             تم الإنشاء: {formatDateTime(offer.createdAt)}
                           </span>
                         </div>
                       </div>
 
+                      {/* Action Buttons */}
                       <div className="flex flex-col sm:flex-col lg:flex-row gap-2 sm:gap-3 justify-end sm:justify-start mt-4 sm:mt-0">
                         <motion.button
                           whileHover={{ scale: 1.05 }}
