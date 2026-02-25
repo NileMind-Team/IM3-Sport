@@ -26,7 +26,7 @@ export default function LoginForm({
       <div className="text-center mb-2">
         <h2 className="text-2xl font-bold text-[#E41E26]">مرحباً بعودتك</h2>
         <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm">
-          سجل الدخول إلى حسابك في ElZawy - New
+          سجل الدخول إلى حسابك في IM3 Sport
         </p>
       </div>
 

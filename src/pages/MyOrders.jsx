@@ -1292,10 +1292,10 @@ export default function MyOrders() {
   return (
     <>
       <Helmet>
-        <title>الزاوي نيو | El-Zawy New</title>
+        <title>IM3 Sport</title>
         <meta
           name="description"
-          content="الزاوي نيو، مطعم عصري يقدم أفضل المأكولات الشرقية والغربية وتجربة طعام فريدة، مع خدمة عالية الجودة."
+          content="IM3 Sport، متجر ملابس رياضية عصري يقدم أحدث صيحات الأزياء الرياضية بجودة عالية وتصميمات عصرية تمنحك الراحة والأداء المثالي طوال اليوم."
         />
       </Helmet>
       <div

@@ -294,10 +294,10 @@ const Branches = () => {
   return (
     <>
       <Helmet>
-        <title>الزاوي نيو | El-Zawy New</title>
+        <title>IM3 Sport</title>
         <meta
           name="description"
-          content="الزاوي نيو، مطعم عصري يقدم أفضل المأكولات الشرقية والغربية وتجربة طعام فريدة، مع خدمة عالية الجودة."
+          content="IM3 Sport، متجر ملابس رياضية عصري يقدم أحدث صيحات الأزياء الرياضية بجودة عالية وتصميمات عصرية تمنحك الراحة والأداء المثالي طوال اليوم."
         />
       </Helmet>
 
@@ -412,7 +412,7 @@ const Branches = () => {
                 transition={{ delay: 0.4 }}
                 className="text-white/80 text-xs sm:text-sm md:text-base px-2"
               >
-                اكتشف فروع ElZawy - New القريبة منك وتعرّف على تفاصيل كل فرع
+                اكتشف فروع IM3 Sport القريبة منك وتعرّف على تفاصيل كل فرع
                 وتقييمات العملاء
               </motion.p>
             </div>

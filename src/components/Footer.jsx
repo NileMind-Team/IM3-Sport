@@ -49,11 +49,11 @@ const Footer = () => {
               <div className="flex items-center gap-3">
                 <img
                   src={logo}
-                  alt="ElZawy - New"
+                  alt="IM3 Sport"
                   className="w-12 h-12 object-contain"
                 />
                 <span className="text-2xl font-bold bg-gradient-to-r from-[#E41E26] to-[#FFFFFF] bg-clip-text text-transparent">
-                  ElZawy - New
+                  IM3 Sport
                 </span>
               </div>
             </Link>
@@ -163,7 +163,7 @@ const Footer = () => {
                 className="text-gray-400 text-sm text-center flex flex-wrap items-center justify-center gap-2"
                 dir="rtl"
               >
-                © {currentYear} ElZawy - New. جميع الحقوق محفوظة.
+                © {currentYear} IM3 Sport. جميع الحقوق محفوظة.
                 <span>|</span>
                 <Link
                   to="/privacy-policy"

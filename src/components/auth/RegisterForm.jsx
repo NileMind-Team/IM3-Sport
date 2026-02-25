@@ -36,7 +36,7 @@ export default function RegisterForm({
   );
 
   const allFieldsFilled = Object.values(formData).every(
-    (val) => val.trim() !== ""
+    (val) => val.trim() !== "",
   );
   const allPasswordValid = Object.values(passwordValidations).every(Boolean);
   const isFormValid = allFieldsFilled && allPasswordValid;
@@ -53,7 +53,7 @@ export default function RegisterForm({
       <div className="text-center mb-2">
         <h2 className="text-2xl font-bold text-[#E41E26]">إنشاء حساب جديد</h2>
         <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm">
-          انضم إلى ElZawy - New وابدأ رحلتك
+          انضم إلى IM3 Sport وابدأ رحلتك
         </p>
       </div>
 

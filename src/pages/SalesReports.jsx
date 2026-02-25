@@ -1183,7 +1183,7 @@ const SalesReports = () => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تقرير المبيعات - El-Zawy New</title>
+<title>تقرير المبيعات - IM3 Sport</title>
 <style>
   @media print {
     @page { margin: 0; size: A4 portrait; }
@@ -1336,7 +1336,7 @@ const SalesReports = () => {
 <body>
 
 <div class="print-header">
-  <h1>تقرير المبيعات - El-Zawy New</h1>
+  <h1>تقرير المبيعات - IM3 Sport</h1>
   <p>نظام إدارة المطاعم</p>
 </div>
 
@@ -1496,7 +1496,7 @@ ${
     /\d/g,
     (d) => toArabicNumbers(d),
   )}</p>
-  <p>El-Zawy New © ${toArabicNumbers(new Date().getFullYear())}</p>
+  <p>IM3 Sport © ${toArabicNumbers(new Date().getFullYear())}</p>
 </div>
 
 </body>
@@ -1624,10 +1624,10 @@ ${
   return (
     <>
       <Helmet>
-        <title>الزاوي نيو | El-Zawy New</title>
+        <title>IM3 Sport</title>
         <meta
           name="description"
-          content="الزاوي نيو، مطعم عصري يقدم أفضل المأكولات الشرقية والغربية وتجربة طعام فريدة، مع خدمة عالية الجودة."
+          content="IM3 Sport، متجر ملابس رياضية عصري يقدم أحدث صيحات الأزياء الرياضية بجودة عالية وتصميمات عصرية تمنحك الراحة والأداء المثالي طوال اليوم."
         />
       </Helmet>
       <div

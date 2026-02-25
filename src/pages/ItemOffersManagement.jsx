@@ -992,10 +992,10 @@ export default function ItemOffersManagement() {
   return (
     <>
       <Helmet>
-        <title>الزاوي نيو | El-Zawy New</title>
+        <title>IM3 Sport</title>
         <meta
           name="description"
-          content="الزاوي نيو، مطعم عصري يقدم أفضل المأكولات الشرقية والغربية وتجربة طعام فريدة، مع خدمة عالية الجودة."
+          content="IM3 Sport، متجر ملابس رياضية عصري يقدم أحدث صيحات الأزياء الرياضية بجودة عالية وتصميمات عصرية تمنحك الراحة والأداء المثالي طوال اليوم."
         />
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">

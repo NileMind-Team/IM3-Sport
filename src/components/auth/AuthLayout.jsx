@@ -74,9 +74,7 @@ export default function AuthLayout({
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight text-right">
                   مرحباً بك في
                   <br />
-                  <span className="text-[#E41E26] block mt-2">
-                    ElZawy - New
-                  </span>
+                  <span className="text-[#E41E26] block mt-2">IM3 Sport</span>
                 </h1>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-right">
                   انضم إلى مجتمعنا واستمتع بأفضل الخدمات مع نظام أمان متكامل.

@@ -340,7 +340,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             <div className="relative">
               <img
                 src={darkMode ? logoDark : logo}
-                alt="ElZawy - New logo"
+                alt="IM3 Sport logo"
                 className="w-14 h-12 object-contain transition-transform duration-300 group-hover:scale-105"
               />
 
@@ -354,7 +354,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
               {/* Title and Icon for Medium+ Screens */}
               <div className="flex items-center gap-2">
                 <h1 className="hidden md:block text-xl lg:text-2xl font-bold text-[#E41E26] dark:text-[#E41E26] transition-all duration-300">
-                  ElZawy - New
+                  IM3 Sport
                 </h1>
 
                 {/* Home Icon for Medium+ Screens */}
@@ -461,7 +461,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                         >
                           انضم إلى{" "}
                           <span className="font-semibold text-gray-800 dark:text-gray-200">
-                            ElZawy - New
+                            IM3 Sport
                           </span>
                         </p>
                         <p
