@@ -608,7 +608,7 @@ export default function AuthPage() {
         ) : isProcessingGoogle ? (
           // Show only loading during Google processing
           <div className="flex flex-col items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26] dark:border-[#E41E26] mb-6"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#C28B46] dark:border-[#C28B46] mb-6"></div>
             <p className="text-gray-700 dark:text-gray-300 text-lg">
               جاري تسجيل الدخول باستخدام Google...
             </p>

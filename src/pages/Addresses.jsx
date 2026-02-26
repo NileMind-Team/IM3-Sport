@@ -194,7 +194,7 @@ const showAddressErrorAlert = (errorData) => {
       confirmButtonText: "حاول مرة أخرى",
       timer: 2500,
       showConfirmButton: false,
-      confirmButtonColor: "#E41E26",
+      confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
     });
   }
 };
@@ -224,7 +224,7 @@ const showAddressSuccessAlert = (message) => {
       icon: "success",
       showConfirmButton: false,
       timer: 2500,
-      confirmButtonColor: "#E41E26",
+      confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
     });
   }
 };
@@ -541,7 +541,7 @@ export default function Addresses() {
       text: "لن تتمكن من التراجع عن هذا!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#E41E26",
+      confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       cancelButtonColor: "#6B7280",
       confirmButtonText: "نعم، احذفه!",
       cancelButtonText: "إلغاء",
@@ -669,7 +669,7 @@ export default function Addresses() {
         text: "يرجى اختيار موقع من الخريطة أولاً",
         showConfirmButton: false,
         timer: 2000,
-        confirmButtonColor: "#E41E26",
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       });
     }
   };
@@ -704,10 +704,11 @@ export default function Addresses() {
         className={`min-h-screen flex items-center justify-center ${
           darkMode
             ? "dark bg-gray-900"
-            : "bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5]"
+            : "bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8]" // Updated: Background gradient with brown-gold tones
         } px-4`}
       >
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#C28B46]"></div>{" "}
+        {/* Updated: Border color */}
       </div>
     );
   }
@@ -725,12 +726,14 @@ export default function Addresses() {
         className={`min-h-screen ${
           darkMode
             ? "dark bg-gray-900"
-            : "bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5]"
+            : "bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8]" // Updated: Background gradient with brown-gold tones
         } px-3 sm:px-4 md:px-6 py-3 sm:py-6 relative font-sans overflow-hidden transition-colors duration-300`}
       >
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -left-10 sm:-left-20 -top-10 sm:-top-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#E41E26]/10 to-[#ffffff]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-          <div className="absolute -right-10 sm:-right-20 -bottom-10 sm:-bottom-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#ffffff]/10 to-[#E41E26]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+          <div className="absolute -left-10 sm:-left-20 -top-10 sm:-top-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#C28B46]/10 to-[#ffffff]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>{" "}
+          {/* Updated: Gradient color */}
+          <div className="absolute -right-10 sm:-right-20 -bottom-10 sm:-bottom-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#ffffff]/10 to-[#C28B46]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>{" "}
+          {/* Updated: Gradient color */}
         </div>
 
         <motion.button
@@ -745,8 +748,8 @@ export default function Addresses() {
           }}
           className={`fixed top-3 sm:top-4 left-3 sm:left-4 z-50 ${
             darkMode
-              ? "bg-gray-800/80 text-white border-gray-600 hover:bg-[#E41E26]"
-              : "bg-white/80 text-[#E41E26] border-[#E41E26] hover:bg-[#E41E26] hover:text-white"
+              ? "bg-gray-800/80 text-white border-gray-600 hover:bg-[#C28B46]" // Updated: Hover color
+              : "bg-white/80 text-[#C28B46] border-[#C28B46] hover:bg-[#C28B46] hover:text-white" // Updated: Text and border colors
           } backdrop-blur-md rounded-full p-2 sm:p-3 border shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl group`}
         >
           <FaArrowLeft
@@ -779,7 +782,8 @@ export default function Addresses() {
                   } flex items-center justify-between flex-shrink-0`}
                 >
                   <div className="flex items-center gap-3">
-                    <FaMap className="text-[#E41E26] text-xl" />
+                    <FaMap className="text-[#C28B46] text-xl" />{" "}
+                    {/* Updated: Icon color */}
                     <h3
                       className={`text-lg font-bold ${
                         darkMode ? "text-white" : "text-gray-800"
@@ -815,7 +819,8 @@ export default function Addresses() {
                     {!mapLoaded && (
                       <div className="flex items-center justify-center h-64 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-300">
                         <div className="text-center">
-                          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[#E41E26] mx-auto mb-4"></div>
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[#C28B46] mx-auto mb-4"></div>{" "}
+                          {/* Updated: Border color */}
                           <p
                             className={`text-sm ${
                               darkMode ? "text-gray-300" : "text-gray-600"
@@ -855,22 +860,22 @@ export default function Addresses() {
                       <div
                         className={`mt-4 p-4 rounded-lg border ${
                           darkMode
-                            ? "bg-green-900/20 border-green-800"
-                            : "bg-green-50 border-green-200"
+                            ? "bg-amber-900/20 border-amber-800" // Updated: Background color
+                            : "bg-amber-50 border-amber-200" // Updated: Background color
                         }`}
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                           <div className="flex-1">
                             <p
                               className={`text-sm font-medium ${
-                                darkMode ? "text-green-300" : "text-green-700"
+                                darkMode ? "text-amber-300" : "text-amber-700" // Updated: Text color
                               }`}
                             >
                               ✓ الموقع المختار
                             </p>
                             <p
                               className={`text-xs ${
-                                darkMode ? "text-green-400" : "text-green-600"
+                                darkMode ? "text-amber-400" : "text-amber-600" // Updated: Text color
                               }`}
                             >
                               خط العرض: {selectedLocation.lat.toFixed(6)} | خط
@@ -882,7 +887,7 @@ export default function Addresses() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={confirmLocation}
-                            className="bg-[#E41E26] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:shadow-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap flex-shrink-0 border border-white"
+                            className="bg-[#C28B46] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:shadow-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap flex-shrink-0 border border-white" // Updated: Button color
                           >
                             <FaCheck className="text-sm" />
                             تأكيد الموقع
@@ -907,11 +912,12 @@ export default function Addresses() {
               : "bg-white/90 border-white"
           } backdrop-blur-xl shadow-xl sm:shadow-2xl rounded-2xl sm:rounded-3xl border relative overflow-hidden transition-colors duration-300`}
         >
-          <div className="relative h-36 sm:h-40 md:h-44 lg:h-52 bg-[#E41E26] overflow-hidden border-b border-white">
+          <div className="relative h-36 sm:h-40 md:h-44 lg:h-52 bg-[#C28B46] overflow-hidden border-b border-white">
+            {" "}
+            {/* Updated: Background color */}
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="absolute -top-4 sm:-top-6 -right-4 sm:-right-6 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 bg-white/10 rounded-full"></div>
             <div className="absolute -bottom-4 sm:-bottom-6 -left-4 sm:-left-6 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-32 lg:h-32 bg-white/10 rounded-full"></div>
-
             <div className="relative z-10 h-full flex flex-col justify-end items-center text-center px-4 sm:px-6 pb-6 sm:pb-8 md:pb-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -949,7 +955,7 @@ export default function Addresses() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleAddNewAddress}
-                className="flex items-center gap-2 bg-[#E41E26] text-white px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 rounded-xl sm:rounded-2xl font-semibold shadow-2xl sm:shadow-3xl hover:shadow-4xl hover:shadow-[#E41E26]/50 transition-all duration-300 text-sm sm:text-base md:text-lg border-2 border-white whitespace-nowrap transform translate-y-2"
+                className="flex items-center gap-2 bg-[#C28B46] text-white px-4 sm:px-5 md:px-6 py-3 sm:py-3 md:py-4 rounded-xl sm:rounded-2xl font-semibold shadow-2xl sm:shadow-3xl hover:shadow-4xl hover:shadow-[#C28B46]/50 transition-all duration-300 text-sm sm:text-base md:text-lg border-2 border-white whitespace-nowrap transform translate-y-2" // Updated: Button color and shadow
               >
                 <FaPlus className="text-sm sm:text-base md:text-lg" />
                 <span>إضافة عنوان جديد</span>
@@ -980,10 +986,11 @@ export default function Addresses() {
                           : "bg-white/80 border-gray-200"
                       } backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 lg:p-6 border-2 transition-all duration-300 hover:shadow-lg cursor-pointer group ${
                         address.isDefaultLocation
-                          ? `border-[#E41E26] ${
+                          ? `border-[#C28B46] ${
+                              // Updated: Border color
                               darkMode
                                 ? "bg-gradient-to-r from-gray-800 to-gray-700"
-                                : "bg-gradient-to-r from-[#fff5f5] to-[#ffe5e5]"
+                                : "bg-gradient-to-r from-[#faf5e8] to-[#f5e9d8]" // Updated: Gradient colors
                             }`
                           : ""
                       }`}
@@ -996,7 +1003,8 @@ export default function Addresses() {
                               <div
                                 className={`p-1 sm:p-2 rounded-lg sm:rounded-xl bg-gradient-to-r ${getAddressTypeColor()} border border-gray-300 flex-shrink-0`}
                               >
-                                <FaMapMarkerAlt className="text-[#E41E26]" />
+                                <FaMapMarkerAlt className="text-[#C28B46]" />{" "}
+                                {/* Updated: Icon color */}
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1008,7 +1016,9 @@ export default function Addresses() {
                                     {address.city.name}
                                   </h3>
                                   {address.isDefaultLocation && (
-                                    <span className="bg-[#E41E26] text-white text-xs px-2 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1 self-start sm:self-center border border-white">
+                                    <span className="bg-[#C28B46] text-white text-xs px-2 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1 self-start sm:self-center border border-white">
+                                      {" "}
+                                      {/* Updated: Background color */}
                                       <FaStar className="text-xs" />
                                       افتراضي
                                     </span>
@@ -1033,10 +1043,10 @@ export default function Addresses() {
                               }}
                               className={`relative w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 cursor-pointer transition-all duration-200 flex items-center justify-center ml-2 flex-shrink-0 sm:hidden ${
                                 address.isDefaultLocation
-                                  ? "border-[#E41E26] bg-[#E41E26]"
+                                  ? "border-[#C28B46] bg-[#C28B46]" // Updated: Border and background color
                                   : darkMode
-                                    ? "border-gray-500 bg-gray-800 hover:border-[#E41E26] group-hover:border-[#E41E26]"
-                                    : "border-gray-300 bg-white hover:border-[#E41E26] group-hover:border-[#E41E26]"
+                                    ? "border-gray-500 bg-gray-800 hover:border-[#C28B46] group-hover:border-[#C28B46]" // Updated: Hover color
+                                    : "border-gray-300 bg-white hover:border-[#C28B46] group-hover:border-[#C28B46]" // Updated: Hover color
                               }`}
                             >
                               {address.isDefaultLocation && (
@@ -1156,10 +1166,10 @@ export default function Addresses() {
                             }}
                             className={`relative w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 cursor-pointer transition-all duration-200 items-center justify-center hidden sm:flex ${
                               address.isDefaultLocation
-                                ? "border-[#E41E26] bg-[#E41E26]"
+                                ? "border-[#C28B46] bg-[#C28B46]" // Updated: Border and background color
                                 : darkMode
-                                  ? "border-gray-500 bg-gray-800 hover:border-[#E41E26] group-hover:border-[#E41E26]"
-                                  : "border-gray-300 bg-white hover:border-[#E41E26] group-hover:border-[#E41E26]"
+                                  ? "border-gray-500 bg-gray-800 hover:border-[#C28B46] group-hover:border-[#C28B46]" // Updated: Hover color
+                                  : "border-gray-300 bg-white hover:border-[#C28B46] group-hover:border-[#C28B46]" // Updated: Hover color
                             }`}
                           >
                             {address.isDefaultLocation && (
@@ -1245,7 +1255,7 @@ export default function Addresses() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleAddNewAddress}
-                      className="flex items-center gap-2 bg-[#E41E26] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base mx-auto border border-white"
+                      className="flex items-center gap-2 bg-[#C28B46] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base mx-auto border border-white" // Updated: Button color
                     >
                       <FaPlus className="text-xs sm:text-sm" />
                       <span>أضف عنوانك الأول</span>
@@ -1282,8 +1292,8 @@ export default function Addresses() {
                           onClick={resetForm}
                           className={`${
                             darkMode
-                              ? "text-gray-400 hover:text-[#E41E26]"
-                              : "text-gray-500 hover:text-[#E41E26]"
+                              ? "text-gray-400 hover:text-[#C28B46]" // Updated: Hover color
+                              : "text-gray-500 hover:text-[#C28B46]" // Updated: Hover color
                           } transition-colors duration-200 flex-shrink-0 ml-2 border border-gray-300 p-1 rounded-full`}
                         >
                           <FaTimes size={16} className="sm:size-5" />
@@ -1308,12 +1318,13 @@ export default function Addresses() {
                               onClick={() => toggleDropdown("city")}
                               className={`w-full flex items-center justify-between border ${
                                 darkMode
-                                  ? "border-gray-600 bg-gray-800 text-gray-300 hover:border-[#E41E26]"
-                                  : "border-gray-300 bg-white text-gray-600 hover:border-[#E41E26]"
+                                  ? "border-gray-600 bg-gray-800 text-gray-300 hover:border-[#C28B46]" // Updated: Hover color
+                                  : "border-gray-300 bg-white text-gray-600 hover:border-[#C28B46]" // Updated: Hover color
                               } rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 transition-all group text-sm sm:text-base`}
                             >
                               <div className="flex items-center gap-3">
-                                <FaCity className="text-[#E41E26] text-sm" />
+                                <FaCity className="text-[#C28B46] text-sm" />{" "}
+                                {/* Updated: Icon color */}
                                 <span>
                                   {formData.cityId
                                     ? cities.find(
@@ -1329,7 +1340,8 @@ export default function Addresses() {
                                 }}
                                 transition={{ duration: 0.3 }}
                               >
-                                <FaChevronDown className="text-[#E41E26]" />
+                                <FaChevronDown className="text-[#C28B46]" />{" "}
+                                {/* Updated: Icon color */}
                               </motion.div>
                             </button>
                             <AnimatePresence>
@@ -1379,7 +1391,8 @@ export default function Addresses() {
                             رقم الهاتف *
                           </label>
                           <div className="relative group">
-                            <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                            <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-sm transition-all duration-300 group-focus-within:scale-110" />{" "}
+                            {/* Updated: Icon color */}
                             <input
                               type="tel"
                               name="phoneNumber"
@@ -1392,7 +1405,7 @@ export default function Addresses() {
                                 darkMode
                                   ? "border-gray-600 bg-gray-800 text-white"
                                   : "border-gray-300 bg-white text-black"
-                              } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base`}
+                              } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base`} // Updated: Focus ring color
                               placeholder="رقم الهاتف"
                             />
                           </div>
@@ -1407,7 +1420,8 @@ export default function Addresses() {
                             اسم الشارع *
                           </label>
                           <div className="relative group">
-                            <FaRoad className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                            <FaRoad className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-sm transition-all duration-300 group-focus-within:scale-110" />{" "}
+                            {/* Updated: Icon color */}
                             <input
                               type="text"
                               name="streetName"
@@ -1418,7 +1432,7 @@ export default function Addresses() {
                                 darkMode
                                   ? "border-gray-600 bg-gray-800 text-white"
                                   : "border-gray-300 bg-white text-black"
-                              } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base`}
+                              } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base`} // Updated: Focus ring color
                               placeholder="اسم الشارع"
                             />
                           </div>
@@ -1434,7 +1448,8 @@ export default function Addresses() {
                               رقم المبنى *
                             </label>
                             <div className="relative group">
-                              <FaBuildingIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                              <FaBuildingIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-sm transition-all duration-300 group-focus-within:scale-110" />{" "}
+                              {/* Updated: Icon color */}
                               <input
                                 type="text"
                                 inputMode="numeric"
@@ -1447,7 +1462,7 @@ export default function Addresses() {
                                   darkMode
                                     ? "border-gray-600 bg-gray-800 text-white"
                                     : "border-gray-300 bg-white text-black"
-                                } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base`}
+                                } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base`} // Updated: Focus ring color
                                 placeholder="رقم"
                               />
                             </div>
@@ -1461,7 +1476,8 @@ export default function Addresses() {
                               رقم الدور *
                             </label>
                             <div className="relative group">
-                              <FaTag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                              <FaTag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-sm transition-all duration-300 group-focus-within:scale-110" />{" "}
+                              {/* Updated: Icon color */}
                               <input
                                 type="text"
                                 inputMode="numeric"
@@ -1474,7 +1490,7 @@ export default function Addresses() {
                                   darkMode
                                     ? "border-gray-600 bg-gray-800 text-white"
                                     : "border-gray-300 bg-white text-black"
-                                } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base`}
+                                } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base`} // Updated: Focus ring color
                                 placeholder="الدور"
                               />
                             </div>
@@ -1488,7 +1504,8 @@ export default function Addresses() {
                               رقم الشقة *
                             </label>
                             <div className="relative group">
-                              <FaTag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                              <FaTag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-sm transition-all duration-300 group-focus-within:scale-110" />{" "}
+                              {/* Updated: Icon color */}
                               <input
                                 type="text"
                                 inputMode="numeric"
@@ -1501,7 +1518,7 @@ export default function Addresses() {
                                   darkMode
                                     ? "border-gray-600 bg-gray-800 text-white"
                                     : "border-gray-300 bg-white text-black"
-                                } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base`}
+                                } rounded-lg sm:rounded-xl pl-9 pr-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base`} // Updated: Focus ring color
                                 placeholder="الشقة"
                               />
                             </div>
@@ -1526,7 +1543,7 @@ export default function Addresses() {
                               darkMode
                                 ? "border-gray-600 bg-gray-800 text-white"
                                 : "border-gray-300 bg-white text-black"
-                            } rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none`}
+                            } rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none`} // Updated: Focus ring color
                             placeholder="مثال : بجوار مسجد الرحمة"
                           />
                         </div>
@@ -1545,7 +1562,7 @@ export default function Addresses() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={openMapModal}
-                            className="flex items-center gap-2 w-full mb-2 px-3 py-2.5 bg-[#E41E26] text-white rounded-lg hover:shadow-lg transition-all duration-200 text-sm font-semibold border border-white"
+                            className="flex items-center gap-2 w-full mb-2 px-3 py-2.5 bg-[#C28B46] text-white rounded-lg hover:shadow-lg transition-all duration-200 text-sm font-semibold border border-white" // Updated: Button color
                           >
                             <FaMap className="text-sm" />
                             <span>اختيار الموقع من الخريطة</span>
@@ -1569,7 +1586,7 @@ export default function Addresses() {
                           {formData.locationUrl && (
                             <p
                               className={`text-xs mt-1 ${
-                                darkMode ? "text-green-400" : "text-green-600"
+                                darkMode ? "text-amber-400" : "text-amber-600" // Updated: Text color
                               }`}
                             >
                               ✓ تم إضافة رابط الخريطة بنجاح
@@ -1583,7 +1600,7 @@ export default function Addresses() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={resetForm}
-                            className={`flex-1 py-2.5 sm:py-3 border-2 border-[#E41E26] text-[#E41E26] rounded-lg sm:rounded-xl font-semibold hover:bg-[#E41E26] hover:text-white transition-all duration-300 text-sm sm:text-base`}
+                            className={`flex-1 py-2.5 sm:py-3 border-2 border-[#C28B46] text-[#C28B46] rounded-lg sm:rounded-xl font-semibold hover:bg-[#C28B46] hover:text-white transition-all duration-300 text-sm sm:text-base`} // Updated: Border and text color, hover background
                           >
                             إلغاء
                           </motion.button>
@@ -1594,7 +1611,7 @@ export default function Addresses() {
                             disabled={!isFormValid()}
                             className={`flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base flex items-center justify-center gap-1 sm:gap-2 border ${
                               isFormValid()
-                                ? "bg-[#E41E26] text-white hover:shadow-xl hover:shadow-[#E41E26]/25 cursor-pointer border-white"
+                                ? "bg-[#C28B46] text-white hover:shadow-xl hover:shadow-[#C28B46]/25 cursor-pointer border-white" // Updated: Button color and shadow
                                 : "bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400"
                             }`}
                           >

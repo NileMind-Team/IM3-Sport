@@ -24,7 +24,7 @@ export default function EmptyState({ searchTerm, handleAddNewUser }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleAddNewUser}
-          className="flex items-center gap-2 bg-[#E41E26] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl hover:bg-[#d11c24] transition-all duration-300 text-sm sm:text-base mx-auto border border-[#E41E26]"
+          className="flex items-center gap-2 bg-[#C28B46] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl hover:bg-[#b07a3a] transition-all duration-300 text-sm sm:text-base mx-auto border border-[#C28B46]"
         >
           <FaPlus className="text-xs sm:text-sm" />
           <span>أضف أول مستخدم</span>

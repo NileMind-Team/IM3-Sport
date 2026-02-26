@@ -39,7 +39,7 @@ const Favorites = () => {
         confirmButtonText: options.confirmButtonText,
         showCancelButton: options.showCancelButton,
         cancelButtonText: options.cancelButtonText,
-        confirmButtonColor: "#E41E26", // Updated: Red color
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
         cancelButtonColor: "#6B7280",
         ...options.swalOptions,
       });
@@ -83,7 +83,7 @@ const Favorites = () => {
         text: text,
         timer: options.timer || 2000,
         showConfirmButton: false,
-        confirmButtonColor: "#E41E26", // Updated: Red color
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
         ...options.swalOptions,
       });
     }
@@ -251,7 +251,7 @@ const Favorites = () => {
         text: "يجب تسجيل الدخول لإضافة المنتجات إلى السلة",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#E41E26", // Updated: Red color
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
         cancelButtonColor: "#6B7280",
         confirmButtonText: "تسجيل الدخول",
         cancelButtonText: "إنشاء حساب جديد",
@@ -325,7 +325,7 @@ const Favorites = () => {
               confirmButtonText: "عرض التفاصيل",
               showCancelButton: true,
               cancelButtonText: "إلغاء",
-              confirmButtonColor: "#E41E26",
+              confirmButtonColor: "#C28B46",
               cancelButtonColor: "#6B7280",
             }).then((result) => {
               if (result.isConfirmed) {
@@ -396,7 +396,7 @@ const Favorites = () => {
   const formatPriceDisplayMobile = (product) => {
     if (product.isPriceBasedOnRequest) {
       return (
-        <div className="text-[#E41E26] font-bold text-sm">السعر حسب الطلب</div>
+        <div className="text-[#C28B46] font-bold text-sm">السعر حسب الطلب</div>
       );
     }
 
@@ -406,7 +406,7 @@ const Favorites = () => {
           <div className="text-gray-400 dark:text-gray-500 text-xs line-through">
             {product.price} ج.م
           </div>
-          <div className="text-[#E41E26] font-bold text-sm">
+          <div className="text-[#C28B46] font-bold text-sm">
             {product.finalPrice.toFixed(2)} ج.م
           </div>
         </>
@@ -414,7 +414,7 @@ const Favorites = () => {
     }
 
     return (
-      <div className="text-[#E41E26] font-bold text-sm">
+      <div className="text-[#C28B46] font-bold text-sm">
         {product.price} ج.م
       </div>
     );
@@ -423,7 +423,7 @@ const Favorites = () => {
   const formatPriceDisplay = (product) => {
     if (product.isPriceBasedOnRequest) {
       return (
-        <div className="text-[#E41E26] font-bold text-lg sm:text-xl">
+        <div className="text-[#C28B46] font-bold text-lg sm:text-xl">
           السعر حسب الطلب
         </div>
       );
@@ -435,7 +435,7 @@ const Favorites = () => {
           <div className="text-gray-400 dark:text-gray-500 text-sm line-through">
             {product.price} ج.م
           </div>
-          <div className="text-[#E41E26] font-bold text-lg sm:text-xl">
+          <div className="text-[#C28B46] font-bold text-lg sm:text-xl">
             {product.finalPrice.toFixed(2)} ج.م
           </div>
         </>
@@ -443,7 +443,7 @@ const Favorites = () => {
     }
 
     return (
-      <div className="text-[#E41E26] font-bold text-lg sm:text-xl">
+      <div className="text-[#C28B46] font-bold text-lg sm:text-xl">
         {product.price} ج.م
       </div>
     );
@@ -451,8 +451,8 @@ const Favorites = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-4">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-4">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#C28B46]"></div>
       </div>
     );
   }
@@ -466,10 +466,10 @@ const Favorites = () => {
           content="IM3 Sport، متجر ملابس رياضية عصري يقدم أحدث صيحات الأزياء الرياضية بجودة عالية وتصميمات عصرية تمنحك الراحة والأداء المثالي طوال اليوم."
         />
       </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-3 sm:px-4 md:px-6 py-3 sm:py-6 relative font-sans overflow-hidden transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-3 sm:px-4 md:px-6 py-3 sm:py-6 relative font-sans overflow-hidden transition-colors duration-300">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -left-10 sm:-left-20 -top-10 sm:-top-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-[#E41E26]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-          <div className="absolute -right-10 sm:-right-20 -bottom-10 sm:-bottom-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-[#E41E26]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+          <div className="absolute -left-10 sm:-left-20 -top-10 sm:-top-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-[#C28B46]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+          <div className="absolute -right-10 sm:-right-20 -bottom-10 sm:-bottom-20 w-40 h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-[#C28B46]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
         </div>
 
         <motion.div
@@ -478,7 +478,7 @@ const Favorites = () => {
           transition={{ duration: 0.6, type: "spring" }}
           className="max-w-7xl mx-auto bg-white/90 backdrop-blur-xl shadow-xl sm:shadow-2xl rounded-2xl sm:rounded-3xl border border-gray-300 relative overflow-hidden dark:bg-gray-800/90 dark:border-gray-600"
         >
-          <div className="relative h-36 sm:h-40 md:h-44 lg:h-52 bg-[#E41E26] overflow-hidden">
+          <div className="relative h-36 sm:h-40 md:h-44 lg:h-52 bg-[#C28B46] overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="absolute -top-4 sm:-top-6 -right-4 sm:-right-6 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 bg-white/10 rounded-full"></div>
             <div className="absolute -bottom-4 sm:-bottom-6 -left-4 sm:-left-6 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-32 lg:h-32 bg-white/10 rounded-full"></div>
@@ -517,7 +517,7 @@ const Favorites = () => {
                 className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-300 dark:bg-gray-700/80 dark:border-gray-600 my-6"
               >
                 <div className="max-w-md mx-auto">
-                  <div className="bg-[#E41E26] w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white">
+                  <div className="bg-[#C28B46] w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white">
                     <FaHeart className="text-white text-3xl" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
@@ -530,7 +530,7 @@ const Favorites = () => {
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleContinueShopping}
-                    className="bg-[#E41E26] text-white px-8 py-4 rounded-2xl font-bold hover:shadow-2xl hover:bg-[#d11c24] transition-all duration-300 flex items-center gap-3 mx-auto text-lg border border-[#E41E26]"
+                    className="bg-[#C28B46] text-white px-8 py-4 rounded-2xl font-bold hover:shadow-2xl hover:bg-[#b07a3a] transition-all duration-300 flex items-center gap-3 mx-auto text-lg border border-[#C28B46]"
                   >
                     <FaHome />
                     ابدأ التسوق الآن
@@ -571,7 +571,7 @@ const Favorites = () => {
                         animate={{ scale: 1 }}
                         className="absolute top-2 right-2 z-10"
                       >
-                        <div className="bg-[#E41E26] text-white px-3 py-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 border border-white">
+                        <div className="bg-[#C28B46] text-white px-3 py-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 border border-white">
                           <FaFire
                             className="text-white animate-pulse"
                             size={12}
@@ -599,7 +599,7 @@ const Favorites = () => {
 
                           <div className="flex-1 min-w-0">
                             <h3
-                              className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover:text-[#E41E26] transition-colors line-clamp-1 mb-2"
+                              className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover:text-[#C28B46] transition-colors line-clamp-1 mb-2"
                               dir={isArabic(product.name) ? "rtl" : "ltr"}
                             >
                               {product.name}
@@ -634,7 +634,7 @@ const Favorites = () => {
                               addingToCart === product.id
                                 ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white cursor-wait"
                                 : product.isActive
-                                  ? "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white"
+                                  ? "bg-gradient-to-r from-[#C28B46] to-[#C28B46] text-white"
                                   : "bg-gray-400 text-gray-200 cursor-not-allowed"
                             }`}
                           >
@@ -678,7 +678,7 @@ const Favorites = () => {
                                 product.name,
                               );
                             }}
-                            className="p-2.5 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center text-xs no-product-details text-[#E41E26] bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-700"
+                            className="p-2.5 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center text-xs no-product-details text-[#C28B46] bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 border border-amber-200 dark:border-amber-700"
                           >
                             <FaHeart size={16} />
                           </motion.button>
@@ -698,7 +698,7 @@ const Favorites = () => {
 
                       <div className="p-3 sm:p-4">
                         <h3
-                          className="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-2 group-hover:text-[#E41E26] transition-colors line-clamp-1"
+                          className="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-2 group-hover:text-[#C28B46] transition-colors line-clamp-1"
                           dir={isArabic(product.name) ? "rtl" : "ltr"}
                         >
                           {product.name}
@@ -724,7 +724,7 @@ const Favorites = () => {
                                 product.name,
                               );
                             }}
-                            className="p-2 sm:p-2.5 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center no-product-details text-[#E41E26] bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-700"
+                            className="p-2 sm:p-2.5 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center no-product-details text-[#C28B46] bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 border border-amber-200 dark:border-amber-700"
                           >
                             <FaHeart size={18} />
                           </motion.button>
@@ -742,7 +742,7 @@ const Favorites = () => {
                               addingToCart === product.id
                                 ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white cursor-wait"
                                 : product.isActive
-                                  ? "bg-gradient-to-r from-[#E41E26] to-[#FDB913] text-white"
+                                  ? "bg-gradient-to-r from-[#C28B46] to-[#C28B46] text-white"
                                   : "bg-gray-400 text-gray-200 cursor-not-allowed"
                             }`}
                           >
@@ -791,7 +791,7 @@ const Favorites = () => {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#E41E26] text-white rounded-full p-3 sm:p-4 shadow-2xl z-40 cursor-pointer hover:scale-110 transition-transform duration-200 no-product-details border-2 border-white ${
+          className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#C28B46] text-white rounded-full p-3 sm:p-4 shadow-2xl z-40 cursor-pointer hover:scale-110 transition-transform duration-200 no-product-details border-2 border-white ${
             cartItemsCount === 0 ? "opacity-70" : ""
           }`}
           onClick={() => navigate("/cart")}
@@ -799,7 +799,7 @@ const Favorites = () => {
           <div className="relative">
             <FaShoppingCart className="w-4 h-4 sm:w-6 sm:h-6" />
             {cartItemsCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-white text-[#E41E26] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold border border-[#E41E26]">
+              <span className="absolute -top-2 -right-2 bg-white text-[#C28B46] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold border border-[#C28B46]">
                 {cartItemsCount}
               </span>
             )}

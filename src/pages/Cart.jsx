@@ -603,7 +603,7 @@ export default function Cart() {
   const formatPriceDisplay = (product) => {
     if (product.isPriceBasedOnRequest) {
       return (
-        <div className="text-[#E41E26] font-bold text-base sm:text-lg">
+        <div className="text-[#C28B46] font-bold text-base sm:text-lg">
           السعر حسب الطلب
         </div>
       );
@@ -615,7 +615,7 @@ export default function Cart() {
           <span className="text-gray-500 dark:text-gray-400 text-sm line-through">
             {toArabicNumbers(product.price.toFixed(2))} ج.م
           </span>
-          <span className="text-[#E41E26] font-bold text-base sm:text-lg">
+          <span className="text-[#C28B46] font-bold text-base sm:text-lg">
             {toArabicNumbers(product.finalPrice.toFixed(2))} ج.م
           </span>
         </>
@@ -623,7 +623,7 @@ export default function Cart() {
     }
 
     return (
-      <div className="text-[#E41E26] font-bold text-base sm:text-lg">
+      <div className="text-[#C28B46] font-bold text-base sm:text-lg">
         {toArabicNumbers(product.price.toFixed(2))} ج.م
       </div>
     );
@@ -632,7 +632,7 @@ export default function Cart() {
   const formatPriceInModal = (product) => {
     if (product.basePrice === 0) {
       return (
-        <span className="text-base sm:text-xl font-bold text-[#E41E26]">
+        <span className="text-base sm:text-xl font-bold text-[#C28B46]">
           السعر حسب الطلب
         </span>
       );
@@ -654,7 +654,7 @@ export default function Cart() {
           <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm line-through">
             {toArabicNumbers(product.basePrice)} ج.م
           </span>
-          <span className="text-base sm:text-xl font-bold text-[#E41E26]">
+          <span className="text-base sm:text-xl font-bold text-[#C28B46]">
             {toArabicNumbers(priceAfterDiscount.toFixed(2))} ج.م
           </span>
         </>
@@ -662,7 +662,7 @@ export default function Cart() {
     }
 
     return (
-      <span className="text-base sm:text-xl font-bold text-[#E41E26]">
+      <span className="text-base sm:text-xl font-bold text-[#C28B46]">
         {toArabicNumbers(product.basePrice)} ج.م
       </span>
     );
@@ -697,7 +697,7 @@ export default function Cart() {
               </p>
               <button
                 onClick={handleAddAddress}
-                className="bg-[#E41E26] text-white px-4 py-2 rounded-lg font-semibold text-sm hover:shadow-lg transition-all flex items-center gap-2 border border-[#E41E26]"
+                className="bg-[#C28B46] text-white px-4 py-2 rounded-lg font-semibold text-sm hover:shadow-lg transition-all flex items-center gap-2 border border-[#C28B46]"
               >
                 <FaPlusCircle />
                 إضافة عنوان جديد
@@ -716,7 +716,7 @@ export default function Cart() {
           </label>
           <button
             onClick={openAddressesPage}
-            className="text-[#E41E26] text-sm font-semibold hover:underline flex items-center gap-1"
+            className="text-[#C28B46] text-sm font-semibold hover:underline flex items-center gap-1"
           >
             <FaExchangeAlt className="text-xs" />
             تغيير
@@ -730,7 +730,7 @@ export default function Cart() {
                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center 
                 ${
                   selectedAddress?.isDefaultLocation
-                    ? "bg-[#E41E26] border-[#E41E26]"
+                    ? "bg-[#C28B46] border-[#C28B46]"
                     : "border-gray-300 dark:border-gray-600"
                 }`}
               >
@@ -1139,7 +1139,7 @@ export default function Cart() {
       text: "هل أنت متأكد من إزالة هذا المنتج من سلة التسوق؟",
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#E41E26",
+      confirmButtonColor: "#C28B46",
       cancelButtonColor: "#6B7280",
       confirmButtonText: "نعم، قم بإزالته!",
       cancelButtonText: "إلغاء",
@@ -1534,8 +1534,8 @@ export default function Cart() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#C28B46]"></div>
       </div>
     );
   }
@@ -1549,7 +1549,7 @@ export default function Cart() {
           content="IM3 Sport، متجر ملابس رياضية عصري يقدم أحدث صيحات الأزياء الرياضية بجودة عالية وتصميمات عصرية تمنحك الراحة والأداء المثالي طوال اليوم."
         />
       </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-3 sm:px-4 py-4 sm:py-8 transition-colors duration-300">
         {/* Phone Input Modal */}
         {showPhoneInputModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[80] p-4">
@@ -1561,7 +1561,7 @@ export default function Cart() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <FaPhone className="text-[#E41E26] text-xl" />
+                  <FaPhone className="text-[#C28B46] text-xl" />
                   <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                     تحديث رقم الهاتف
                   </h3>
@@ -1590,7 +1590,7 @@ export default function Cart() {
                     value={newPhoneNumber}
                     onChange={(e) => setNewPhoneNumber(e.target.value)}
                     placeholder="أدخل رقم الهاتف"
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#E41E26] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#C28B46] focus:border-transparent"
                     dir="ltr"
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1609,7 +1609,7 @@ export default function Cart() {
                 <button
                   onClick={updatePhoneNumber}
                   disabled={loadingProfile || !newPhoneNumber.trim()}
-                  className="flex-1 py-3 bg-[#E41E26] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-[#E41E26]"
+                  className="flex-1 py-3 bg-[#C28B46] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-[#C28B46]"
                 >
                   {loadingProfile ? (
                     <>
@@ -1639,7 +1639,7 @@ export default function Cart() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <FaInfoCircle className="text-[#E41E26] text-xl" />
+                  <FaInfoCircle className="text-[#C28B46] text-xl" />
                   <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                     معلومات ناقصة
                   </h3>
@@ -1671,10 +1671,10 @@ export default function Cart() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={openPhoneInputModal}
-                    className="w-full p-4 bg-white dark:bg-gray-700 rounded-xl border-2 border-gray-300 hover:border-[#E41E26] transition-all duration-300 flex items-center justify-center gap-3"
+                    className="w-full p-4 bg-white dark:bg-gray-700 rounded-xl border-2 border-gray-300 hover:border-[#C28B46] transition-all duration-300 flex items-center justify-center gap-3"
                   >
                     <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                      <FaPhone className="text-[#E41E26] text-xl" />
+                      <FaPhone className="text-[#C28B46] text-xl" />
                     </div>
                     <div className="text-right">
                       <h4 className="font-bold text-gray-800 dark:text-white text-base">
@@ -1690,10 +1690,10 @@ export default function Cart() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleAddAddress}
-                    className="w-full p-4 bg-white dark:bg-gray-700 rounded-xl border-2 border-gray-300 hover:border-[#E41E26] transition-all duration-300 flex items-center justify-center gap-3"
+                    className="w-full p-4 bg-white dark:bg-gray-700 rounded-xl border-2 border-gray-300 hover:border-[#C28B46] transition-all duration-300 flex items-center justify-center gap-3"
                   >
                     <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                      <FaMapPin className="text-[#E41E26] text-xl" />
+                      <FaMapPin className="text-[#C28B46] text-xl" />
                     </div>
                     <div className="text-right">
                       <h4 className="font-bold text-gray-800 dark:text-white text-base">
@@ -1719,7 +1719,7 @@ export default function Cart() {
                     setShowMissingInfoModal(false);
                     navigate("/");
                   }}
-                  className="flex-1 py-3 bg-[#E41E26] text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 border border-[#E41E26]"
+                  className="flex-1 py-3 bg-[#C28B46] text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 border border-[#C28B46]"
                 >
                   مواصلة التسوق
                 </button>
@@ -1740,7 +1740,7 @@ export default function Cart() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <FaStickyNote className="text-[#E41E26] text-xl" />
+                  <FaStickyNote className="text-[#C28B46] text-xl" />
                   <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                     تعليمات إضافية
                   </h3>
@@ -1762,7 +1762,7 @@ export default function Cart() {
                   value={itemNotes}
                   onChange={(e) => setItemNotes(e.target.value)}
                   placeholder="اكتب تعليماتك هنا..."
-                  className="w-full h-40 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#E41E26] focus:border-transparent resize-none"
+                  className="w-full h-40 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#C28B46] focus:border-transparent resize-none"
                   dir="rtl"
                   maxLength={500}
                   autoFocus
@@ -1800,7 +1800,7 @@ export default function Cart() {
                 </button>
                 <button
                   onClick={handleSaveNotes}
-                  className="flex-1 py-3 bg-[#E41E26] text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 border border-[#E41E26]"
+                  className="flex-1 py-3 bg-[#C28B46] text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 border border-[#C28B46]"
                 >
                   <FaSave className="text-sm" />
                   حفظ
@@ -1854,7 +1854,7 @@ export default function Cart() {
                           productDetails.itemOffer,
                           selectedBranch.id,
                         ) && (
-                          <div className="bg-[#E41E26] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg font-bold shadow text-xs sm:text-sm flex items-center gap-1 border border-white">
+                          <div className="bg-[#C28B46] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg font-bold shadow text-xs sm:text-sm flex items-center gap-1 border border-white">
                             <span>خصم</span>
                             <span>
                               {toArabicNumbers(
@@ -1885,7 +1885,7 @@ export default function Cart() {
                 <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
                   {productDetails.calories && (
                     <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
-                      <FaFire className="text-[#E41E26] text-xs sm:text-sm" />
+                      <FaFire className="text-[#C28B46] text-xs sm:text-sm" />
                       {toArabicNumbers(productDetails.calories)} كالوري
                     </span>
                   )}
@@ -1964,7 +1964,7 @@ export default function Cart() {
                                   }
                                   className={`w-full p-2 rounded-md sm:rounded-lg border-2 transition-all duration-200 flex items-center justify-between ${
                                     isSelected
-                                      ? "border-[#E41E26] bg-red-50 dark:bg-red-900/20"
+                                      ? "border-[#C28B46] bg-amber-50 dark:bg-amber-900/20"
                                       : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-500"
                                   }`}
                                   dir="rtl"
@@ -1973,14 +1973,14 @@ export default function Cart() {
                                     <span
                                       className={`font-medium text-xs sm:text-sm ${
                                         isSelected
-                                          ? "text-[#E41E26]"
+                                          ? "text-[#C28B46]"
                                           : "text-gray-700 dark:text-gray-300"
                                       }`}
                                     >
                                       {option.name}
                                     </span>
                                     {isSelected && (
-                                      <FaCheck className="text-[#E41E26] text-xs" />
+                                      <FaCheck className="text-[#C28B46] text-xs" />
                                     )}
                                   </div>
 
@@ -2012,14 +2012,14 @@ export default function Cart() {
                     <div
                       className={`p-1.5 sm:p-2 rounded-full ${
                         itemNotes
-                          ? "bg-red-100 dark:bg-red-800/50"
+                          ? "bg-amber-100 dark:bg-amber-800/50"
                           : "bg-gray-100 dark:bg-gray-600"
                       }`}
                     >
                       <FaStickyNote
                         className={`text-lg sm:text-xl ${
                           itemNotes
-                            ? "text-[#E41E26]"
+                            ? "text-[#C28B46]"
                             : "text-gray-600 dark:text-gray-400"
                         }`}
                       />
@@ -2028,7 +2028,7 @@ export default function Cart() {
                       <h4
                         className={`font-semibold text-sm sm:text-base ${
                           itemNotes
-                            ? "text-[#E41E26]"
+                            ? "text-[#C28B46]"
                             : "text-gray-700 dark:text-gray-300"
                         }`}
                       >
@@ -2071,7 +2071,7 @@ export default function Cart() {
                           }
                           className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-gray-200"
                         >
-                          <FaMinus className="text-[#E41E26] text-xs" />
+                          <FaMinus className="text-[#C28B46] text-xs" />
                         </button>
                         <span className="font-bold text-gray-800 dark:text-white min-w-8 sm:min-w-10 text-center text-sm sm:text-base">
                           {toArabicNumbers(productQuantity)}
@@ -2080,11 +2080,11 @@ export default function Cart() {
                           onClick={() => setProductQuantity((prev) => prev + 1)}
                           className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-gray-200"
                         >
-                          <FaPlus className="text-[#E41E26] text-xs" />
+                          <FaPlus className="text-[#C28B46] text-xs" />
                         </button>
                       </div>
                     </div>
-                    <div className="text-base sm:text-lg lg:text-xl font-bold text-[#E41E26]">
+                    <div className="text-base sm:text-lg lg:text-xl font-bold text-[#C28B46]">
                       {toArabicNumbers(calculateProductTotalPrice().toFixed(2))}{" "}
                       ج.م
                     </div>
@@ -2103,7 +2103,7 @@ export default function Cart() {
                       whileTap={{ scale: 0.95 }}
                       onClick={updateCartItem}
                       disabled={updatingCart}
-                      className="flex-1 md:flex-none px-4 py-2 bg-[#E41E26] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-[#E41E26]"
+                      className="flex-1 md:flex-none px-4 py-2 bg-[#C28B46] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-[#C28B46]"
                     >
                       {updatingCart ? (
                         <>
@@ -2136,7 +2136,7 @@ export default function Cart() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate(-1)}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full p-2 sm:p-3 text-[#E41E26] dark:text-gray-300 hover:bg-[#E41E26] hover:text-white transition-all duration-300 shadow-lg border border-gray-300"
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full p-2 sm:p-3 text-[#C28B46] dark:text-gray-300 hover:bg-[#C28B46] hover:text-white transition-all duration-300 shadow-lg border border-gray-300"
               >
                 <FaArrowLeft size={18} className="sm:w-5 sm:h-5" />
               </motion.button>
@@ -2150,7 +2150,7 @@ export default function Cart() {
               </div>
             </div>
             <div className="text-right self-end sm:self-auto">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#E41E26]">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#C28B46]">
                 {cartItems.reduce((total, item) => total + item.quantity, 0)}{" "}
                 عناصر
               </div>
@@ -2170,7 +2170,7 @@ export default function Cart() {
               >
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                   <FaShoppingCart
-                    className="text-[#E41E26] sm:w-6 sm:h-6"
+                    className="text-[#C28B46] sm:w-6 sm:h-6"
                     size={18}
                   />
                   عناصر الطلب ({cartItems.length})
@@ -2189,7 +2189,7 @@ export default function Cart() {
                         </p>
                         <button
                           onClick={() => navigate("/")}
-                          className="bg-[#E41E26] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all text-sm sm:text-base border border-[#E41E26]"
+                          className="bg-[#C28B46] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all text-sm sm:text-base border border-[#C28B46]"
                         >
                           تصفح المنتجات
                         </button>
@@ -2216,7 +2216,7 @@ export default function Cart() {
                               {/* Badge for discount - only show if offer is valid for selected branch */}
                               {item.hasDiscount &&
                                 !item.isPriceBasedOnRequest && (
-                                  <div className="absolute -top-2 -right-2 bg-[#E41E26] text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg border border-white">
+                                  <div className="absolute -top-2 -right-2 bg-[#C28B46] text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg border border-white">
                                     خصم{" "}
                                     {toArabicNumbers(
                                       item.discountValue.toFixed(2),
@@ -2228,10 +2228,10 @@ export default function Cart() {
                             <div className="flex-1 min-w-0">
                               <div className="mb-1 sm:mb-2">
                                 <div className="flex items-center gap-2">
-                                  <h3 className="font-bold text-gray-800 dark:text-white text-base sm:text-lg group-hover:text-[#E41E26] transition-colors">
+                                  <h3 className="font-bold text-gray-800 dark:text-white text-base sm:text-lg group-hover:text-[#C28B46] transition-colors">
                                     {item.name}
                                   </h3>
-                                  <FaInfoCircle className="text-[#E41E26] opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  <FaInfoCircle className="text-[#C28B46] opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                               </div>
 
@@ -2247,7 +2247,7 @@ export default function Cart() {
                               {item.prepTime && (
                                 <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2">
                                   <FaClock
-                                    className="text-[#E41E26]"
+                                    className="text-[#C28B46]"
                                     size={12}
                                   />
                                   <span>{item.prepTime}</span>
@@ -2281,7 +2281,7 @@ export default function Cart() {
                                   e.stopPropagation();
                                   updateQuantity(item.id, item.quantity - 1);
                                 }}
-                                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#E41E26] border border-gray-200"
+                                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#C28B46] border border-gray-200"
                               >
                                 <FaMinus size={10} className="sm:w-3 sm:h-3" />
                               </button>
@@ -2293,7 +2293,7 @@ export default function Cart() {
                                   e.stopPropagation();
                                   updateQuantity(item.id, item.quantity + 1);
                                 }}
-                                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#E41E26] border border-gray-200"
+                                className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 text-[#C28B46] border border-gray-200"
                               >
                                 <FaPlus size={10} className="sm:w-3 sm:h-3" />
                               </button>
@@ -2345,7 +2345,7 @@ export default function Cart() {
               >
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                   <FaMapMarkerAlt
-                    className="text-[#E41E26] sm:w-6 sm:h-6"
+                    className="text-[#C28B46] sm:w-6 sm:h-6"
                     size={18}
                   />
                   خيارات {deliveryType === "delivery" ? "التوصيل" : "الاستلام"}
@@ -2358,7 +2358,7 @@ export default function Cart() {
                     <div
                       className={`p-4 bg-white dark:bg-gray-700 rounded-xl sm:rounded-2xl border-2 cursor-pointer hover:shadow-lg transition-all duration-300 ${
                         deliveryType === "delivery"
-                          ? "border-[#E41E26]"
+                          ? "border-[#C28B46]"
                           : "border-gray-300 dark:border-gray-600"
                       }`}
                       onClick={() => setDeliveryType("delivery")}
@@ -2367,7 +2367,7 @@ export default function Cart() {
                         <div
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center ${
                             deliveryType === "delivery"
-                              ? "bg-[#E41E26] border-[#E41E26]"
+                              ? "bg-[#C28B46] border-[#C28B46]"
                               : "border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -2383,14 +2383,14 @@ export default function Cart() {
                             توصيل الطلب إلى عنوانك
                           </div>
                         </div>
-                        <FaMapMarkerAlt className="text-[#E41E26] text-lg" />
+                        <FaMapMarkerAlt className="text-[#C28B46] text-lg" />
                       </div>
                     </div>
 
                     <div
                       className={`p-4 bg-white dark:bg-gray-700 rounded-xl sm:rounded-2xl border-2 cursor-pointer hover:shadow-lg transition-all duration-300 ${
                         deliveryType === "pickup"
-                          ? "border-[#E41E26]"
+                          ? "border-[#C28B46]"
                           : "border-gray-300 dark:border-gray-600"
                       }`}
                       onClick={() => setDeliveryType("pickup")}
@@ -2399,7 +2399,7 @@ export default function Cart() {
                         <div
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center ${
                             deliveryType === "pickup"
-                              ? "bg-[#E41E26] border-[#E41E26]"
+                              ? "bg-[#C28B46] border-[#C28B46]"
                               : "border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -2415,7 +2415,7 @@ export default function Cart() {
                             استلام الطلب من الفرع
                           </div>
                         </div>
-                        <FaStore className="text-[#E41E26] text-lg" />
+                        <FaStore className="text-[#C28B46] text-lg" />
                       </div>
                     </div>
                   </div>
@@ -2439,10 +2439,10 @@ export default function Cart() {
                             openDropdown === "branch" ? null : "branch",
                           )
                         }
-                        className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base cursor-pointer"
+                        className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base cursor-pointer"
                       >
                         <span className="flex items-center gap-2">
-                          <FaStore className="text-[#E41E26]" />
+                          <FaStore className="text-[#C28B46]" />
                           {selectedBranch ? selectedBranch.name : "اختر الفرع"}
                         </span>
                         <motion.div
@@ -2451,7 +2451,7 @@ export default function Cart() {
                           }}
                           transition={{ duration: 0.3 }}
                         >
-                          <FaChevronDown className="text-[#E41E26]" />
+                          <FaChevronDown className="text-[#C28B46]" />
                         </motion.div>
                       </button>
 
@@ -2505,10 +2505,10 @@ export default function Cart() {
                                 openDropdown === "area" ? null : "area",
                               )
                             }
-                            className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-sm sm:text-base cursor-pointer"
+                            className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-sm sm:text-base cursor-pointer"
                           >
                             <span className="flex items-center gap-2">
-                              <FaMapMarkerAlt className="text-[#E41E26]" />
+                              <FaMapMarkerAlt className="text-[#C28B46]" />
                               {selectedArea
                                 ? `${selectedArea.areaName} - ${selectedArea.fee} ج.م`
                                 : "اختر منطقة التوصيل"}
@@ -2519,7 +2519,7 @@ export default function Cart() {
                               }}
                               transition={{ duration: 0.3 }}
                             >
-                              <FaChevronDown className="text-[#E41E26]" />
+                              <FaChevronDown className="text-[#C28B46]" />
                             </motion.div>
                           </button>
 
@@ -2603,7 +2603,7 @@ export default function Cart() {
                     value={additionalNotes}
                     onChange={(e) => setAdditionalNotes(e.target.value)}
                     placeholder="أضف ملاحظات أو تعليمات خاصة للطلب الكامل..."
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#E41E26] focus:border-transparent resize-none h-32"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#C28B46] focus:border-transparent resize-none h-32"
                     dir="rtl"
                     maxLength={500}
                   />
@@ -2636,7 +2636,7 @@ export default function Cart() {
                 <div className="mb-4 sm:mb-6">
                   <div className="bg-white dark:bg-gray-700 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-300 dark:border-gray-600">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 bg-[#E41E26] rounded-full flex items-center justify-center border border-[#E41E26]">
+                      <div className="w-8 h-8 bg-[#C28B46] rounded-full flex items-center justify-center border border-[#C28B46]">
                         <FaUser className="text-white text-sm" />
                       </div>
                       <h4 className="font-bold text-gray-800 dark:text-white text-sm sm:text-base">
@@ -2664,11 +2664,11 @@ export default function Cart() {
                         </div>
                       ) : deliveryType === "delivery" &&
                         userAddresses.length === 0 ? (
-                        <div className="text-[#E41E26] text-sm">
+                        <div className="text-[#C28B46] text-sm">
                           يجب إضافة عنوان للتوصيل
                         </div>
                       ) : (
-                        <div className="text-[#E41E26] text-sm">
+                        <div className="text-[#C28B46] text-sm">
                           لم يتم اختيار عنوان التوصيل
                         </div>
                       )}
@@ -2709,7 +2709,7 @@ export default function Cart() {
                       <span className="font-bold text-gray-800 dark:text-white text-base sm:text-lg">
                         الإجمالي
                       </span>
-                      <span className="font-bold text-[#E41E26] text-lg sm:text-xl md:text-2xl">
+                      <span className="font-bold text-[#C28B46] text-lg sm:text-xl md:text-2xl">
                         {calculateTotal().toFixed(2)} ج.م
                       </span>
                     </div>
@@ -2761,7 +2761,7 @@ export default function Cart() {
                             <span className="text-gray-600 dark:text-gray-400">
                               رسوم التوصيل:
                             </span>
-                            <span className="font-semibold text-[#E41E26]">
+                            <span className="font-semibold text-[#C28B46]">
                               {getDeliveryFee().toFixed(2)} ج.م
                             </span>
                           </div>
@@ -2774,7 +2774,7 @@ export default function Cart() {
                             <span className="text-gray-600 dark:text-gray-400">
                               رسوم الاستلام:
                             </span>
-                            <span className="font-semibold text-[#E41E26]">
+                            <span className="font-semibold text-[#C28B46]">
                               {getDeliveryFee().toFixed(2)} ج.م
                             </span>
                           </div>
@@ -2805,7 +2805,7 @@ export default function Cart() {
                       userAddresses.length === 0) ||
                     (deliveryType === "delivery" && !selectedAddress)
                       ? "bg-gray-400 cursor-not-allowed text-white border-gray-400"
-                      : "bg-[#E41E26] text-white hover:shadow-xl border-[#E41E26]"
+                      : "bg-[#C28B46] text-white hover:shadow-xl border-[#C28B46]"
                   }`}
                 >
                   <FaLocationArrow className="text-sm" />
@@ -2817,7 +2817,7 @@ export default function Cart() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate("/")}
-                  className="w-full mt-3 sm:mt-4 border-2 border-[#E41E26] text-[#E41E26] py-2 sm:py-3 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base hover:bg-[#E41E26] hover:text-white transition-all duration-300"
+                  className="w-full mt-3 sm:mt-4 border-2 border-[#C28B46] text-[#C28B46] py-2 sm:py-3 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base hover:bg-[#C28B46] hover:text-white transition-all duration-300"
                 >
                   مواصلة التسوق
                 </motion.button>

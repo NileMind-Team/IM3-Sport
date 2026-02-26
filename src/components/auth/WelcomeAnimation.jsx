@@ -50,7 +50,7 @@ export default function WelcomeAnimation({ userName, userImage }) {
             className="max-w-md w-full mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700"
           >
             {/* Header with solid color background */}
-            <div className="bg-[#E41E26] p-6 text-center">
+            <div className="bg-[#C28B46] p-6 text-center">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -98,7 +98,7 @@ export default function WelcomeAnimation({ userName, userImage }) {
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.7, type: "spring" }}
                   >
-                    <FaCheckCircle className="text-[#E41E26]" size={24} />
+                    <FaCheckCircle className="text-[#C28B46]" size={24} />
                   </motion.div>
                 </div>
               </motion.div>
@@ -108,15 +108,15 @@ export default function WelcomeAnimation({ userName, userImage }) {
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
                 transition={{ delay: 0.9, duration: 2 }}
-                className="h-1 bg-gradient-to-r from-[#E41E26] to-[#E41E26]/70 rounded-full"
+                className="h-1 bg-gradient-to-r from-[#C28B46] to-[#C28B46]/70 rounded-full"
               />
             </div>
           </motion.div>
 
           {/* Subtle background pattern */}
           <div className="absolute inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-[#E41E26]/5 to-[#E41E26]/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-[#E41E26]/10 to-[#E41E26]/5 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-[#C28B46]/5 to-[#C28B46]/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-[#C28B46]/10 to-[#C28B46]/5 rounded-full blur-3xl"></div>
           </div>
         </motion.div>
       )}

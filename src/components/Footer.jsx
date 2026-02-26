@@ -15,26 +15,26 @@ const Footer = () => {
     {
       name: "فيسبوك",
       icon: <FaFacebookF />,
-      url: "https://www.facebook.com/ProstElzawy.New",
+      url: "https://www.facebook.com/profile.php?id=61580352808105",
       color: "hover:bg-blue-600",
     },
     {
       name: "واتساب",
       icon: <FaWhatsapp />,
-      url: "https://wa.me/201025256954",
+      url: "https://wa.me/201062485133",
       color: "hover:bg-green-600",
     },
   ];
 
   return (
     <footer
-      className="bg-gradient-to-br from-gray-900 via-gray-800 to-[#1a1a1a] text-white relative overflow-hidden border-t border-[#E41E26]"
+      className="bg-gradient-to-br from-gray-900 via-gray-800 to-[#1a1a1a] text-white relative overflow-hidden border-t border-[#C28B46]"
       dir="rtl"
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-r from-[#E41E26]/10 to-[#000000]/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-r from-[#000000]/10 to-[#E41E26]/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-gradient-to-r from-[#E41E26]/5 to-[#000000]/5 rounded-full blur-3xl"></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-r from-[#C28B46]/10 to-[#000000]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-r from-[#000000]/10 to-[#C28B46]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-gradient-to-r from-[#C28B46]/5 to-[#000000]/5 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
@@ -52,29 +52,27 @@ const Footer = () => {
                   alt="IM3 Sport"
                   className="w-12 h-12 object-contain"
                 />
-                <span className="text-2xl font-bold bg-gradient-to-r from-[#E41E26] to-[#FFFFFF] bg-clip-text text-transparent">
+                <span className="text-2xl font-bold bg-gradient-to-r from-[#C28B46] to-[#FFFFFF] bg-clip-text text-transparent">
                   IM3 Sport
                 </span>
               </div>
             </Link>
 
             <p className="text-gray-300 mb-6 leading-relaxed">
-              استمتع بتجربة طعام فريدة مع وصفاتنا الخاصة التي تمزج بين النكهة
-              الأصيلة والمذاق الشهي.
+              اكتشف أسلوبك الرياضي مع IM3، حيث نجمع بين التصميم العصري والخامات
+              المريحة لنمنحك أداءً مثالياً وإطلالة واثقة في كل وقت.
             </p>
 
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                <FaPhone className="text-[#E41E26] text-sm" />
+                <FaPhone className="text-[#C28B46] text-sm" />
                 <span className="text-sm" dir="ltr">
-                  +20 106 002 7648
+                  +20 106 248 5133
                 </span>
               </div>
               <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                <FaMapMarkerAlt className="text-[#E41E26] text-sm" />
-                <span className="text-sm">
-                  الفيوم الحواتم - امام موقف بني سويف
-                </span>
+                <FaMapMarkerAlt className="text-[#C28B46] text-sm" />
+                <span className="text-sm">الفيوم - المحمدية</span>
               </div>
             </div>
           </motion.div>
@@ -87,7 +85,7 @@ const Footer = () => {
           >
             <div className="text-center w-full">
               <h3 className="text-lg font-bold mb-4 flex items-center justify-center gap-2">
-                <FaClock className="text-[#E41E26]" />
+                <FaClock className="text-[#C28B46]" />
                 ساعات العمل
               </h3>
 
@@ -184,7 +182,7 @@ const Footer = () => {
                   href="https://wa.me/201062485133"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#E41E26] font-semibold hover:text-red-400 transition-colors duration-300"
+                  className="text-[#C28B46] font-semibold hover:text-[#b07a3a] transition-colors duration-300"
                 >
                   شركه TripleS للبرمجيات
                 </a>
@@ -204,7 +202,7 @@ const Footer = () => {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#E41E26]"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#C28B46]"></div>
     </footer>
   );
 };

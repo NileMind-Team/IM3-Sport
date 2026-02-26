@@ -179,7 +179,7 @@ const ProductForm = () => {
         confirmButtonText: "حاول مرة أخرى",
         timer: 2500,
         showConfirmButton: false,
-        confirmButtonColor: "#E41E26",
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       });
     }
   };
@@ -209,6 +209,7 @@ const ProductForm = () => {
         icon: "success",
         showConfirmButton: false,
         timer: 2500,
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       });
     }
   };
@@ -219,7 +220,7 @@ const ProductForm = () => {
         icon: "error",
         title: "رابط غير صالح",
         text: "الرجاء إدخال رابط صحيح للصورة",
-        confirmButtonColor: "#E41E26",
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       });
       return null;
     }
@@ -533,7 +534,7 @@ const ProductForm = () => {
       text: "لن تتمكن من التراجع عن هذا الإجراء!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#E41E26",
+      confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       cancelButtonColor: "#6B7280",
       confirmButtonText: "نعم، احذفه!",
       cancelButtonText: "إلغاء",
@@ -852,7 +853,7 @@ const ProductForm = () => {
         icon: "error",
         title: "رابط فارغ",
         text: "الرجاء إدخال رابط الصورة أولاً",
-        confirmButtonColor: "#E41E26",
+        confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
       });
       return;
     }
@@ -1160,8 +1161,8 @@ const ProductForm = () => {
 
   if (isLoadingProduct) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#C28B46]"></div>
       </div>
     );
   }
@@ -1176,12 +1177,12 @@ const ProductForm = () => {
         />
       </Helmet>
       <div
-        className={`min-h-screen bg-gradient-to-br from-white via-[#fff5f5] to-[#ffe5e5] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-2 xs:px-3 sm:px-4 md:px-6 py-2 xs:py-3 sm:py-6 relative font-sans overflow-hidden transition-colors duration-300`}
+        className={`min-h-screen bg-gradient-to-br from-white via-[#faf5e8] to-[#f5e9d8] dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 px-2 xs:px-3 sm:px-4 md:px-6 py-2 xs:py-3 sm:py-6 relative font-sans overflow-hidden transition-colors duration-300`}
         dir="rtl"
       >
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -left-8 xs:-left-10 sm:-left-20 -top-8 xs:-top-10 sm:-top-20 w-32 h-32 xs:w-40 xs:h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#E41E26]/10 to-[#E41E26]/05 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-          <div className="absolute -right-8 xs:-right-10 sm:-right-20 -bottom-8 xs:-bottom-10 sm:-bottom-20 w-32 h-32 xs:w-40 xs:h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#E41E26]/05 to-[#E41E26]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+          <div className="absolute -left-8 xs:-left-10 sm:-left-20 -top-8 xs:-top-10 sm:-top-20 w-32 h-32 xs:w-40 xs:h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#C28B46]/10 to-[#C28B46]/05 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+          <div className="absolute -right-8 xs:-right-10 sm:-right-20 -bottom-8 xs:-bottom-10 sm:-bottom-20 w-32 h-32 xs:w-40 xs:h-40 sm:w-60 sm:h-60 md:w-80 md:h-80 bg-gradient-to-r from-[#C28B46]/05 to-[#C28B46]/10 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
         </div>
 
         <motion.div
@@ -1190,7 +1191,7 @@ const ProductForm = () => {
           transition={{ duration: 0.6, type: "spring" }}
           className="max-w-6xl xl:max-w-5xl mx-auto bg-white/90 backdrop-blur-xl shadow-lg xs:shadow-xl sm:shadow-2xl rounded-xl xs:rounded-2xl sm:rounded-3xl border border-gray-200 relative overflow-hidden dark:bg-gray-800/90 dark:border-gray-700"
         >
-          <div className="relative h-28 xs:h-32 sm:h-40 md:h-44 lg:h-52 bg-[#E41E26] overflow-hidden">
+          <div className="relative h-28 xs:h-32 sm:h-40 md:h-44 lg:h-52 bg-[#C28B46] overflow-hidden">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="absolute -top-3 xs:-top-4 sm:-top-6 -right-3 xs:-right-4 sm:-right-6 w-12 h-12 xs:w-16 xs:h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 bg-white/10 rounded-full"></div>
             <div className="absolute -bottom-3 xs:-bottom-4 sm:-bottom-6 -left-3 xs:-left-4 sm:-left-6 w-10 h-10 xs:w-12 xs:h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-32 lg:h-32 bg-white/10 rounded-full"></div>
@@ -1199,7 +1200,7 @@ const ProductForm = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={() => navigate(-1)}
-              className="absolute top-2 xs:top-3 sm:top-6 left-2 xs:left-3 sm:left-6 z-50 bg-white/80 backdrop-blur-md hover:bg-[#E41E26] hover:text-white rounded-full p-1.5 xs:p-2 sm:p-3 text-[#E41E26] border border-[#E41E26] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl group dark:bg-gray-800/80 dark:text-gray-200 dark:hover:bg-[#E41E26]"
+              className="absolute top-2 xs:top-3 sm:top-6 left-2 xs:left-3 sm:left-6 z-50 bg-white/80 backdrop-blur-md hover:bg-[#C28B46] hover:text-white rounded-full p-1.5 xs:p-2 sm:p-3 text-[#C28B46] border border-[#C28B46] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl group dark:bg-gray-800/80 dark:text-gray-200 dark:hover:bg-[#C28B46]"
             >
               <FaArrowLeft
                 size={12}
@@ -1258,7 +1259,7 @@ const ProductForm = () => {
                           name="Name"
                           value={formData.Name}
                           onChange={handleInputChange}
-                          className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                          className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                           placeholder="اسم المنتج"
                           required
                         />
@@ -1290,7 +1291,7 @@ const ProductForm = () => {
                                   }
                                   className={`flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2 p-1.5 xs:p-2 sm:p-3 rounded-lg border-2 transition-all duration-200 ${
                                     formData.CategoryId === category.id
-                                      ? "border-[#E41E26] bg-white text-[#E41E26] dark:bg-gray-600"
+                                      ? "border-[#C28B46] bg-white text-[#C28B46] dark:bg-gray-600"
                                       : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                                   }`}
                                 >
@@ -1316,7 +1317,7 @@ const ProductForm = () => {
                               onClick={() => handlePriceTypeChange("fixed")}
                               className={`flex items-center justify-center gap-1.5 xs:gap-2 p-2 xs:p-3 rounded-lg border-2 transition-all duration-200 ${
                                 !formData.IsPriceBasedOnRequest
-                                  ? "border-[#E41E26] bg-white text-[#E41E26] shadow-md dark:bg-gray-600"
+                                  ? "border-[#C28B46] bg-white text-[#C28B46] shadow-md dark:bg-gray-600"
                                   : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                               }`}
                             >
@@ -1333,7 +1334,7 @@ const ProductForm = () => {
                               onClick={() => handlePriceTypeChange("request")}
                               className={`flex items-center justify-center gap-1.5 xs:gap-2 p-2 xs:p-3 rounded-lg border-2 transition-all duration-200 ${
                                 formData.IsPriceBasedOnRequest
-                                  ? "border-[#E41E26] bg-white text-[#E41E26] shadow-md dark:bg-gray-600"
+                                  ? "border-[#C28B46] bg-white text-[#C28B46] shadow-md dark:bg-gray-600"
                                   : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                               }`}
                             >
@@ -1358,7 +1359,7 @@ const ProductForm = () => {
                               step="0.01"
                               min="0.01"
                               onWheel={(e) => e.target.blur()}
-                              className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                              className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                               placeholder="0.00"
                               required={!formData.IsPriceBasedOnRequest}
                             />
@@ -1403,7 +1404,7 @@ const ProductForm = () => {
                           السعرات الحرارية
                         </label>
                         <div className="relative group">
-                          <FaFire className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-sm transition-all duration-300 group-focus-within:scale-110" />
+                          <FaFire className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-sm transition-all duration-300 group-focus-within:scale-110" />
                           <input
                             type="number"
                             name="Calories"
@@ -1411,7 +1412,7 @@ const ProductForm = () => {
                             onChange={handleNumberInputChange}
                             min="0"
                             onWheel={(e) => e.target.blur()}
-                            className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white pr-10"
+                            className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white pr-10"
                             placeholder="عدد السعرات الحرارية"
                           />
                         </div>
@@ -1423,7 +1424,7 @@ const ProductForm = () => {
                         </label>
                         <div className="grid grid-cols-2 gap-2 xs:gap-3">
                           <div className="relative group">
-                            <FaClock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-xs transition-all duration-300 group-focus-within:scale-110" />
+                            <FaClock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-xs transition-all duration-300 group-focus-within:scale-110" />
                             <input
                               type="number"
                               name="PreparationTimeStart"
@@ -1431,12 +1432,12 @@ const ProductForm = () => {
                               onChange={handlePreparationTimeChange}
                               min="0"
                               onWheel={(e) => e.target.blur()}
-                              className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white pr-8"
+                              className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white pr-8"
                               placeholder="من"
                             />
                           </div>
                           <div className="relative group">
-                            <FaClock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#E41E26] text-xs transition-all duration-300 group-focus-within:scale-110" />
+                            <FaClock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#C28B46] text-xs transition-all duration-300 group-focus-within:scale-110" />
                             <input
                               type="number"
                               name="PreparationTimeEnd"
@@ -1444,7 +1445,7 @@ const ProductForm = () => {
                               onChange={handlePreparationTimeChange}
                               min="0"
                               onWheel={(e) => e.target.blur()}
-                              className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white pr-8"
+                              className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white pr-8"
                               placeholder="إلى"
                             />
                           </div>
@@ -1465,7 +1466,7 @@ const ProductForm = () => {
                           الحالة *
                         </label>
                         <div className="flex gap-3 bg-gray-50/80 dark:bg-gray-600/80 rounded-lg p-2 xs:p-3 border border-gray-300 dark:border-gray-500">
-                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#E41E26]/30">
+                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#C28B46]/30">
                             <div className="relative">
                               <input
                                 type="radio"
@@ -1480,7 +1481,7 @@ const ProductForm = () => {
                               <div
                                 className={`w-4 h-4 xs:w-5 xs:h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                   formData.IsActive === true
-                                    ? "border-[#E41E26] bg-[#E41E26]"
+                                    ? "border-[#C28B46] bg-[#C28B46]"
                                     : "border-gray-400 bg-white dark:bg-gray-500"
                                 }`}
                               >
@@ -1493,7 +1494,7 @@ const ProductForm = () => {
                               نشط
                             </span>
                           </label>
-                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#E41E26]/30">
+                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#C28B46]/30">
                             <div className="relative">
                               <input
                                 type="radio"
@@ -1508,7 +1509,7 @@ const ProductForm = () => {
                               <div
                                 className={`w-4 h-4 xs:w-5 xs:h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                   formData.IsActive === false
-                                    ? "border-[#E41E26] bg-[#E41E26]"
+                                    ? "border-[#C28B46] bg-[#C28B46]"
                                     : "border-gray-400 bg-white dark:bg-gray-500"
                                 }`}
                               >
@@ -1530,7 +1531,7 @@ const ProductForm = () => {
                           عرض في السلايدر
                         </label>
                         <div className="flex gap-3 bg-gray-50/80 dark:bg-gray-600/80 rounded-lg p-2 xs:p-3 border border-gray-300 dark:border-gray-500">
-                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#E41E26]/30">
+                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#C28B46]/30">
                             <div className="relative">
                               <input
                                 type="radio"
@@ -1547,7 +1548,7 @@ const ProductForm = () => {
                               <div
                                 className={`w-4 h-4 xs:w-5 xs:h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                   formData.ShowInSlider === true
-                                    ? "border-[#E41E26] bg-[#E41E26]"
+                                    ? "border-[#C28B46] bg-[#C28B46]"
                                     : "border-gray-400 bg-white dark:bg-gray-500"
                                 }`}
                               >
@@ -1557,13 +1558,13 @@ const ProductForm = () => {
                               </div>
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <FaSlidersH className="text-[#E41E26] text-xs xs:text-sm" />
+                              <FaSlidersH className="text-[#C28B46] text-xs xs:text-sm" />
                               <span className="text-xs xs:text-sm font-medium text-gray-700 dark:text-gray-300">
                                 عرض
                               </span>
                             </div>
                           </label>
-                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#E41E26]/30">
+                          <label className="flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 xs:p-3 rounded-lg transition-all duration-200 border-2 border-transparent hover:border-[#C28B46]/30">
                             <div className="relative">
                               <input
                                 type="radio"
@@ -1580,7 +1581,7 @@ const ProductForm = () => {
                               <div
                                 className={`w-4 h-4 xs:w-5 xs:h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                   formData.ShowInSlider === false
-                                    ? "border-[#E41E26] bg-[#E41E26]"
+                                    ? "border-[#C28B46] bg-[#C28B46]"
                                     : "border-gray-400 bg-white dark:bg-gray-500"
                                 }`}
                               >
@@ -1615,7 +1616,7 @@ const ProductForm = () => {
                             onClick={() => setImageInputMode("upload")}
                             className={`flex-1 flex items-center justify-center gap-1.5 xs:gap-2 p-2 xs:p-2.5 rounded-lg border-2 transition-all duration-200 ${
                               imageInputMode === "upload"
-                                ? "border-[#E41E26] bg-white text-[#E41E26] shadow-md dark:bg-gray-600"
+                                ? "border-[#C28B46] bg-white text-[#C28B46] shadow-md dark:bg-gray-600"
                                 : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                             }`}
                           >
@@ -1631,7 +1632,7 @@ const ProductForm = () => {
                             onClick={() => setImageInputMode("url")}
                             className={`flex-1 flex items-center justify-center gap-1.5 xs:gap-2 p-2 xs:p-2.5 rounded-lg border-2 transition-all duration-200 ${
                               imageInputMode === "url"
-                                ? "border-[#E41E26] bg-white text-[#E41E26] shadow-md dark:bg-gray-600"
+                                ? "border-[#C28B46] bg-white text-[#C28B46] shadow-md dark:bg-gray-600"
                                 : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                             }`}
                           >
@@ -1644,7 +1645,7 @@ const ProductForm = () => {
 
                         {imageInputMode === "upload" ? (
                           <div
-                            className="border-2 border-dashed border-gray-300 rounded-lg p-2 xs:p-3 sm:p-4 text-center hover:border-[#E41E26] transition-colors duration-200 cursor-pointer dark:border-gray-600"
+                            className="border-2 border-dashed border-gray-300 rounded-lg p-2 xs:p-3 sm:p-4 text-center hover:border-[#C28B46] transition-colors duration-200 cursor-pointer dark:border-gray-600"
                             onClick={handleUploadAreaClick}
                           >
                             {imagePreview ? (
@@ -1701,7 +1702,7 @@ const ProductForm = () => {
                                       setImageUrl(e.target.value)
                                     }
                                     placeholder="أدخل رابط الصورة"
-                                    className="flex-1 border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    className="flex-1 border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                   />
                                   <motion.button
                                     type="button"
@@ -1713,7 +1714,7 @@ const ProductForm = () => {
                                     }
                                     className={`px-3 xs:px-4 py-2 xs:py-2.5 rounded-lg font-semibold transition-all duration-300 flex items-center gap-1.5 xs:gap-2 text-xs xs:text-sm ${
                                       imageUrl.trim() && !isDownloadingImage
-                                        ? "bg-[#E41E26] text-white hover:shadow-xl hover:shadow-[#E41E26]/25 cursor-pointer"
+                                        ? "bg-[#C28B46] text-white hover:shadow-xl hover:shadow-[#C28B46]/25 cursor-pointer"
                                         : "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400"
                                     }`}
                                   >
@@ -1774,7 +1775,7 @@ const ProductForm = () => {
                           value={formData.Description}
                           onChange={handleInputChange}
                           rows="3"
-                          className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 resize-none text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                          className="w-full border border-gray-300 bg-white text-black rounded-lg px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 resize-none text-xs sm:text-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                           placeholder="قم بوصف المنتج بالتفصيل..."
                           required
                         />
@@ -2077,9 +2078,9 @@ const ProductForm = () => {
                   )}
 
                   {/*
-                <div className="bg-gradient-to-r from-[#fff5f5] to-[#ffe5e5] rounded-lg xs:rounded-xl sm:rounded-2xl p-3 xs:p-4 sm:p-6 border border-[#E41E26]/30 dark:from-gray-600 dark:to-gray-500 dark:border-gray-500">
+                <div className="bg-gradient-to-r from-[#faf5e8] to-[#f5e9d8] rounded-lg xs:rounded-xl sm:rounded-2xl p-3 xs:p-4 sm:p-6 border border-[#C28B46]/30 dark:from-gray-600 dark:to-gray-500 dark:border-gray-500">
                   <div className="flex items-center gap-2 xs:gap-3 mb-3 xs:mb-4">
-                    <FaClock className="text-[#E41E26] text-base xs:text-lg sm:text-xl" />
+                    <FaClock className="text-[#C28B46] text-base xs:text-lg sm:text-xl" />
                     <h3 className="text-sm xs:text-base sm:text-lg font-bold text-gray-800 dark:text-gray-200">
                       وقت التوفر *
                     </h3>
@@ -2093,7 +2094,7 @@ const ProductForm = () => {
                       onClick={() => handleAvailabilityTypeChange("always")}
                       className={`flex items-center justify-center gap-1.5 xs:gap-2 p-2 xs:p-3 rounded-lg border-2 transition-all duration-200 ${
                         formData.availabilityType === "always"
-                          ? "border-[#E41E26] bg-white text-[#E41E26] shadow-md dark:bg-gray-600"
+                          ? "border-[#C28B46] bg-white text-[#C28B46] shadow-md dark:bg-gray-600"
                           : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                       }`}
                     >
@@ -2110,7 +2111,7 @@ const ProductForm = () => {
                       onClick={() => handleAvailabilityTypeChange("custom")}
                       className={`flex items-center justify-center gap-1.5 xs:gap-2 p-2 xs:p-3 rounded-lg border-2 transition-all duration-200 ${
                         formData.availabilityType === "custom"
-                          ? "border-[#E41E26] bg-white text-[#E41E26] shadow-md dark:bg-gray-600"
+                          ? "border-[#C28B46] bg-white text-[#C28B46] shadow-md dark:bg-gray-600"
                           : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 dark:hover:border-gray-400"
                       }`}
                     >
@@ -2165,7 +2166,7 @@ const ProductForm = () => {
                                           : schedule.id
                                       )
                                     }
-                                    className="w-full flex items-center justify-between border border-gray-300 bg-white rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-[#E41E26] transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    className="w-full flex items-center justify-between border border-gray-300 bg-white rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-[#C28B46] transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                     required
                                   >
                                     <span>{schedule.Day || "اختر اليوم"}</span>
@@ -2180,7 +2181,7 @@ const ProductForm = () => {
                                     >
                                       <FaChevronDown
                                         size={12}
-                                        className="text-[#E41E26]"
+                                        className="text-[#C28B46]"
                                       />
                                     </motion.div>
                                   </button>
@@ -2204,7 +2205,7 @@ const ProductForm = () => {
                                             );
                                             setOpenDropdown(null);
                                           }}
-                                          className="px-3 py-2 hover:bg-gradient-to-r hover:from-[#fff5f5] hover:to-[#ffe5e5] cursor-pointer text-gray-700 transition-all text-xs border-b border-gray-100 last:border-b-0 dark:hover:from-gray-500 dark:hover:to-gray-400 dark:text-gray-300 dark:border-gray-500"
+                                          className="px-3 py-2 hover:bg-gradient-to-r hover:from-[#faf5e8] hover:to-[#f5e9d8] cursor-pointer text-gray-700 transition-all text-xs border-b border-gray-100 last:border-b-0 dark:hover:from-gray-500 dark:hover:to-gray-400 dark:text-gray-300 dark:border-gray-500"
                                         >
                                           {day.name}
                                         </li>
@@ -2228,7 +2229,7 @@ const ProductForm = () => {
                                       e.target.value
                                     )
                                   }
-                                  className="w-full border border-gray-300 bg-white rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                  className="w-full border border-gray-300 bg-white rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                   required
                                 />
                               </div>
@@ -2247,7 +2248,7 @@ const ProductForm = () => {
                                       e.target.value
                                     )
                                   }
-                                  className="w-full border border-gray-300 bg-white rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[#E41E26] focus:border-transparent transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                  className="w-full border border-gray-300 bg-white rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[#C28B46] focus:border-transparent transition-all duration-200 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                   required
                                 />
                               </div>
@@ -2265,7 +2266,7 @@ const ProductForm = () => {
                                       e.target.checked
                                     )
                                   }
-                                  className="text-[#E41E26] focus:ring-[#E41E26]"
+                                  className="text-[#C28B46] focus:ring-[#C28B46]"
                                 />
                                 <span className="text-xs text-gray-600 dark:text-gray-400">
                                   نشط
@@ -2281,7 +2282,7 @@ const ProductForm = () => {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={addSchedule}
-                        className="w-full py-2 xs:py-2.5 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg font-semibold hover:border-[#E41E26] hover:text-[#E41E26] transition-all duration-300 text-xs xs:text-sm flex items-center justify-center gap-2 dark:border-gray-500 dark:text-gray-400 dark:hover:border-[#E41E26] dark:hover:text-[#E41E26]"
+                        className="w-full py-2 xs:py-2.5 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg font-semibold hover:border-[#C28B46] hover:text-[#C28B46] transition-all duration-300 text-xs xs:text-sm flex items-center justify-center gap-2 dark:border-gray-500 dark:text-gray-400 dark:hover:border-[#C28B46] dark:hover:text-[#C28B46]"
                       >
                         <FaPlus size={12} />
                         إضافة جدول زمني جديد
@@ -2297,7 +2298,7 @@ const ProductForm = () => {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => navigate("/")}
-                      className="flex-1 py-2 xs:py-2.5 sm:py-3 border-2 border-[#E41E26] text-[#E41E26] rounded-lg font-semibold hover:bg-[#E41E26] hover:text-white transition-all duration-300 text-xs xs:text-sm sm:text-base flex items-center justify-center gap-1.5 xs:gap-2 dark:border-[#E41E26] dark:text-[#E41E26] dark:hover:bg-[#E41E26] dark:hover:text-white"
+                      className="flex-1 py-2 xs:py-2.5 sm:py-3 border-2 border-[#C28B46] text-[#C28B46] rounded-lg font-semibold hover:bg-[#C28B46] hover:text-white transition-all duration-300 text-xs xs:text-sm sm:text-base flex items-center justify-center gap-1.5 xs:gap-2 dark:border-[#C28B46] dark:text-[#C28B46] dark:hover:bg-[#C28B46] dark:hover:text-white"
                     >
                       <FaTimes size={12} className="xs:size-3 sm:size-4" />
                       إلغاء
@@ -2321,7 +2322,7 @@ const ProductForm = () => {
                         (!formData.IsPriceBasedOnRequest ||
                           hasRequiredOptionTypes() ||
                           isEditing)
-                          ? "bg-[#E41E26] text-white hover:shadow-xl hover:shadow-[#E41E26]/25 cursor-pointer"
+                          ? "bg-[#C28B46] text-white hover:shadow-xl hover:shadow-[#C28B46]/25 cursor-pointer"
                           : "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400"
                       }`}
                     >
@@ -2373,7 +2374,7 @@ const ProductForm = () => {
                   onClick={(e) => e.stopPropagation()}
                   dir="rtl"
                 >
-                  <div className="bg-[#E41E26] text-white p-4 sm:p-6 relative border-b border-white">
+                  <div className="bg-[#C28B46] text-white p-4 sm:p-6 relative border-b border-white">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="bg-white/20 p-2 sm:p-3 rounded-2xl backdrop-blur-sm border border-white">
@@ -2400,8 +2401,8 @@ const ProductForm = () => {
                   <div className="p-4 sm:p-6">
                     <div className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 transition-colors duration-300 shadow-lg">
                       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                        <div className="bg-[#E41E26]/10 p-2 rounded-xl border border-[#E41E26]/20">
-                          <FaPlus className="text-[#E41E26] text-base sm:text-lg" />
+                        <div className="bg-[#C28B46]/10 p-2 rounded-xl border border-[#C28B46]/20">
+                          <FaPlus className="text-[#C28B46] text-base sm:text-lg" />
                         </div>
                         <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">
                           إضافة نوع إضافة جديد
@@ -2425,7 +2426,7 @@ const ProductForm = () => {
                                 })
                               }
                               placeholder="أدخل اسم نوع الإضافة الجديد..."
-                              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-white focus:ring-2 focus:ring-[#E41E26] focus:border-[#E41E26] outline-none transition-all text-right text-base sm:text-lg font-medium"
+                              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-white focus:ring-2 focus:ring-[#C28B46] focus:border-[#C28B46] outline-none transition-all text-right text-base sm:text-lg font-medium"
                             />
                           </div>
                         </div>
@@ -2525,8 +2526,8 @@ const ProductForm = () => {
 
                     <div>
                       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                        <div className="bg-[#E41E26]/10 p-2 rounded-xl border border-[#E41E26]/20">
-                          <FaList className="text-[#E41E26] text-base sm:text-lg" />
+                        <div className="bg-[#C28B46]/10 p-2 rounded-xl border border-[#C28B46]/20">
+                          <FaList className="text-[#C28B46] text-base sm:text-lg" />
                         </div>
                         <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">
                           أنواع الإضافات الحالية ({optionTypes.length})
@@ -2539,7 +2540,7 @@ const ProductForm = () => {
                             key={optionType.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 hover:border-[#E41E26]/30 dark:hover:border-[#E41E26]/30 rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg group"
+                            className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 hover:border-[#C28B46]/30 dark:hover:border-[#C28B46]/30 rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg group"
                           >
                             {editingOptionType &&
                             editingOptionType.id === optionType.id ? (
@@ -2558,7 +2559,7 @@ const ProductForm = () => {
                                           name: e.target.value,
                                         })
                                       }
-                                      className="w-full px-3 sm:px-4 py-3 sm:py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-white focus:ring-2 focus:ring-[#E41E26] focus:border-[#E41E26] outline-none transition-all text-right text-base sm:text-lg font-medium"
+                                      className="w-full px-3 sm:px-4 py-3 sm:py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-white focus:ring-2 focus:ring-[#C28B46] focus:border-[#C28B46] outline-none transition-all text-right text-base sm:text-lg font-medium"
                                       dir="rtl"
                                     />
                                   </div>
@@ -2660,7 +2661,7 @@ const ProductForm = () => {
                                     whileHover={{ scale: 1.02, y: -2 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={handleSaveOptionType}
-                                    className="bg-[#E41E26] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold hover:shadow-lg transition-all flex items-center gap-2 text-sm sm:text-base shadow-lg border border-[#E41E26] hover:bg-[#d11c24]"
+                                    className="bg-[#C28B46] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold hover:shadow-lg transition-all flex items-center gap-2 text-sm sm:text-base shadow-lg border border-[#C28B46] hover:bg-[#b07a3a]"
                                   >
                                     <FaSave />
                                     حفظ التغييرات

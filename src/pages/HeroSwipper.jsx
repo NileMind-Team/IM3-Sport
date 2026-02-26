@@ -72,11 +72,11 @@ const HeroSwipper = () => {
 
         const formattedSlides = sliderItems.map((item, index) => {
           const colorGradients = [
-            "from-[#E41E26]/85 to-[#000000]/85",
+            "from-[#C28B46]/85 to-[#000000]/85", // Updated: Brown-gold primary color
             "from-[#0f766e]/85 to-[#14b8a6]/85",
             "from-[#7c3aed]/85 to-[#c026d3]/85",
             "from-[#1a1a2e]/85 to-[#16213e]/85",
-            "from-[#dc2626]/85 to-[#ea580c]/85",
+            "from-[#b07a3a]/85 to-[#8b5a2b]/85", // Updated: Brown-gold shades
             "from-[#059669]/85 to-[#10b981]/85",
             "from-[#7c2d12]/85 to-[#c2410c]/85",
           ];
@@ -146,6 +146,7 @@ const HeroSwipper = () => {
           text: "تعذر تحميل العروض الخاصة",
           timer: 2000,
           showConfirmButton: false,
+          confirmButtonColor: "#C28B46", // Updated: Brown-gold primary color
         });
       } finally {
         setLoading(false);
@@ -169,7 +170,7 @@ const HeroSwipper = () => {
   if (loading) {
     return (
       <div className="relative w-full h-[40vh] sm:h-[45vh] md:h-[50vh] lg:h-[55vh] min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[600px] overflow-hidden rounded-b-2xl shadow-xl bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 border-t-4 border-b-4 border-[#E41E26]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 border-t-4 border-b-4 border-[#C28B46]"></div>
       </div>
     );
   }
@@ -194,9 +195,9 @@ const HeroSwipper = () => {
 
   if (slides.length === 0) {
     return (
-      <div className="relative w-full h-[40vh] sm:h-[45vh] md:h-[50vh] lg:h-[55vh] min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[600px] overflow-hidden rounded-b-2xl shadow-xl bg-gradient-to-r from-[#E41E26]/10 to-[#000000]/10 dark:from-[#E41E26]/20 dark:to-[#000000]/20 flex items-center justify-center">
+      <div className="relative w-full h-[40vh] sm:h-[45vh] md:h-[50vh] lg:h-[55vh] min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[600px] overflow-hidden rounded-b-2xl shadow-xl bg-gradient-to-r from-[#C28B46]/10 to-[#000000]/10 dark:from-[#C28B46]/20 dark:to-[#000000]/20 flex items-center justify-center">
         <div className="text-center px-4">
-          <div className="bg-[#E41E26] p-3 sm:p-4 rounded-2xl inline-block mb-3 sm:mb-4">
+          <div className="bg-[#C28B46] p-3 sm:p-4 rounded-2xl inline-block mb-3 sm:mb-4">
             <FaFire className="text-white text-3xl sm:text-4xl" />
           </div>
           <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
@@ -333,7 +334,7 @@ const HeroSwipper = () => {
                                   transition={{ delay: 0.2 }}
                                   className="relative"
                                 >
-                                  <div className="bg-[#E41E26] text-white px-1.5 py-1 sm:px-2 sm:py-1 md:px-3 md:py-1.5 rounded-md sm:rounded-lg shadow-md flex items-center gap-0.5 sm:gap-1 w-fit border border-white">
+                                  <div className="bg-[#C28B46] text-white px-1.5 py-1 sm:px-2 sm:py-1 md:px-3 md:py-1.5 rounded-md sm:rounded-lg shadow-md flex items-center gap-0.5 sm:gap-1 w-fit border border-white">
                                     {slide.discountType === "percentage" ? (
                                       <FaPercent size={8} />
                                     ) : (
@@ -374,7 +375,7 @@ const HeroSwipper = () => {
                           className="group relative bg-gradient-to-r from-white to-gray-100 text-gray-900 px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2 rounded-lg font-bold text-xs sm:text-sm md:text-base hover:shadow-lg hover:scale-105 transition-all duration-250 transform flex items-center gap-1 sm:gap-2 mx-auto lg:mx-0 overflow-hidden w-fit"
                           dir="rtl"
                         >
-                          <div className="absolute inset-0 bg-[#E41E26] opacity-0 group-hover:opacity-20 transition-opacity duration-250"></div>
+                          <div className="absolute inset-0 bg-[#C28B46] opacity-0 group-hover:opacity-20 transition-opacity duration-250"></div>
                           <span className="relative z-10">{slide.ctaText}</span>
                           <FaShoppingCart
                             className="relative z-10 group-hover:translate-x-0.5 transition-transform duration-250"
@@ -413,7 +414,7 @@ const HeroSwipper = () => {
                                   initial={{ y: 8, opacity: 0 }}
                                   animate={{ y: 0, opacity: 1 }}
                                   transition={{ delay: 0.6 }}
-                                  className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 md:top-2 md:left-2 bg-[#E41E26] text-white px-1 py-0.5 sm:px-1.5 sm:py-0.5 md:px-2 md:py-1 rounded-md shadow-md w-fit border border-white"
+                                  className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 md:top-2 md:left-2 bg-[#C28B46] text-white px-1 py-0.5 sm:px-1.5 sm:py-0.5 md:px-2 md:py-1 rounded-md shadow-md w-fit border border-white"
                                 >
                                   <div className="flex items-center gap-0.5 sm:gap-1">
                                     <FaFire size={7} />

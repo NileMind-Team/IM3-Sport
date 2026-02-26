@@ -31,7 +31,8 @@ export default function DeliveryAreaCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="p-2 sm:p-3 bg-white dark:bg-gray-700 rounded-xl sm:rounded-2xl border border-gray-300 dark:border-gray-500">
-              <FaMapMarkerAlt className="text-[#E41E26] text-lg sm:text-xl" />
+              <FaMapMarkerAlt className="text-[#C28B46] text-lg sm:text-xl" />{" "}
+              {/* Updated: Icon color */}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
@@ -40,7 +41,7 @@ export default function DeliveryAreaCard({
                 </h3>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                    area.isActive
+                    area.isActive,
                   )} whitespace-nowrap`}
                 >
                   {area.isActive ? "نشط" : "غير نشط"}
@@ -56,12 +57,15 @@ export default function DeliveryAreaCard({
 
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-300 dark:border-gray-600">
-              <FaMoneyBillWave className="text-[#E41E26] text-lg flex-shrink-0" />
+              <FaMoneyBillWave className="text-[#C28B46] text-lg flex-shrink-0" />{" "}
+              {/* Updated: Icon color */}
               <div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
                   تكلفة التوصيل
                 </p>
-                <p className="font-bold text-[#E41E26] text-lg">
+                <p className="font-bold text-[#C28B46] text-lg">
+                  {" "}
+                  {/* Updated: Text color */}
                   ج.م {area.deliveryCost.toFixed(2)}
                 </p>
               </div>
