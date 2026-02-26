@@ -24,7 +24,7 @@ export const loginWithGoogle = createAsyncThunk(
       const returnUrl = encodeURIComponent(
         `${window.location.origin}/auth/callback`,
       );
-      const tenant = "New_Zawy";
+      const tenant = "IM3_Sport";
 
       window.location.href = `https://restaurant-template.runasp.net/api/account/login/google?returnUrl=${returnUrl}&Tenant=${tenant}`;
       return null;
@@ -41,7 +41,7 @@ export const loginWithFacebook = createAsyncThunk(
       const returnUrl = encodeURIComponent(
         `${window.location.origin}/auth/callback`,
       );
-      const tenant = "New_Zawy";
+      const tenant = "IM3_Sport";
 
       window.location.href = `https://restaurant-template.runasp.net/api/Auth/FacebookLogin/facebook-login?returnUrl=${returnUrl}&tenant=${tenant}`;
       return null;

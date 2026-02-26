@@ -556,7 +556,7 @@ export default function MyOrders() {
 
   const connectSignalR = async () => {
     try {
-      const tenantName = "New_Zawy";
+      const tenantName = "IM3_Sport";
       const groupFromApi = await getOrderGroupName();
       const fullGroupName = `${tenantName}-${groupFromApi}`;
 
